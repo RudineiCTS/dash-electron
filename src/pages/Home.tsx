@@ -1,35 +1,40 @@
 import { FaArchive } from 'react-icons/fa'
+import { OptionSide, SideBar } from '../components/SideBar'
 
+const items: OptionSide[] = [
+  { key: 1, value: 'Campanha Televendas', icon: FaArchive },
+  { key: 2, value: 'Campanha Comercial', icon: FaArchive },
+]
 export default function Home() {
   return (
-    <div>
-      <div className="flex flex-col bg-white w-2/5 rounded-md h-screen">
-        <div className="font-bold mx-auto py-6 text-xl"> Simple PDF </div>
-        <div className="flex flex-col ml-10">
-          <ul className="flex flex-col gap-3">
-            <li className="text-[#8A8A9A] flex gap-4 items-center">
-               <FaArchive />
-               Opção 1
-            </li>
-            <li className="text-[#8A8A9A] flex gap-4 items-center">
-               <FaArchive />
-               Opção 2
-            </li>
-                        <li className="text-[#8A8A9A] flex gap-4 items-center">
-               <FaArchive />
-               Opção 3
-            </li>
-          </ul>
+    <div className='flex h-screen w-screen overflow-hidden'>
+      <SideBar
+        options={items}        
+      />
 
-        </div>
-        <div className='bg-slate-600 mt-auto h-1/5 flex flex-col py-3 mx-2 rounded-md'>
-          
-          <div className='flex flex-col  mx-6 mt-auto  gap-2'>
-          <p className='text-rose-50'>Diga o que precisa:</p>
-            <input type="text" className='bg-[#E8E8EC] rounded-md'  />
-          </div>
-        </div>
+
+      <section className='flex flex-col justify-center items-center gap-3'>
+      <h1 className='text-2xl font-bold text-github-text'>Campanhas que chegaram!</h1>
+      <div className='mb-4'>
+        <ul className='flex gap-3 text-sm text-github-text-muted'>
+          <li className='bg-github-btn-green rounded-full px-2 text-github-text'>Abril</li>
+          <li className='bg-github-btn-green rounded-full px-2 text-github-text'>Maio</li>
+          <li className='bg-github-btn-green-hover rounded-full px-2 scale-125 text-github-text'>junho</li>
+          <li className='bg-github-btn-green rounded-full px-2 text-github-text'>Julho</li>
+          <li className='bg-github-btn-green rounded-full px-2 text-github-text'>Agosto</li>
+        </ul>
       </div>
+        <div className='bg-github-bg-card '>
+          <h1>Campanha Cremer</h1>
+          <span>
+            <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Accusamus mollitia aliquid dolore sint, delectus enim! Inventore autem iste nihil delectus. Qui voluptas ea esse reiciendis tempore aliquid nihil hic accusamus?</p>
+          </span>
+        </div>
+
+      </section>
+
+        
+      
     </div>
   )
 } 
