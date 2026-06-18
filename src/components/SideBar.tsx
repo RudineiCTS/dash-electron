@@ -8,13 +8,14 @@ export interface OptionSide{
 }
 
 export interface SideBarProps{
-    options: OptionSide[]
+    options: OptionSide[],
+    className?:string
 }
 
-export function SideBar({options }:SideBarProps){
+export function SideBar({options,className }:SideBarProps){
     return(
-        <>
-         <div className="flex flex-col bg-github-bg-card w-2/5 rounded-md h-screen">
+        
+         <div className={`flex flex-col bg-github-bg-card w-80 max-w-80 rounded-md h-screen ${className}`}>
             <div className="font-bold mx-auto py-6 text-xl text-github-text"> O que tem de novo? </div>
             <div className="flex flex-col ml-10">
               <ul className="flex flex-col gap-3">
@@ -31,6 +32,6 @@ export function SideBar({options }:SideBarProps){
               </ul>    
             </div>                            
             </div>
-        </>
+        
     )
 }
