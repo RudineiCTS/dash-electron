@@ -1,4 +1,6 @@
 import { IconType } from 'react-icons'  // ← importa o tipo
+import { LogoApp } from './logoApp'
+import { ReactNode } from 'react'
 
 export interface OptionSide{
     key:string | number,
@@ -9,29 +11,48 @@ export interface OptionSide{
 
 export interface SideBarProps{
     options: OptionSide[],
-    className?:string
+    className?:string,
+    isMenuDefault:boolean,
+    children?: ReactNode
 }
 
-export function SideBar({options,className }:SideBarProps){
+export function SideBar({options,className,isMenuDefault,children }:SideBarProps){
     return(
         
-         <div className={`flex flex-col bg-github-bg-card w-80 max-w-80 rounded-md h-screen ${className}`}>
-            <div className="font-bold mx-auto py-6 text-xl text-github-text"> O que tem de novo? </div>
-            <div className="flex flex-col ml-10">
-              <ul className="flex flex-col gap-3">
-                {options.map((e)=> 
-                    (
-                    <li 
-                    key={e.key} 
-                    onClick={()=> e.onClick ? e.onClick(e) : undefined}
-                    className="text-[#8A8A9A] flex gap-4 items-center text-sm">
-                        <e.icon/>
-                        {e.value}
-                    </li>                
-                    ))}
-              </ul>    
-            </div>                            
-            </div>
+         <div className={`${className}`}>
+            
+            <LogoApp/>
+            {
+                isMenuDefault  == true ? (
+                    <>
+                        <div className="flex flex-col  items-center">
+                            <ul className="flex flex-col gap-3 w-full items-center">
+                                {options.map((e)=> 
+                                    (
+                                    <li 
+                                    key={e.key} 
+                                    onClick={()=> e.onClick ? e.onClick(e) : undefined}
+                                    className="text-[#8A8A9A] flex gap-4 items-center text-sm bg-github-border w-4/5 py-3 rounded-xl px-3 mb-4 cursor-pointer
+                                        hover:text-github-text hover:bg-github-btn-green-hover transition-all duration-200
+                                    ">
+                                        <e.icon size={20} color="#21262d"/>
+                                        {e.value}
+                                    </li>                
+                                    ))}
+                            </ul>    
+                        </div>
+                        <span className='text-github-bg-hover text-sm mt-8'>@Created by rudineicts</span>
+                    </>
+                ):(
+                    <>
+                     {children}
+                    </>
+                )
+            
+            
+            }
+
+        </div>
         
     )
 }

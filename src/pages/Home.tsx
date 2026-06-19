@@ -1,14 +1,15 @@
 import { FaArchive} from 'react-icons/fa'
+import {MdCampaign} from 'react-icons/md'
 import { OptionSide, SideBar } from '../components/SideBar'
 import { useState } from 'react';
 import {campanhas} from '../mock/campaign'
-import { Carousel } from '../components/Carrosel';
+import { Carousel } from '../components/Carousel';
 import { TCampaing } from '../components/CardItem';
 
 
 const items: OptionSide[] = [
-  { key: 1, value: 'Campanha Televendas', icon: FaArchive },
-  { key: 2, value: 'Campanha Comercial', icon: FaArchive },
+  { key: 1, value: 'Campanha Televendas', icon: MdCampaign },
+  { key: 2, value: 'Campanha Comercial', icon: MdCampaign },
 ]
 
 
@@ -21,10 +22,12 @@ export default function Home() {
   }
   return (
     <div className='flex h-screen w-screen overflow-hidden max-h-screen justify-between'>
+      
       <SideBar
-        options={items}        
+        isMenuDefault={true}
+        options={items}     
+        className={`flex flex-col bg-github-bg-card w-80 max-w-80 rounded-md h-screen`}
       />
-
 
       <section className='flex flex-col  mx-36  h-screen overflow-y-auto py-8'>
         <div className='flex flex-col gap-6 mb-8 '>
@@ -51,7 +54,11 @@ export default function Home() {
         />
       </section>
 
-        <div></div>
+      <SideBar
+        isMenuDefault={true}
+        options={items}     
+        className={`flex flex-col bg-github-bg-card w-80 max-w-80 rounded-md h-screen`}
+      />
       
     </div>
   )
