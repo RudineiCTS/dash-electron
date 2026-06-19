@@ -2,9 +2,10 @@ import { FaArchive} from 'react-icons/fa'
 import {MdCampaign} from 'react-icons/md'
 import { OptionSide, SideBar } from '../components/SideBar'
 import { useState } from 'react';
-import {campanhas} from '../mock/campaign'
+import {campanhas, campanhaDetalhe} from '../mock/campaign'
 import { Carousel } from '../components/Carousel';
 import { TCampaing } from '../components/CardItem';
+import { SideBarShowDetailsIten } from '../components/SideBarShowDetailsIten';
 
 
 const items: OptionSide[] = [
@@ -54,11 +55,9 @@ export default function Home() {
         />
       </section>
 
-      <SideBar
-        isMenuDefault={true}
-        options={items}     
-        className={`flex flex-col bg-github-bg-card w-80 max-w-80 rounded-md h-screen`}
-      />
+  
+       
+         <SideBarShowDetailsIten campaign={campanhaDetalhe}/>
       
     </div>
   )

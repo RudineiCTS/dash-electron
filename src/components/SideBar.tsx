@@ -21,10 +21,11 @@ export function SideBar({options,className,isMenuDefault,children }:SideBarProps
         
          <div className={`${className}`}>
             
-            <LogoApp/>
+            
             {
                 isMenuDefault  == true ? (
                     <>
+                    <LogoApp/>
                         <div className="flex flex-col  items-center">
                             <ul className="flex flex-col gap-3 w-full items-center">
                                 {options.map((e)=> 
