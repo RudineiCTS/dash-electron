@@ -31,8 +31,8 @@ export function CardItem({handleClick, ...props}:CardItemProps){
             onMouseLeave={() => setIsHovered(false)}
             >
           <div className='absolute top-3 right-5 px-2 bg-github-lang-javascript rounded-full text-github-btn-dark font-semibold'>Farma</div>
-          <div className={`absolute bottom-0 right-1  px-2 py-2  text-github-text-muted font-semibold ${isHovered ? "text-github-lang-javascript":""}`}>
-            {isHovered ? <FaDoorOpen /> : <FaDoorClosed />}            
+          <div className={`absolute bottom-0 right-1  px-2 py-2  text-github-text-muted font-semibold `}>
+            {isHovered ? <FaDoorOpen color="#f1e05a" /> : <FaDoorClosed />}            
           </div>
           <div className='border-solid border-s-orange-400 border-l-2 px-3'>
             <h1 className='text-github-text font-medium text-lg mb-2'>{props.title}</h1>

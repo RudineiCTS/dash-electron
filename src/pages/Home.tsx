@@ -2,7 +2,7 @@ import { FaArchive} from 'react-icons/fa'
 import { OptionSide, SideBar } from '../components/SideBar'
 import { useState } from 'react';
 import {campanhas} from '../mock/campaign'
-import { Carousel } from '../components/Carrosel';
+import { Carousel } from '../components/Carousel';
 import { TCampaing } from '../components/CardItem';
 
 
