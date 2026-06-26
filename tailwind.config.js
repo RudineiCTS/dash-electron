@@ -13,6 +13,7 @@ module.exports = {
             DEFAULT: "#0d1117",   // fundo principal da página
             card:    "#161b22",   // fundo de cards / painéis
             hover:   "#21262d",   // hover de itens / bordas internas
+            focus:    "#2ecb73",
           },
  
           // ── Texto ───────────────────────────────

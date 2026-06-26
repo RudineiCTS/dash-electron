@@ -27,8 +27,22 @@
  */
 
 import { createRoot } from 'react-dom/client'
+import { HashRouter, Routes, Route } from 'react-router-dom'
 import Home from './pages/Home'
+import CampaignsActive from './pages/CampaingsActive'
+import Layout from './pages/Layout'
 import './index.css'
 
-const root = createRoot(document.getElementById('app'))
-root.render(<Home />)
+createRoot(document.getElementById('app')!).render(
+  <HashRouter>
+    <Routes>
+      <Route path="/" element={<Layout />}>
+        <Route index element={<Home />} />
+        <Route path="/campaigns" element={<CampaignsActive />} />
+      </Route>
+    </Routes>
+  </HashRouter>
+)
+
+// const root = createRoot(document.getElementById('app'))
+// root.render(<Home />)

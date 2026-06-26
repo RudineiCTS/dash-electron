@@ -1,7 +1,8 @@
 import { IconType } from 'react-icons'  // ← importa o tipo
 import { LogoApp } from './logoApp'
 import { ReactNode } from 'react'
-
+import {FiActivity, FiArchive} from 'react-icons/fi'
+import { useNavigate } from 'react-router-dom'
 export interface OptionSide{
     key:string | number,
     value: string,
@@ -17,14 +18,28 @@ export interface SideBarProps{
 }
 
 export function SideBar({options,className,isMenuDefault,children }:SideBarProps){
-    return(
-        
-         <div className={`${className}`}>
-            
-            
+     const navigate = useNavigate()
+    return(        
+         <div className={`${className}`}>                        
             {
                 isMenuDefault  == true ? (
                     <>
+                    <div className='mt-4 w-full'>
+                        <ul className='text-github-text-muted flex flex-col gap-4 pl-4'>
+                            <li 
+                                className='flex items-center gap-5 cursor-pointer hover:text-github-btn-green-hover transition: duration-500'
+                                onClick={() => navigate("/campaigns")}
+                            >
+                                <FiArchive />
+                                Campanhas Recebidas
+                                
+                            </li>
+                            <li className='flex items-center gap-5 cursor-pointer hover:text-github-btn-green-hover transition: duration-500'>
+                                <FiActivity />
+                                Campanhas Rodando
+                            </li>
+                        </ul>
+                    </div>
                     <LogoApp/>
                         <div className="flex flex-col  items-center">
                             <ul className="flex flex-col gap-3 w-full items-center">
