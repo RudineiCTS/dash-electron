@@ -9,7 +9,7 @@ export default function Layout() {
       <SideBar
         isMenuDefault={true}
         options={items}
-        className="flex flex-col bg-github-bg-card w-80 max-w-80 rounded-md h-screen"
+        className="flex flex-col bg-other-card w-80 max-w-80  h-screen"
       />
       <main className="flex-1">
         <Outlet />

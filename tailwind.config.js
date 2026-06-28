@@ -41,6 +41,17 @@ module.exports = {
             html:       "#e34c26",
           },
         },
+         other: {
+          bg:          '#0d1117',
+          surface:     '#161b22',
+          card:        '#10171f',
+          border:      'rgba(255,255,255,0.07)',
+          text:        '#ffffff',
+          muted:       '#8b949e',
+          green:       '#3fb950',
+          'green-dark':'#1a2e1a',
+          badge:       '#21262d',
+        }
       },
     },
   },
