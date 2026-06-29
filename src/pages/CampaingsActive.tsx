@@ -58,147 +58,21 @@ export default function CampaignsActive()
         </header>
         <main className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 p-4 overflow-y-auto flex-1 min-h-0 ">
             
-            <CampaignCard 
-                description="Pampers Supersec Mega" 
-                id={627} 
+           {Array.from({ length: 10 }).map((_, index) => (
+            <CampaignCard
+                key={index}
+                description="Pampers Supersec Mega"
+                id={627}
                 dinamic={false}
                 premio="1000,00"
                 status="Premiado"
                 tipeMeta="Livre"
                 typeCampaign="Valor"
                 valueRealizado="1843,00"
-                />
-            <CampaignCard 
-                description="Pampers Supersec Mega" 
-                id={627} 
-                dinamic={false}
-                premio="1000,00"
-                status="Premiado"
-                tipeMeta="Livre"
-                typeCampaign="Valor"
-                valueRealizado="1843,00"
-                />
-            <CampaignCard 
-                description="Pampers Supersec Mega" 
-                id={627} 
-                dinamic={false}
-                premio="1000,00"
-                status="Premiado"
-                tipeMeta="Livre"
-                typeCampaign="Valor"
-                valueRealizado="1843,00"
-                />
-            <CampaignCard 
-                description="Pampers Supersec Mega" 
-                id={627} 
-                dinamic={false}
-                premio="1000,00"
-                status="Premiado"
-                tipeMeta="Livre"
-                typeCampaign="Valor"
-                valueRealizado="1843,00"
-                />
-            <CampaignCard 
-                description="Pampers Supersec Mega" 
-                id={627} 
-                dinamic={false}
-                premio="1000,00"
-                status="Premiado"
-                tipeMeta="Livre"
-                typeCampaign="Valor"
-                valueRealizado="1843,00"
-                />
-            <CampaignCard 
-                description="Pampers Supersec Mega" 
-                id={627} 
-                dinamic={false}
-                premio="1000,00"
-                status="Premiado"
-                tipeMeta="Livre"
-                typeCampaign="Valor"
-                valueRealizado="1843,00"
-                />                                                         
-            <CampaignCard 
-                description="Pampers Supersec Mega" 
-                id={627} 
-                dinamic={false}
-                premio="1000,00"
-                status="Premiado"
-                tipeMeta="Livre"
-                typeCampaign="Valor"
-                valueRealizado="1843,00"
-                />  
-            <CampaignCard 
-                description="Pampers Supersec Mega" 
-                id={627} 
-                dinamic={false}
-                premio="1000,00"
-                status="Premiado"
-                tipeMeta="Livre"
-                typeCampaign="Valor"
-                valueRealizado="1843,00"
-                />  
-            <CampaignCard 
-                description="Pampers Supersec Mega" 
-                id={627} 
-                dinamic={false}
-                premio="1000,00"
-                status="Premiado"
-                tipeMeta="Livre"
-                typeCampaign="Valor"
-                valueRealizado="1843,00"
-                />                                                  
-            <CampaignCard 
-                description="Pampers Supersec Mega" 
-                id={627} 
-                dinamic={false}
-                premio="1000,00"
-                status="Premiado"
-                tipeMeta="Livre"
-                typeCampaign="Valor"
-                valueRealizado="1843,00"
-                />  
-            <CampaignCard 
-                description="Pampers Supersec Mega" 
-                id={627} 
-                dinamic={false}
-                premio="1000,00"
-                status="Premiado"
-                tipeMeta="Livre"
-                typeCampaign="Valor"
-                valueRealizado="1843,00"
-                />  
-            <CampaignCard 
-                description="Pampers Supersec Mega" 
-                id={627} 
-                dinamic={false}
-                premio="1000,00"
-                status="Premiado"
-                tipeMeta="Livre"
-                typeCampaign="Valor"
-                valueRealizado="1843,00"
-                />  
-            <CampaignCard 
-                description="Pampers Supersec Mega" 
-                id={627} 
-                dinamic={false}
-                premio="1000,00"
-                status="Premiado"
-                tipeMeta="Livre"
-                typeCampaign="Valor"
-                valueRealizado="1843,00"
-                />                                                                  
-
-            <CampaignCard 
-                description="Pampers Supersec Mega" 
-                id={627} 
-                dinamic={false}
-                premio="1000,00"
-                status="Premiado"
-                tipeMeta="Livre"
-                typeCampaign="Valor"
-                valueRealizado="1843,00"
-                />                  
+            />
+            ))}
+          
+                  
 
         </main>
     </div>
