@@ -45,6 +45,9 @@
   },
   "dependencies": {
     "@types/react-router-dom": "^5.3.3",
+    "axios": "^1.18.1",
+    "dayjs": "^1.11.21",
+    "days": "^1.1.1",
     "electron-squirrel-startup": "^1.0.1",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",

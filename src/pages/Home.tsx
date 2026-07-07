@@ -1,11 +1,12 @@
-import { FaArchive} from 'react-icons/fa'
+import dayjs from 'dayjs'
 import {MdCampaign} from 'react-icons/md'
-import { OptionSide, SideBar } from '../components/SideBar'
+import { OptionSide } from '../components/SideBar'
 import { useState } from 'react';
-import {campanhas, campanhaDetalhe} from '../mock/campaign'
+import {campanhaDetalhe} from '../mock/campaign'
 import { Carousel } from '../components/Carousel';
-import { TCampaing } from '../components/CardItem';
 import { SideBarShowDetailsIten } from '../components/SideBarShowDetailsIten';
+import { useCampaign } from '../hook/useCampaign';
+import {getUltimoDiaDoMes} from '../utils/getLastDayInMonth'
 
 
 export const items: OptionSide[] = [
@@ -13,13 +14,23 @@ export const items: OptionSide[] = [
   { key: 2, value: 'Campanha Comercial', icon: MdCampaign },
 ]
 
-
+const dataReferencia = dayjs()
+  .subtract(1, 'month')   // volta um mês
+  .endOf('month')         // vai pro último dia desse mês
+  .format('YYYY-MM-DD');
 export default function Home() {
   const meses = ["Abril", "Maio", "Junho", "Julho", "setembto"];
   const [ativo, setAtivo] = useState("Junho");
-  
-  function handleCheckCampaign(e:TCampaing){
+  const [date, setDate] = useState(dayjs(dataReferencia).format('YYYY-MM-DD'))
+  const { campaigns, loading, error } = useCampaign(date);
+
+  function handleCheckCampaign(e:any){
     console.log(e)
+  }
+  function handleChangeMonthCampaign(e:string){
+    const year = dayjs().year();
+    const data = getUltimoDiaDoMes(e, year)
+    setDate(data);
   }
   return (
     <div className='flex h-screen overflow-hidden'>
@@ -39,7 +50,7 @@ export default function Home() {
               {meses.map((mes) => (
                 <li
                 key={mes}
-                onClick={() => setAtivo(mes)}
+                onClick={() => handleChangeMonthCampaign(mes)}
                 className={`rounded-full px-4 py-1 border border-green-600 text-sm font-medium transition-all cursor-pointer
                   ${ativo === mes ? "bg-green-600 text-white" : "text-green-600 hover:bg-green-50"}`}      
                   >
@@ -51,7 +62,7 @@ export default function Home() {
         </div>
         <Carousel
           key={1}
-          cardItemList={campanhas}
+          cardItemList={campaigns}
           handleCheckCampaign={handleCheckCampaign}
           
         />

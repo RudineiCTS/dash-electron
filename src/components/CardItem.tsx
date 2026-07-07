@@ -1,24 +1,11 @@
 import { useState } from "react";
 import { FaCalendar, FaClock,FaDoorClosed ,  FaDoorOpen} from "react-icons/fa";
-
-export interface TCampaing {
-  description: string
-  dateAccuracy: string
-  dateBegin: string
-  dateEnd: string
-  title: string
-  idCampaign: number
-}
+import { CampaignCompetencePeriod } from "src/interfaces/CampaignResume";
 
 
-export interface CardItemProps {
-  description: string
-  dateAccuracy: string
-  dateBegin: string
-  dateEnd: string
-  title: string
-  idCampaign: number
-  handleClick: (item: Omit<CardItemProps, "handleClick">) => void
+
+export interface CardItemProps extends CampaignCompetencePeriod {  
+  handleClick: (item: CampaignCompetencePeriod) => void
 }
 export function CardItem({handleClick, ...props}:CardItemProps){
   const [isHovered, setIsHovered] = useState(false)
@@ -35,13 +22,13 @@ export function CardItem({handleClick, ...props}:CardItemProps){
             {isHovered ? <FaDoorOpen color="#f1e05a" /> : <FaDoorClosed />}            
           </div>
           <div className='border-solid border-s-orange-400 border-l-2 px-3'>
-            <h1 className='text-github-text font-medium text-lg mb-2'>{props.title}</h1>
+            <h1 className='text-github-text font-medium text-lg mb-2'>{props.description}</h1>
               <span className='flex gap-4 items-center text-github-text-muted px-2 text-sm mb-2'>
-                <div className='flex gap-2 items-center'> <FaCalendar/> Data Competencia: {props.dateAccuracy}</div>
-                <div className='flex gap-2 items-center'> <FaClock/> Período de apuração: {props.dateBegin} - {props.dateEnd}</div>            
+                <div className='flex gap-2 items-center'> <FaCalendar/> Data Competencia: {props.competenceDate}</div>
+                <div className='flex gap-2 items-center'> <FaClock/> Período de apuração: {props.startDate} - {props.endDate}</div>            
               </span>
           </div>
-            <p className='mx-3 text-github-text-muted'>{props.description}</p>
+            <p className='mx-3 text-github-text-muted'>{props.notes}</p>
         </div>
     )
 }
