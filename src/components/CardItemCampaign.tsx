@@ -3,9 +3,9 @@ interface ICampaignCard{
     description:string;
     typeCampaign:string;
     status:string;
-    tipeMeta:string;
-    valueRealizado:string;
-    premio:string;
+    tipeMeta:number;
+    valueRealizado:number;
+    premio:number;
     dinamic:boolean;
 }
 export function CampaignCard(props:ICampaignCard) {

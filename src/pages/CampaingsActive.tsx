@@ -1,9 +1,16 @@
 import { TopCardTopic } from "../components/TopCardTopic";
 import { ToggleTab } from "../components/ToggleTab";
 import { CampaignCard } from "../components/CardItemCampaign";
+import { useCampaign } from "../hook/useCampaign";
+import dayjs from "dayjs";
 
-export default function CampaignsActive() 
-{
+
+const dataReferencia = dayjs()
+  .subtract(1, 'month')   // volta um mês
+  .endOf('month')         // vai pro último dia desse mês
+  .format('YYYY-MM-DD');
+export default function CampaignsActive() {
+const {summary,loadingSummary,errorSummary }= useCampaign(dataReferencia);
     return(
         <div className="flex flex-col h-screen">
         <header className="flex flex-col shrink-0">
@@ -58,17 +65,17 @@ export default function CampaignsActive()
         </header>
         <main className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 p-4 overflow-y-auto flex-1 min-h-0 ">
             
-           {Array.from({ length: 10 }).map((_, index) => (
+           {summary.map((e) => (
             <CampaignCard
-                key={index}
-                description="Pampers Supersec Mega"
-                id={627}
+                key={e.idCampaign}
+                description={e.campaignDescription}
+                id={e.idCampaign}
                 dinamic={false}
-                premio="1000,00"
-                status="Premiado"
-                tipeMeta="Livre"
-                typeCampaign="Valor"
-                valueRealizado="1843,00"
+                premio={e.totalAward}
+                status={"OK"}
+                tipeMeta={e.goalValue}
+                typeCampaign={e.campaignTypeDescription}
+                valueRealizado={e.assessedValue}
             />
             ))}
           

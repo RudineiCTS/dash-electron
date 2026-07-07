@@ -1,0 +1,15 @@
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import { TopCardTopic } from "../components/TopCardTopic";
+import { ToggleTab } from "../components/ToggleTab";
+import { CampaignCard } from "../components/CardItemCampaign";
+import { useCampaign } from "../hook/useCampaign";
+import dayjs from "dayjs";
+const dataReferencia = dayjs()
+    .subtract(1, 'month') // volta um mês
+    .endOf('month') // vai pro último dia desse mês
+    .format('YYYY-MM-DD');
+export default function CampaignsActive() {
+    const { summary, loadingSummary, errorSummary } = useCampaign(dataReferencia);
+    return (_jsxs("div", { className: "flex flex-col h-screen", children: [_jsxs("header", { className: "flex flex-col shrink-0", children: [_jsxs("div", { className: 'gap-5 flex flex-col justify-start mt-6 ', children: [_jsx("div", { className: "text-sm text-github-btn-green-hover tracking-[2.5px] px-6 font-medium", children: "APURA\u00C7\u00C3O" }, void 0), _jsx("div", { className: " border-other-badge border-b pb-3", children: _jsxs("div", { className: "px-6", children: [_jsx("h1", { className: "text-xl font-extrabold text-github-text mb-2", children: "Campanhas Rodando" }, void 0), _jsxs("div", { className: " text-github-text-muted flex w-full justify-between  text-sm", children: ["9 campanhas - acompanhamento de meta, realizado e premia\u00E7\u00E3o", _jsxs("div", { className: "flex gap-4 ", children: [_jsxs("div", { className: "flex flex-col", children: [_jsx("p", { className: " tracking-[2.5px] uppercase text-xs", children: "data Compet\u00EAncia" }, void 0), _jsx("strong", { className: "text-github-text text-right", children: "30/06/2026" }, void 0)] }, void 0), _jsx(ToggleTab, {}, void 0)] }, void 0)] }, void 0)] }, void 0) }, void 0)] }, void 0), _jsxs("section", { className: "flex  justify-around px-7 gap-7 mt-2 ", children: [_jsx(TopCardTopic, { title: "Meta Total", subtitles: "Objetivo das campanhas", value: "R$ 10.704.000,00" }, void 0), _jsx(TopCardTopic, { title: "Meta Total", subtitles: "Objetivo das campanhas", value: "R$ 10.704.000,00" }, void 0), _jsx(TopCardTopic, { title: "Meta Total", subtitles: "Objetivo das campanhas", value: "R$ 10.704.000,00" }, void 0), _jsx(TopCardTopic, { title: "Meta Total", subtitles: "Objetivo das campanhas", value: "R$ 10.704.000,00" }, void 0)] }, void 0)] }, void 0), _jsx("main", { className: "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 p-4 overflow-y-auto flex-1 min-h-0 ", children: summary.map((e) => (_jsx(CampaignCard, { description: e.campaignDescription, id: e.idCampaign, dinamic: false, premio: e.totalAward, status: "OK", tipeMeta: e.goalValue, typeCampaign: e.campaignTypeDescription, valueRealizado: e.assessedValue }, e.idCampaign))) }, void 0)] }, void 0));
+}
+//# sourceMappingURL=CampaingsActive.js.map

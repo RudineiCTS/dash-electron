@@ -1,0 +1,8 @@
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import { useState } from "react";
+import { FaCalendar, FaClock, FaDoorClosed, FaDoorOpen } from "react-icons/fa";
+export function CardItem({ handleClick, ...props }) {
+    const [isHovered, setIsHovered] = useState(false);
+    return (_jsxs("div", { className: 'bg-github-bg-card p-7 rounded-md w-full relative flex flex-col gap-1 cursor-pointer', onClick: () => handleClick(props), onMouseEnter: () => setIsHovered(true), onMouseLeave: () => setIsHovered(false), children: [_jsx("div", { className: 'absolute top-3 right-5 px-2 bg-github-lang-javascript rounded-full text-github-btn-dark font-semibold', children: "Farma" }, void 0), _jsx("div", { className: `absolute bottom-0 right-1  px-2 py-2  text-github-text-muted font-semibold `, children: isHovered ? _jsx(FaDoorOpen, { color: "#f1e05a" }, void 0) : _jsx(FaDoorClosed, {}, void 0) }, void 0), _jsxs("div", { className: 'border-solid border-s-orange-400 border-l-2 px-3', children: [_jsx("h1", { className: 'text-github-text font-medium text-lg mb-2', children: props.description }, void 0), _jsxs("span", { className: 'flex gap-4 items-center text-github-text-muted px-2 text-sm mb-2', children: [_jsxs("div", { className: 'flex gap-2 items-center', children: [" ", _jsx(FaCalendar, {}, void 0), " Data Competencia: ", props.competenceDate] }, void 0), _jsxs("div", { className: 'flex gap-2 items-center', children: [" ", _jsx(FaClock, {}, void 0), " Per\u00EDodo de apura\u00E7\u00E3o: ", props.startDate, " - ", props.endDate] }, void 0)] }, void 0)] }, void 0), _jsx("p", { className: 'mx-3 text-github-text-muted', children: props.notes }, void 0)] }, props.idCampaign));
+}
+//# sourceMappingURL=CardItem.js.map
