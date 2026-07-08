@@ -22,7 +22,7 @@ export default function Home() {
   const meses = ["Abril", "Maio", "Junho", "Julho", "setembto"];
   const [ativo, setAtivo] = useState("Junho");
   const [date, setDate] = useState(dayjs(dataReferencia).format('YYYY-MM-DD'))
-  const { campaigns, loading, error } = useCampaign(date);
+  const { campaigns, loading, error } = useCampaign({dateCompetency:date});
 
   function handleCheckCampaign(e:any){
     console.log(e)

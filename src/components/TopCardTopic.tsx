@@ -1,7 +1,9 @@
+import { formatCurrency } from "../utils/formateCurrency";
+
 interface ITopCardTopic{
     title:string;
     subtitles:string;
-    value:string;
+    value: number;
     
 }
 export function TopCardTopic({title,subtitles,value}:ITopCardTopic){
@@ -11,7 +13,7 @@ export function TopCardTopic({title,subtitles,value}:ITopCardTopic){
             {title}
         </span>
         <span className="text-3xl font-semibold text-white">
-            {value}
+            {formatCurrency(value)}
         </span>
         <span className="text-sm text-[#4ade80]/80">
             {subtitles}

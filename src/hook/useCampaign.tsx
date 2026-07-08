@@ -3,7 +3,11 @@ import { getCamapignTelesalerPerPeriod, getCampaignSummaryPerPeriod } from '../s
 import { CampaignCompetencePeriod } from '../interfaces/CampaignResume';
 import { CampaignSummary } from '../interfaces/CampaignSummary';
 
-export function useCampaign(dateCompetency?:string, dateSummary?:string){    
+interface typeUseCampaign {
+  dateCompetency?:string,
+  dateSummary?:string
+}
+export function useCampaign({dateCompetency,dateSummary}:typeUseCampaign){    
     const [campaigns, setCampaigns] = useState<CampaignCompetencePeriod[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
@@ -11,6 +15,7 @@ export function useCampaign(dateCompetency?:string, dateSummary?:string){
     const [summary, setSummary] = useState<CampaignSummary[]>([]);
     const [loadingSummary, setLoadingSummary] = useState(false);
     const [errorSummary, setErrorSummary] = useState("");
+    const [totalCard, setTotalCard] = useState({totalMeta:0,          totalValor:0,          premiacaoTotal:0,          percentTotal:0})
 
     const fetchCampaign = useCallback(async (signal?: AbortSignal) => {
       try {
@@ -30,6 +35,7 @@ export function useCampaign(dateCompetency?:string, dateSummary?:string){
       }
     }, [dateCompetency]); // 👈 recria a função só quando a data muda
 
+
     const fetchSummary = useCallback(async (signal?:AbortSignal)=>{
      try {
         setLoadingSummary(true);
@@ -37,6 +43,25 @@ export function useCampaign(dateCompetency?:string, dateSummary?:string){
 
         const data = await getCampaignSummaryPerPeriod(dateSummary!, signal);
         setSummary(data);
+
+        const valores = data.reduce((acc, item)=> ({
+          totalMeta: acc.totalMeta + item.goalValue,          
+          totalValor: acc.totalValor + item.assessedValue,
+          premiacaoTotal: acc.premiacaoTotal + item.totalAward,
+          percentTotal: acc.percentTotal + item.percentageAchieved
+        }           
+        ), {
+          totalMeta:0,
+          totalValor:0,
+          premiacaoTotal:0,
+          percentTotal:0
+        })
+        setTotalCard((prev)=>({
+          percentTotal: valores.percentTotal,
+          premiacaoTotal:valores.premiacaoTotal,
+          totalMeta:valores.totalMeta,
+          totalValor:valores.totalValor
+        }))
       } catch (err) {
         if (err instanceof Error && err.name === 'AbortError') return;
         setErrorSummary(`Erro ao buscar resumo a partir de ${dateSummary}`);
@@ -66,6 +91,7 @@ export function useCampaign(dateCompetency?:string, dateSummary?:string){
     summary,
     loadingSummary,
     errorSummary,
-    fetchSummary
+    fetchSummary,
+    totalCard
   };
 }

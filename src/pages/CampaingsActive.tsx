@@ -3,6 +3,7 @@ import { ToggleTab } from "../components/ToggleTab";
 import { CampaignCard } from "../components/CardItemCampaign";
 import { useCampaign } from "../hook/useCampaign";
 import dayjs from "dayjs";
+import { useState } from "react";
 
 
 const dataReferencia = dayjs()
@@ -10,7 +11,14 @@ const dataReferencia = dayjs()
   .endOf('month')         // vai pro último dia desse mês
   .format('YYYY-MM-DD');
 export default function CampaignsActive() {
-const {summary,loadingSummary,errorSummary }= useCampaign(dataReferencia);
+    // const [metaTotal, setMetaTotal] = useState();
+    // const [realizadoTotal, setRealizadoTotal] = useState();
+    // const [percentageTotal, setpercentageTotal] = useState();
+    // const [prizeAccumulated, setprizeAccumulated] = useState();
+
+    const {summary,totalCard }= useCampaign({dateSummary:dataReferencia});
+
+    
     return(
         <div className="flex flex-col h-screen">
         <header className="flex flex-col shrink-0">
@@ -44,22 +52,22 @@ const {summary,loadingSummary,errorSummary }= useCampaign(dataReferencia);
                 <TopCardTopic
                     title="Meta Total"
                     subtitles="Objetivo das campanhas"
-                    value="R$ 10.704.000,00"
+                    value={totalCard.totalMeta}
                 />
                 <TopCardTopic
-                        title="Meta Total"
+                        title="Realizado Total"
                         subtitles="Objetivo das campanhas"
-                        value="R$ 10.704.000,00"
+                        value={totalCard.totalValor}
                         />
                 <TopCardTopic
-                        title="Meta Total"
+                        title="Percentual total"
                         subtitles="Objetivo das campanhas"
-                        value="R$ 10.704.000,00"
+                        value={totalCard.percentTotal}
                         />
                 <TopCardTopic
-                        title="Meta Total"
+                        title="Premiação Total"
                         subtitles="Objetivo das campanhas"
-                        value="R$ 10.704.000,00"
+                        value={totalCard.premiacaoTotal}
                         />            
             </section>            
         </header>
