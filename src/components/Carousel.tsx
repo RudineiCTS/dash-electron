@@ -1,4 +1,4 @@
-import { CampaignCompetencePeriod } from "src/interfaces/CampaignResume"
+import { CampaignCompetencePeriod } from "../interfaces/CampaignResume"
 import { CardItem } from "./CardItem"
 
 

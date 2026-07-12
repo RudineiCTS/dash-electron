@@ -30,6 +30,7 @@ import { createRoot } from 'react-dom/client'
 import { HashRouter, Routes, Route } from 'react-router-dom'
 import Home from './pages/Home'
 import CampaignsActive from './pages/CampaingsActive'
+import CampaignDetail from './pages/CampaignDetail'
 import Layout from './pages/Layout'
 import './index.css'
 
@@ -39,6 +40,7 @@ createRoot(document.getElementById('app')!).render(
       <Route path="/" element={<Layout />}>
         <Route index element={<Home />} />
         <Route path="/campaigns" element={<CampaignsActive />} />
+        <Route path="/campaigns/:id" element={<CampaignDetail />} />
       </Route>
     </Routes>
   </HashRouter>

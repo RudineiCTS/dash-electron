@@ -7,11 +7,12 @@ import { Carousel } from '../components/Carousel';
 import { SideBarShowDetailsIten } from '../components/SideBarShowDetailsIten';
 import { useCampaign } from '../hook/useCampaign';
 import {getUltimoDiaDoMes} from '../utils/getLastDayInMonth'
+import InBuildingComponent from '../components/InBuildingComponent/InBuildingComponent';
 
 
 export const items: OptionSide[] = [
-  { key: 1, value: 'Campanha Televendas', icon: MdCampaign },
-  { key: 2, value: 'Campanha Comercial', icon: MdCampaign },
+  { key: 1, value: 'Campanha Televendas', icon: MdCampaign,status:'active'  },
+  { key: 2, value: 'Campanha Comercial', icon: MdCampaign,status:'locked'  },
 ]
 
 const dataReferencia = dayjs()
@@ -60,14 +61,21 @@ export default function Home() {
             </ul>
           </div>
         </div>
-        <Carousel
+        {/* <Carousel
           key={1}
           cardItemList={campaigns}
           handleCheckCampaign={handleCheckCampaign}
           
+        /> */}
+        <InBuildingComponent 
+          titulo='Construção'
+          descricao='Esta pagina será um hub, onde mostrara todas as campanhas recebidas do mês, com seus respectivos status, metas e premiações. Em breve estará disponível.'
+          key={'Building'}
+          progresso={50}
+        
         />
       </section>         
-         <SideBarShowDetailsIten campaign={campanhaDetalhe}/>
+         {/* <SideBarShowDetailsIten campaign={campanhaDetalhe}/> */}
       
     </div>
   )

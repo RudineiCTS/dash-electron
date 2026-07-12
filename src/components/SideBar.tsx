@@ -3,11 +3,14 @@ import { LogoApp } from './logoApp'
 import { ReactNode } from 'react'
 import {FiActivity, FiArchive} from 'react-icons/fi'
 import { NavLink } from 'react-router-dom'
+import { ButtonSideBar } from './ButtonSideBar'
+import { Lock} from "lucide-react";
 export interface OptionSide{
     key:string | number,
     value: string,
     icon: IconType
-    onClick?: (item:OptionSide) =>void
+    onClick?: (item:OptionSide) =>void,
+    status: 'active' | 'inactive' | 'locked'
 }
 
 export interface SideBarProps{
@@ -63,15 +66,20 @@ export function SideBar({options,className,isMenuDefault,children,switchCampaign
                                 {options.map((e)=> 
                                     (
                                     <li 
-                                    key={e.key} 
-                                    onClick={()=> handleSelectOption(e.key as number)}
-                                    className={`text-[#8A8A9A] flex gap-4 items-center text-sm 
-                                        bg-github-border w-4/5 py-3 rounded-xl px-3 mb-4 cursor-pointer
-                                        hover:text-github-text hover:bg-github-btn-green-hover transition-all duration-200
-                                        ${optionActive === e.key && 'bg-github-btn-green-hover text-github-text'}
-                                    `}>
-                                        <e.icon size={20} color="#21262d"/>
-                                        {e.value}
+                                    // key={e.key} 
+                                    // onClick={()=> handleSelectOption(e.key as number)}
+                                    // className={`text-[#8A8A9A] flex gap-4 items-center text-sm 
+                                    //     bg-github-border w-4/5 py-3 rounded-xl px-3 mb-4 cursor-pointer
+                                    //     hover:text-github-text hover:bg-github-btn-green-hover transition-all duration-200
+                                    //     ${optionActive === e.key && 'bg-github-btn-green-hover text-github-text'}
+                                    // `
+                                    >
+                                        <ButtonSideBar title={e.value} typeButton={e.status} active={optionActive === e.key} onClick={()=> handleSelectOption(e.key as number)}>
+                                            {
+                                                e.status === 'locked' ?( <Lock size={20} color="#21262d"/>) :
+                                                e.status === 'active' ?  ( <e.icon size={20} color="#fff"/>) : ""
+                                            }                                        
+                                        </ButtonSideBar>
                                         
                                     </li>                
                                     ))}

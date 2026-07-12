@@ -2,10 +2,25 @@ import {useCallback, useEffect, useState} from 'react'
 import { getCamapignTelesalerPerPeriod, getCampaignSummaryPerPeriod } from '../services/campaign.teleseler'
 import { CampaignCompetencePeriod } from '../interfaces/CampaignResume';
 import { CampaignSummary } from '../interfaces/CampaignSummary';
+import { campaignSummaryMock } from '../mock/campaignSummary';
 
 interface typeUseCampaign {
   dateCompetency?:string,
   dateSummary?:string
+}
+
+function computeTotalCard(data: CampaignSummary[]) {
+  return data.reduce((acc, item) => ({
+    totalMeta: acc.totalMeta + item.goalValue,
+    totalValor: acc.totalValor + item.assessedValue,
+    premiacaoTotal: acc.premiacaoTotal + item.totalAward,
+    percentTotal: acc.percentTotal + item.percentageAchieved
+  }), {
+    totalMeta: 0,
+    totalValor: 0,
+    premiacaoTotal: 0,
+    percentTotal: 0
+  });
 }
 export function useCampaign({dateCompetency,dateSummary}:typeUseCampaign){    
     const [campaigns, setCampaigns] = useState<CampaignCompetencePeriod[]>([]);
@@ -43,28 +58,15 @@ export function useCampaign({dateCompetency,dateSummary}:typeUseCampaign){
 
         const data = await getCampaignSummaryPerPeriod(dateSummary!, signal);
         setSummary(data);
-
-        const valores = data.reduce((acc, item)=> ({
-          totalMeta: acc.totalMeta + item.goalValue,          
-          totalValor: acc.totalValor + item.assessedValue,
-          premiacaoTotal: acc.premiacaoTotal + item.totalAward,
-          percentTotal: acc.percentTotal + item.percentageAchieved
-        }           
-        ), {
-          totalMeta:0,
-          totalValor:0,
-          premiacaoTotal:0,
-          percentTotal:0
-        })
-        setTotalCard((prev)=>({
-          percentTotal: valores.percentTotal,
-          premiacaoTotal:valores.premiacaoTotal,
-          totalMeta:valores.totalMeta,
-          totalValor:valores.totalValor
-        }))
+        setTotalCard(computeTotalCard(data));
       } catch (err) {
         if (err instanceof Error && err.name === 'AbortError') return;
-        setErrorSummary(`Erro ao buscar resumo a partir de ${dateSummary}`);
+
+        // API indisponível (ex: backend desligado em dev) -> cai para dados mockados.
+        console.warn(`Falha ao buscar resumo a partir de ${dateSummary}, usando dados de exemplo.`, err);
+        setErrorSummary(`Erro ao buscar resumo a partir de ${dateSummary} — exibindo dados de exemplo`);
+        setSummary(campaignSummaryMock);
+        setTotalCard(computeTotalCard(campaignSummaryMock));
       } finally {
         setLoadingSummary(false);
     }

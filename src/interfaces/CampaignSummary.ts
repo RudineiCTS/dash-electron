@@ -10,4 +10,5 @@ export interface CampaignSummary {
   totalPot: number;
   percentageAchieved: number;
   notes: string;
+  typeCampaign?: number;
 }

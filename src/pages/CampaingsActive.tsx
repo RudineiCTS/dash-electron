@@ -1,8 +1,12 @@
 import { TopCardTopic } from "../components/TopCardTopic";
 import { ToggleTab } from "../components/ToggleTab";
 import { CampaignCard } from "../components/CardItemCampaign";
+import { TopCardTopicSkeleton } from "../components/Skeleton/TopCardTopicSkeleton";
+import { CampaignCardSkeleton } from "../components/Skeleton/CampaignCardSkeleton";
 import { useCampaign } from "../hook/useCampaign";
 import dayjs from "dayjs";
+import { useNavigate } from "react-router-dom";
+import CompetenceDatePicker from "../components/CompetenceDatePicker/CompetenceDatePicker";
 import { useState } from "react";
 
 
@@ -11,14 +15,22 @@ const dataReferencia = dayjs()
   .endOf('month')         // vai pro último dia desse mês
   .format('YYYY-MM-DD');
 export default function CampaignsActive() {
-    // const [metaTotal, setMetaTotal] = useState();
-    // const [realizadoTotal, setRealizadoTotal] = useState();
-    // const [percentageTotal, setpercentageTotal] = useState();
-    // const [prizeAccumulated, setprizeAccumulated] = useState();
+    const {summary,totalCard,loadingSummary }= useCampaign({dateSummary:dataReferencia});
+    const [dateCompetency,setDateCompetency] = useState(dataReferencia);
+    const [activeTab, setActiveTab] = useState<"pontos" | "valor">("valor");
 
-    const {summary,totalCard }= useCampaign({dateSummary:dataReferencia});
+    const navigate = useNavigate();
 
-    
+    function handleOpenCampaign(idCampaign:number){
+        navigate(`/campaigns/${idCampaign}`, { state: { summary: summary.find(s => s.idCampaign === idCampaign), allSummaries: summary } });
+    }
+
+    function HandleSetDateCompetency(date:Date){
+        const formattedDate = dayjs(date).format('YYYY-MM-DD');
+        setDateCompetency(formattedDate);
+    }
+
+
     return(
         <div className="flex flex-col h-screen">
         <header className="flex flex-col shrink-0">
@@ -36,11 +48,18 @@ export default function CampaignsActive() {
                     <div className=" text-github-text-muted flex w-full justify-between  text-sm" >
                         9 campanhas - acompanhamento de meta, realizado e premiação
                         <div className="flex gap-4 ">
-                            <div className="flex flex-col">
-                                <p className=" tracking-[2.5px] uppercase text-xs">data Competência</p>
-                                <strong className="text-github-text text-right">30/06/2026</strong>                        
+                            <div className="flex flex-col">                                
+                                <div className="flex ">
+                                    <CompetenceDatePicker
+                                        initialDate={dayjs(dateCompetency).toDate()}
+                                        key={"datacompetency"}
+                                        onApply={HandleSetDateCompetency}
+                                    />
+                                </div>
                             </div>
-                               <ToggleTab/>
+                            <div>
+                               <ToggleTab onChange={(tab) => setActiveTab(tab)} />
+                            </div>
                                                     
                         </div>
                     </div>
@@ -48,47 +67,60 @@ export default function CampaignsActive() {
                 </div>
 
             </div>
-            <section className="flex  justify-around px-7 gap-7 mt-2 ">                
-                <TopCardTopic
-                    title="Meta Total"
-                    subtitles="Objetivo das campanhas"
-                    value={totalCard.totalMeta}
-                />
-                <TopCardTopic
-                        title="Realizado Total"
-                        subtitles="Objetivo das campanhas"
-                        value={totalCard.totalValor}
+            <section className="flex  justify-around px-7 gap-7 mt-2 ">
+                {loadingSummary ? (
+                    Array.from({ length: 4 }).map((_, i) => (
+                        <TopCardTopicSkeleton key={i} />
+                    ))
+                ) : (
+                    <>
+                        <TopCardTopic
+                            title="Meta Total"
+                            subtitles="Objetivo das campanhas"
+                            value={totalCard.totalMeta}
                         />
-                <TopCardTopic
-                        title="Percentual total"
-                        subtitles="Objetivo das campanhas"
-                        value={totalCard.percentTotal}
-                        />
-                <TopCardTopic
-                        title="Premiação Total"
-                        subtitles="Objetivo das campanhas"
-                        value={totalCard.premiacaoTotal}
-                        />            
-            </section>            
+                        <TopCardTopic
+                                title="Realizado Total"
+                                subtitles="Realizado total das campanhas"
+                                value={totalCard.totalValor}
+                                />
+                        <TopCardTopic
+                                title="Percentual total"
+                                subtitles="Percentual total referente ao objetivo total"
+                                value={totalCard.percentTotal}
+                                />
+                        <TopCardTopic
+                                title="Premiação Total"
+                                subtitles="Premiação total de todas as campanhas do mês"
+                                value={totalCard.premiacaoTotal}
+                                />
+                    </>
+                )}
+            </section>
         </header>
         <main className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 p-4 overflow-y-auto flex-1 min-h-0 ">
-            
-           {summary.map((e) => (
-            <CampaignCard
-                key={e.idCampaign}
-                description={e.campaignDescription}
-                id={e.idCampaign}
-                dinamic={false}
-                premio={e.totalAward}
-                status={"OK"}
-                tipeMeta={e.goalValue}
-                typeCampaign={e.campaignTypeDescription}
-                valueRealizado={e.assessedValue}
-            />
-            ))}
-          
-                  
-
+            {loadingSummary ? (
+                Array.from({ length: 6 }).map((_, i) => (
+                    <CampaignCardSkeleton key={i} />
+                ))
+            ) : (
+                summary
+                    // .filter((e) => e.typeCampaign === (activeTab === "pontos" ? 1 : 2))
+                    .map((e) => (
+                    <CampaignCard
+                        key={e.idCampaign}
+                        description={e.campaignDescription}
+                        id={e.idCampaign}
+                        dinamic={false}
+                        premio={e.totalAward}
+                        status={"OK"}
+                        typeMeta={e.goalValue}
+                        typeCampaign={e.campaignTypeDescription}
+                        valueRealizado={e.assessedValue}
+                        onClick={() => handleOpenCampaign(e.idCampaign)}
+                    />
+                ))
+            )}
         </main>
     </div>
     )
