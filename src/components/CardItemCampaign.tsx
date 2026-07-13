@@ -24,7 +24,7 @@ export function CampaignCard(props:ICampaignCard) {
       {/* Header */}
       <div className="flex items-center gap-3">
         <span className="bg-[#21262d] text-[#8b949e] text-xs font-medium px-2 py-1 rounded-md">
-          {props.id}
+          #{props.id}
         </span>
         <span className="text-white font-semibold text-base">
           {props.description}

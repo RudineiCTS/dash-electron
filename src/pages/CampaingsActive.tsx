@@ -15,8 +15,8 @@ const dataReferencia = dayjs()
   .endOf('month')         // vai pro último dia desse mês
   .format('YYYY-MM-DD');
 export default function CampaignsActive() {
-    const {summary,totalCard,loadingSummary }= useCampaign({dateSummary:dataReferencia});
     const [dateCompetency,setDateCompetency] = useState(dataReferencia);
+    const {summary,totalCard,loadingSummary }= useCampaign({dateSummary:dateCompetency});
     const [activeTab, setActiveTab] = useState<"pontos" | "valor">("valor");
 
     const navigate = useNavigate();
@@ -105,7 +105,7 @@ export default function CampaignsActive() {
                 ))
             ) : (
                 summary
-                    // .filter((e) => e.typeCampaign === (activeTab === "pontos" ? 1 : 2))
+                     .filter((e) => e.typeCampaign === activeTab)
                     .map((e) => (
                     <CampaignCard
                         key={e.idCampaign}
