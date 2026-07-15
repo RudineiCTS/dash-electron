@@ -20,3 +20,11 @@ export async function getCampaignSummaryPerPeriod(date:Date |string, signal?: Ab
     console.log(formateedDate);
     return response.data
 }
+export async function getCampaignSummaryDetailsById(idCampaign:number, signal?: AbortSignal):Promise<CampaignResult[]>{
+    const response = await api.get<CampaignResult[]>(
+        `campaign-summary/details/${idCampaign}`,
+        {   signal   }
+    );
+    return response.data;
+
+}

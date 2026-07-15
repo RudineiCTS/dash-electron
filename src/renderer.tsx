@@ -40,7 +40,7 @@ createRoot(document.getElementById('app')!).render(
       <Route path="/" element={<Layout />}>
         <Route index element={<Home />} />
         <Route path="/campaigns" element={<CampaignsActive />} />
-        <Route path="/campaigns/:id" element={<CampaignDetail />} />
+        <Route path="/campaigns/details/:id" element={<CampaignDetail />} />
       </Route>
     </Routes>
   </HashRouter>
