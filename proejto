@@ -1,0 +1,82 @@
+
+SELECT
+	uvwPes.CpfCnpj [CPF/CNPJ],
+	uvwPes.RazaoSocial,
+	tblConven.IDProduto [Cod. Prod],
+	vwPro.DescProduto [Produto],
+	vwPro.CodBarras [EAN],
+	SUM(tblConven.Quantidade) [Quantidade],
+	FORMAT(SUM(tblconven.Total), 'N2', 'pt-BR') [Total],
+	tblConven.IDPessoaVendedor [Cod. Vendedor],
+	uvwPesVen.Nome [Vendedor]
+FROM
+	GS300BI.dbo.tblConsolidacaoVendas AS tblConVen WITH (NOLOCK)
+LEFT JOIN
+	GS300ERP.dbo.uvwPessoaFisicaJuridica AS uvwPes WITH(NOLOCK) ON uvwPes.IDPessoa = tblConVen.IDPessoaCliente
+LEFT JOIN
+	GS300ERP.dbo.vwProduto AS vwPro WITH(NOLOCK) ON vwPro.IDProduto = tblConven.IDProduto
+LEFT JOIN
+	GS300ERP.dbo.uvwPessoaFisicaJuridica AS uvwPesVen WITH(NOLOCK) ON uvwPesVen.IDPessoa = tblConVen.IDPessoaVendedor
+WHERE
+	tblConVen.DataFaturamento BETWEEN '2026-06-01' AND '2026-06-11'
+	AND tblConVen.IDDigitador IN (
+		SELECT 
+			UsuarioDigitador
+		FROM 
+			tblCampanhaTelevendasBaseDigitadoras WITH (NOLOCK)
+	)
+	AND tblConVen.IDOrigem = 1  -- Origem Televendas
+	AND tblConVen.IDPessoaFabricante IN (527) 
+	--AND tblConVen.IDProdutoLinha IN ()
+	--AND tblConVen.IDProduto IN ()
+GROUP BY
+	uvwPes.CpfCnpj,
+	uvwPes.RazaoSocial,
+	tblConven.IDProduto,
+	vwPro.CodBarras,	
+	tblConven.IDPessoaVendedor,
+	uvwPesVen.Nome,
+	vwPro.DescProduto
+	
+union 
+
+SELECT
+	uvwPes.CpfCnpj [CPF/CNPJ],
+	uvwPes.RazaoSocial,
+	tblConven.IDProduto [Cod. Prod],
+	vwPro.DescProduto [Produto],
+	vwPro.CodBarras [EAN],
+	SUM(tblConven.Quantidade) [Quantidade],
+	FORMAT(SUM(tblconven.Total), 'N2', 'pt-BR') [Total],
+	tblConven.IDPessoaVendedor [Cod. Vendedor],
+	tblSegUsu.NomeUsuario [Vendedor]
+FROM		
+	GS300BI.dbo.tblConsolidacaoVendas tblConVen (NOLOCK)
+JOIN
+	tblVendasBees tblVenBees (NOLOCK) ON tblVenBees.IDPedido = tblConVen.IDPedido AND tblVenBees.IDOperacao = tblConVen.IDOperacao
+LEFT JOIN
+	tblComissaoVendasClienteVendedor tblComVenCliVen (NOLOCK) ON tblComVenCliVen.IDCliente = tblConVen.IDPessoacliente
+LEFT JOIN
+	GS300ERP.dbo.uvwPessoaFisicaJuridica AS uvwPes WITH(NOLOCK) ON uvwPes.IDPessoa = tblConVen.IDPessoaCliente
+LEFT JOIN
+	GS300ERP.dbo.vwProduto AS vwPro WITH(NOLOCK) ON vwPro.IDProduto = tblConven.IDProduto
+LEFT JOIN		
+	GS300ERP.dbo.tblSegUsuario AS tblSegUsu (NOLOCK) ON tblVenBees.IDDigitador = tblSegUsu.IDUsuario
+WHERE
+	tblConVen.DataFaturamento >= '2026-06-01' AND 
+	tblConVen.DataFaturamento < DATEADD(DAY, 1, '2026-06-11') AND
+	tblConVen.IDPessoaFabricante IN (SELECT IDFabricante FROM ufnCampanhaTelevendasFabricante(1308)) AND
+	tblConVen.IDProdutoLinha IN (SELECT IDLinhaProduto FROM ufnCampanhaTelevendasProdutoLinha(1308)) AND
+	tblConVen.IDProduto IN (SELECT IDProduto FROM ufnCampanhaTelevendasProduto(1308)) AND
+	tblConVen.IDPessoaCliente IN (SELECT IDCliente FROM ufnCampanhaTelevendasCliente(1308)) AND
+	tblVenBees.IDDigitador <> 'ce782385-bece-485b-9e33-05ec60591610' /* BRENDA EXCLUSIVA GRANDES CONTAS */ AND
+	tblComVenCliVen.IDGerente <> 159452 AND /* DANIEL CAMPOS PRESTE */
+	tblComVenCliVen.IDComissaoVendasCenario = 100
+GROUP BY
+	uvwPes.CpfCnpj,
+	uvwPes.RazaoSocial,
+	tblConven.IDProduto ,
+	vwPro.DescProduto ,
+	vwPro.CodBarras,
+	tblConven.IDPessoaVendedor ,
+	tblSegUsu.NomeUsuario 
