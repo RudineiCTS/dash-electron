@@ -36,7 +36,7 @@ function matchesFilters(row: CampaignSalesRow, filters: SalesTableFilters): bool
   return true;
 }
 
-export function SalesTable({ rows, filters }: SalesTableProps) {
+export function SalesTable({ rows, filters }: any) {
   const filteredRows = rows.filter((row) => matchesFilters(row, filters));
   const filtersActive = filters.search.trim() !== "" || filters.vendedor !== "todos";
 

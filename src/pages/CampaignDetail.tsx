@@ -13,7 +13,9 @@ import { campaignSalesRowsMock } from "../mock/campaignSalesDetail";
 import { flattenCampaignPersonRows } from "../utils/flattenCampaignPersonRows";
 import { formatCurrency } from "../utils/formateCurrency";
 import { formatPercent } from "../utils/formatPercent";
-import { exportCampaignPersonRowsToCsv, exportCampaignSalesRowsToCsv } from "../utils/csvExport";
+import { exportCampaignPersonRowsToCsv, exportCampaignSalesRowsToCsv, exportCampaingTelesalesPersonRowsToCsv } from "../utils/csvExport";
+import { useCampaignDetails } from "../hook/useCampaignDetails";
+import { TelePersonTable } from "../components/CampaignDetail/TelePersonTable";
 
 interface CampaignDetailLocationState {
   summary?: CampaignSummary;
@@ -43,19 +45,21 @@ export default function CampaignDetail() {
   const [salesFilters, setSalesFilters] = useState<SalesTableFilters>(defaultSalesFilters);
   const [isActiveTab, setIsActiveTab] = useState<"informacoes" | "resumo">("informacoes");
 
+  const {campaignsDetails} = useCampaignDetails(Number(id));
+  
   const summary = state.summary;
   const allSummaries = state.allSummaries ?? (summary ? [summary] : []);
 
-  // TODO: trocar pelo endpoint real quando existir; por enquanto os dados por pessoa são mockados.
-  const allPersonRows = flattenCampaignPersonRows(campaignPersonRowsMock);
-  const tipoOptions = Array.from(new Set(allPersonRows.map((row) => row.tipo)));
+  //CASE PARA FARMA--------------------------------------------------------------------
+  // const allPersonRows = flattenCampaignPersonRows(campaignPersonRowsMock);
+  // const tipoOptions = Array.from(new Set(campaignsDetails .map((row) => row.tipo)));
+  //-----------------------------------------------------------------------------------
   const colocacaoOptions = Array.from(
-    new Set(allPersonRows.map((row) => row.colocacao).filter((c): c is string => !!c))
+    new Set(campaignsDetails.map((row) => row.ranking).filter((c): c is number => !!c))
   );
 
-  // TODO: trocar pelo endpoint real quando existir; por enquanto os dados de vendas são mockados.
   const vendedorOptions = Array.from(
-    new Set(campaignSalesRowsMock.map((row) => row.nomeVendedor))
+    new Set(campaignsDetails.map((row) => row.operatorName))
   );
 
   const campaignOptions: CampaignOption[] = allSummaries.map((s) => ({
@@ -65,7 +69,7 @@ export default function CampaignDetail() {
 
   function handleCampaignChange(newId: number) {
     const target = allSummaries.find((s) => s.idCampaign === newId);
-    navigate(`/campaigns/${newId}`, { state: { summary: target, allSummaries } });
+    navigate(`/campaigns/details/${newId}`, { state: { summary: target, allSummaries } });
   }
 
   function handleClearFilters() {
@@ -77,8 +81,8 @@ export default function CampaignDetail() {
   }
 
   function handleExportCsv() {
-    exportCampaignPersonRowsToCsv(
-      allPersonRows,
+    exportCampaingTelesalesPersonRowsToCsv(
+      campaignsDetails,
       `campanha-${id ?? summary?.idCampaign ?? "detalhe"}.csv`
     );
   }
@@ -191,8 +195,7 @@ export default function CampaignDetail() {
             onSearchChange={(search) => setFilters((f) => ({ ...f, search }))}
             campaignOptions={campaignOptions}
             campaignValue={summary.idCampaign}
-            onCampaignChange={handleCampaignChange}
-            tipoOptions={tipoOptions}
+            onCampaignChange={handleCampaignChange}            
             tipo={filters.tipo}
             onTipoChange={(tipo) => setFilters((f) => ({ ...f, tipo }))}
             colocacaoOptions={colocacaoOptions}
@@ -205,7 +208,7 @@ export default function CampaignDetail() {
             onClearFilters={handleClearFilters}
             onExportCsv={handleExportCsv}
           />
-          <PersonTable rows={campaignPersonRowsMock} filters={filters} />
+          <TelePersonTable rows={campaignsDetails} filters={filters} />
         </>
       ) : (
         <>
@@ -221,7 +224,7 @@ export default function CampaignDetail() {
             onClearFilters={handleClearSalesFilters}
             onExportCsv={handleExportSalesCsv}
           />
-          <SalesTable rows={campaignSalesRowsMock} filters={salesFilters} />
+          <SalesTable rows={campaignsDetails} filters={salesFilters} />
         </>
       )}
     </div>

@@ -50,6 +50,42 @@ export function exportCampaignPersonRowsToCsv(rows: CampaignPersonRow[], filenam
   downloadCsv(headers, data, filename);
 }
 
+export function exportCampaingTelesalesPersonRowsToCsv(rows: CampaignResult[], filename:string){
+  const headers =[
+    'ID Campanha',
+    'Campanha',
+    'Data Competência',
+    'Tipo Campanha',
+    'ID Supervisor',
+    'Supervisor',
+    'ID Pessoa',
+    'Nome',
+    'Objetivo',
+    'Valor Apurado',
+    'Percentual ',
+    'Ranking',
+    'Premio'
+  ];
+
+   const data = rows.map((row) => [
+    row.idCampaign,
+    row.campaignDescription,
+    row.competenceDate,
+    row.campaignTypeDescription,
+    row.idSupervisor,
+    row.supervisorName,
+    row.idPersonSales,
+    row.operatorName,
+    row.individualTarget,
+    row.assessedValue,
+    row.percentageAchieved,
+    row.ranking,
+    row.award
+  ]);
+   downloadCsv(headers, data, filename);
+}
+
+
 export function exportCampaignSalesRowsToCsv(rows: CampaignSalesRow[], filename: string) {
   const headers = [
     "CNPJ",

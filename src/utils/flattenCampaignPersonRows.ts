@@ -6,3 +6,4 @@ export function flattenCampaignPersonRows(rows: CampaignPersonRow[]): CampaignPe
     ...(row.children ? flattenCampaignPersonRows(row.children) : []),
   ]);
 }
+

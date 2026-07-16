@@ -22,7 +22,7 @@ export default function CampaignsActive() {
     const navigate = useNavigate();
 
     function handleOpenCampaign(idCampaign:number){
-        navigate(`/campaigns/${idCampaign}`, { state: { summary: summary.find(s => s.idCampaign === idCampaign), allSummaries: summary } });
+        navigate(`/campaigns/details/${idCampaign}`, { state: { summary: summary.find(s => s.idCampaign === idCampaign), allSummaries: summary } });
     }
 
     function HandleSetDateCompetency(date:Date){

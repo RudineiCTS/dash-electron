@@ -4,31 +4,30 @@ import { items } from '../pages/Home'
 import { SideBar } from '../components/SideBar'
 import { useState } from 'react';
 
-
-
 const routesWithoutSideBar = ['/campaigns/details/:id']
+
 export default function Layout() {
-  const [campaignType, setCamapignType] =useState(1);
+  const [campaignType, setCamapignType] = useState(1);
   const location = useLocation();
-  function handleSwitchCampaign(e:number){    
+
+  function handleSwitchCampaign(e: number) {
     setCamapignType(e);
   }
 
-  const hideSideBar = routesWithoutSideBar.some((p) => matchPath(p, location.pathname))
-
+  const hideSideBar = routesWithoutSideBar.some((p) => matchPath(p, location.pathname));
 
   return (
-    <div className="flex">
+    <div className="flex "> {/* 👈 altura garantida aqui */}
       {!hideSideBar && (
         <SideBar
           isMenuDefault={true}
           options={items}
-          className="flex flex-col bg-other-card w-80 max-w-80  h-screen"
+          className="flex flex-col bg-other-card w-80 max-w-80 h-screen"
           optionActive={campaignType}
-          switchCampaign={handleSwitchCampaign}        
+          switchCampaign={handleSwitchCampaign}
         />
       )}
-      <main className="flex-1">
+      <main className="flex-1 overflow-y-auto">
         <Outlet />
       </main>
     </div>

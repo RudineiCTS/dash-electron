@@ -1,11 +1,12 @@
 import { FiDownload } from "react-icons/fi";
 import { CampaignOption } from "./FiltersBar";
+import { CampaignResult } from "../../interfaces/CampaignResultTelesales";
 
 interface SalesFiltersBarProps {
   search: string;
   onSearchChange: (value: string) => void;
 
-  campaignOptions: CampaignOption[];
+  campaignOptions: CampaignOption[] | CampaignResult[];
   campaignValue: number;
   onCampaignChange: (id: number) => void;
 
@@ -15,11 +16,20 @@ interface SalesFiltersBarProps {
 
   onClearFilters: () => void;
   onExportCsv: () => void;
+  typeCampaign?: "TELEVENDAS" | "FARMA";
 }
 
 const fieldLabel = "text-[10px] font-medium tracking-widest text-white/40 uppercase";
 const fieldControl =
   "bg-[#10171f] border border-white/[0.07] rounded-md px-3 py-2 text-sm text-white outline-none focus:border-[#3fb950]/50";
+
+// Type guard: quando é TELEVENDAS, o array é de CampaignResult
+function isCampaignResultArray(
+  options: CampaignOption[] | CampaignResult[],
+  type: "TELEVENDAS" | "FARMA"
+): options is CampaignResult[] {
+  return type === "TELEVENDAS";
+}
 
 export function SalesFiltersBar({
   search,
@@ -32,6 +42,7 @@ export function SalesFiltersBar({
   onVendedorChange,
   onClearFilters,
   onExportCsv,
+  typeCampaign = "TELEVENDAS",
 }: SalesFiltersBarProps) {
   return (
     <div className="flex flex-wrap items-end gap-4 px-6 py-4 border-b border-white/[0.07]">
@@ -52,11 +63,19 @@ export function SalesFiltersBar({
           value={campaignValue}
           onChange={(e) => onCampaignChange(Number(e.target.value))}
         >
-          {campaignOptions.map((option) => (
-            <option key={option.id} value={option.id}>
-              {option.label}
-            </option>
-          ))}
+          {isCampaignResultArray(campaignOptions, typeCampaign)
+            ? campaignOptions.map((option) => (
+                // TODO: ajustar para os campos reais de CampaignResult
+                <option key={option.idCampaign} value={option.idCampaign}>
+                  {option.campaignDescription}
+                </option>
+              ))
+            : campaignOptions.map((option) => (
+                // TODO: ajustar para os campos reais de CampaignOption
+                <option key={option.id} value={option.id}>
+                  {option.label}
+                </option>
+              ))}
         </select>
       </div>
 

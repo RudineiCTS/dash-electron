@@ -13,11 +13,11 @@ interface FiltersBarProps {
   campaignValue: number;
   onCampaignChange: (id: number) => void;
 
-  tipoOptions: string[];
+  tipoOptions?: string[];
   tipo: string;
   onTipoChange: (value: string) => void;
 
-  colocacaoOptions: string[];
+  colocacaoOptions: string[] | number[];
   colocacao: string;
   onColocacaoChange: (value: string) => void;
 
@@ -88,7 +88,8 @@ export function FiltersBar({
           onChange={(e) => onTipoChange(e.target.value)}
         >
           <option value="todos">todos</option>
-          {tipoOptions.map((option) => (
+          {
+            tipoOptions &&           tipoOptions.map((option) => (
             <option key={option} value={option}>
               {option}
             </option>

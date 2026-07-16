@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
-import { getCampaignSummaryDetailsById } from "src/services/campaign.teleseler";
+import { getCampaignSummaryDetailsById } from "../services/campaign.teleseler";
+import { CampaignResult } from "src/interfaces/CampaignResultTelesales";
 
 export function useCampaignDetails(idCampaign:number){    
     const [campaignsDetails, setCampaignsDetails] = useState<CampaignResult[]>([]);
@@ -10,7 +11,7 @@ export function useCampaignDetails(idCampaign:number){
       try {
         setLoading(true);
         setError("");
-
+        console.log("entrou")
         const data = await getCampaignSummaryDetailsById(idCampaign!, signal);
 
         setCampaignsDetails(data);
