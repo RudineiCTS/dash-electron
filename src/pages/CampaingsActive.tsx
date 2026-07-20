@@ -7,16 +7,18 @@ import { useCampaign } from "../hook/useCampaign";
 import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
 import CompetenceDatePicker from "../components/CompetenceDatePicker/CompetenceDatePicker";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { CampaignSummary } from "../interfaces/CampaignSummary";
+import { campaignSummaryMock } from "../mock/campaignSummary";
 
-
+const teste = 1
 const dataReferencia = dayjs()
   .subtract(1, 'month')   // volta um mês
   .endOf('month')         // vai pro último dia desse mês
   .format('YYYY-MM-DD');
 export default function CampaignsActive() {
     const [dateCompetency,setDateCompetency] = useState(dataReferencia);
-    const {summary,totalCard,loadingSummary }= useCampaign({dateSummary:dateCompetency});
+    const {summary,totalCard,loadingSummary }= useCampaign({dateSummary:dateCompetency});    
     const [activeTab, setActiveTab] = useState<"pontos" | "valor">("valor");
 
     const navigate = useNavigate();
@@ -104,22 +106,41 @@ export default function CampaignsActive() {
                     <CampaignCardSkeleton key={i} />
                 ))
             ) : (
-                summary
-                     .filter((e) => e.typeCampaign === activeTab)
+                teste === 1 ? (
+                    campaignSummaryMock
                     .map((e) => (
-                    <CampaignCard
-                        key={e.idCampaign}
-                        description={e.campaignDescription}
-                        id={e.idCampaign}
-                        dinamic={false}
-                        premio={e.totalAward}
-                        status={"OK"}
-                        typeMeta={e.goalValue}
-                        typeCampaign={e.campaignTypeDescription}
-                        valueRealizado={e.assessedValue}
-                        onClick={() => handleOpenCampaign(e.idCampaign)}
-                    />
-                ))
+                        <CampaignCard
+                            key={e.idCampaign}
+                            description={e.campaignDescription}
+                            id={e.idCampaign}
+                            dinamic={false}
+                            premio={e.totalAward}
+                            status={"OK"}
+                            goalValue={e.goalValue}
+                            typeCampaign={e.campaignTypeDescription}
+                            valueRealizado={e.assessedValue}
+                            onClick={() => handleOpenCampaign(e.idCampaign)}
+                        />
+                    ))
+                ):
+                (
+                    summary                    
+                        .filter((e) => e.typeCampaign === activeTab)
+                        .map((e) => (
+                        <CampaignCard
+                            key={e.idCampaign}
+                            description={e.campaignDescription}
+                            id={e.idCampaign}
+                            dinamic={false}
+                            premio={e.totalAward}
+                            status={"OK"}
+                            goalValue={e.goalValue}
+                            typeCampaign={e.campaignTypeDescription}
+                            valueRealizado={e.assessedValue}
+                            onClick={() => handleOpenCampaign(e.idCampaign)}
+                        />
+                    ))
+                )
             )}
         </main>
     </div>
