@@ -45,7 +45,7 @@ export default function CampaignDetail() {
   const [salesFilters, setSalesFilters] = useState<SalesTableFilters>(defaultSalesFilters);
   const [isActiveTab, setIsActiveTab] = useState<"informacoes" | "resumo">("informacoes");
 
-  const {campaignsDetails} = useCampaignDetails(Number(id));
+  const { campaignsDetails, campaignResumeSellOut, loadingSellOut, errorSellOut } = useCampaignDetails(Number(id));
   
   const summary = state.summary;
   const allSummaries = state.allSummaries ?? (summary ? [summary] : []);
@@ -109,7 +109,7 @@ export default function CampaignDetail() {
   }
 
   const isPremiado = summary.totalAward > 0;
-
+  console.log(campaignResumeSellOut)
   return (
     <div className="flex flex-col h-screen">
       <header className="flex flex-col shrink-0 border-b border-white/[0.07] pb-4">
@@ -224,7 +224,7 @@ export default function CampaignDetail() {
             onClearFilters={handleClearSalesFilters}
             onExportCsv={handleExportSalesCsv}
           />
-          <SalesTable rows={campaignsDetails} filters={salesFilters} />
+          <SalesTable rows={campaignResumeSellOut} filters={salesFilters} />
         </>
       )}
     </div>

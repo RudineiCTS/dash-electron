@@ -33,8 +33,8 @@ export function LogoApp({ className }: LogoAppProps) {
                 </svg>
 
                 <div className="flex tracking-tight">
-                    <span className="text-4xl font-extrabold text-white">Bú</span>
-                    <span className="text-4xl font-extrabold text-green-600">ssola</span>
+                    <span className="text-4xl font-extrabold text-white">Com</span>
+                    <span className="text-4xl font-extrabold text-green-600">pass</span>
                 </div>
             </div>
 

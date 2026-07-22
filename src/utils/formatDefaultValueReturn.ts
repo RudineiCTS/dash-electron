@@ -13,7 +13,7 @@ export function formatDefaultValueReturn({ TypeValue, Value }: IFormatDefaultVal
         return Value
     }
     if (TypeValue === 'Value') {
-        return formatCurrency(Value)
+        return  formatCurrency(Value)
     }
     if (TypeValue === 'Others') {
         return Value

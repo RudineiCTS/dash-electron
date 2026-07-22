@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { formatDefaultValueReturn, TypeValue } from "../utils/formatDefaultValueReturn";
 
 interface ICampaignCard{
@@ -15,6 +16,13 @@ interface ICampaignCard{
     onClick?: () => void;
 }
 export function CampaignCard(props:ICampaignCard) {
+
+  function PercentAvaliable(){
+    if(props.goalValue === 0) return 0;
+      const valuePercent = (props.valueRealizado / props.goalValue) * 100;
+      return Math.min(valuePercent, 100); // trava em 100% no máximo
+    
+  }
   return (
     <div
       onClick={props.onClick}
@@ -32,10 +40,10 @@ export function CampaignCard(props:ICampaignCard) {
           </span>
         </div>
         {
-          props.goalValue <= props.valueRealizado && (
+          props.goalValue > 0 && props.goalValue<= props.valueRealizado &&  (
 
             <div className="text-github-bg-card font bg-[#e3b341] px-2 rounded-md shadow-[0_0_10px_rgba(227,179,65,0.6)] ">
-            Meta Batida
+              Bateu
           </div>
           )
         }
@@ -66,7 +74,9 @@ export function CampaignCard(props:ICampaignCard) {
           <span>Meta livre</span>
         </div>
         <div className="h-1 bg-white/10 rounded-full">
-          <div className="h-1 bg-[#3fb950] rounded-full w-[12%]" />
+        <div className={`h-1  rounded-full ${PercentAvaliable() === 100 ? 'bg-[#e3b341]':'bg-[#3fb950]'}`}
+         style={{ width: `${PercentAvaliable()}%` }}        
+        />
         </div>
       </div>
 
@@ -78,7 +88,7 @@ export function CampaignCard(props:ICampaignCard) {
         </div>
         <div className="flex flex-col gap-0.5">
           <span className="text-[10px] tracking-widest text-[#8b949e] uppercase">Realizado</span>
-          <span className="text-white font-semibold text-sm">{formatDefaultValueReturn({ TypeValue: props.typeValue, Value: props.valueRealizado })}</span>
+          <span className="text-white font-semibold text-sm">{formatDefaultValueReturn({ TypeValue: props.typeGoal, Value: props.valueRealizado })}</span>
         </div>
         <div className="flex flex-col gap-0.5">
           <span className="text-[10px] tracking-widest text-[#8b949e] uppercase">Ganhando</span>

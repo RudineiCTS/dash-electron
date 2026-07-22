@@ -25,18 +25,18 @@ function matchesFilters(row: CampaignSalesRow, filters: SalesTableFilters): bool
   const search = filters.search.trim().toLowerCase();
   if (
     search &&
-    !row.cnpj.toLowerCase().includes(search) &&
-    !row.razaoSocial.toLowerCase().includes(search) &&
-    !row.produto.toLowerCase().includes(search)
+    !row.cpfcnpj.toLowerCase().includes(search) &&
+    !row.legalName.toLowerCase().includes(search) &&
+    !row.productName.toLowerCase().includes(search)
   ) {
     return false;
   }
-  if (filters.vendedor !== "todos" && row.nomeVendedor !== filters.vendedor) return false;
+  if (filters.vendedor !== "todos" && row.sellerName !== filters.vendedor) return false;
 
   return true;
 }
 
-export function SalesTable({ rows, filters }: any) {
+export function SalesTable({ rows, filters }: SalesTableProps) {
   const filteredRows = rows.filter((row) => matchesFilters(row, filters));
   const filtersActive = filters.search.trim() !== "" || filters.vendedor !== "todos";
 
@@ -63,20 +63,20 @@ export function SalesTable({ rows, filters }: any) {
           </thead>
           <tbody>
             {filteredRows.map((row) => (
-              <tr key={row.id} className="border-t border-white/[0.05] hover:bg-white/[0.02]">
-                <td className="px-4 py-2 text-white/70 whitespace-nowrap">{row.cnpj}</td>
+              <tr  className="border-t border-white/[0.05] hover:bg-white/[0.02]">
+                <td className="px-4 py-2 text-white/70 whitespace-nowrap">{row.cpfcnpj}</td>
                 <td className="px-4 py-2 text-white font-medium whitespace-nowrap">
-                  {row.razaoSocial}
+                  {row.legalName}
                 </td>
-                <td className="px-4 py-2 text-white/70 whitespace-nowrap">{row.produto}</td>
+                <td className="px-4 py-2 text-white/70 whitespace-nowrap">{row.productName}</td>
                 <td className="px-4 py-2 text-white/50 text-xs whitespace-nowrap">
-                  {row.codBarras}
+                  {row.productEan}
                 </td>
-                <td className="px-4 py-2 text-white/70 whitespace-nowrap">{row.quantidade}</td>
+                <td className="px-4 py-2 text-white/70 whitespace-nowrap">{row.quantitySold}</td>
                 <td className="px-4 py-2 text-[#3fb950] whitespace-nowrap">
-                  {formatCurrency(row.total)}
+                  {formatCurrency(row.valueSold)}
                 </td>
-                <td className="px-4 py-2 text-white/70 whitespace-nowrap">{row.nomeVendedor}</td>
+                <td className="px-4 py-2 text-white/70 whitespace-nowrap">{row.sellerName}</td>
               </tr>
             ))}
           </tbody>

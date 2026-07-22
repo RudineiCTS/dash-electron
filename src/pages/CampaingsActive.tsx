@@ -7,11 +7,11 @@ import { useCampaign } from "../hook/useCampaign";
 import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
 import CompetenceDatePicker from "../components/CompetenceDatePicker/CompetenceDatePicker";
-import { useEffect, useState } from "react";
-import { CampaignSummary } from "../interfaces/CampaignSummary";
+import { useState } from "react";
 import { campaignSummaryMock } from "../mock/campaignSummary";
+import { DarkSelect } from "../components/SelectOptionComponent/SelectOption";
 
-const teste = 1
+const teste = 2 as number
 const dataReferencia = dayjs()
   .subtract(1, 'month')   // volta um mês
   .endOf('month')         // vai pro último dia desse mês
@@ -20,6 +20,7 @@ export default function CampaignsActive() {
     const [dateCompetency,setDateCompetency] = useState(dataReferencia);
     const {summary,totalCard,loadingSummary }= useCampaign({dateSummary:dateCompetency});    
     const [activeTab, setActiveTab] = useState<"pontos" | "valor">("valor");
+    const [filterActive, setFilterActive] = useState('')
 
     const navigate = useNavigate();
 
@@ -31,7 +32,22 @@ export default function CampaignsActive() {
         const formattedDate = dayjs(date).format('YYYY-MM-DD');
         setDateCompetency(formattedDate);
     }
+    function GetOptionDash(){
+        const optionSummary = [...new Set(summary.map((e)=> e.campaignTypeDescription))]
+            .map((desc) => ({value:desc, label:desc}))
+        return optionSummary
+    }
+    function GetAllTypeCampaign(){
+        const types = [...new Set (summary.map((e)=> e.typeCampaign))]
+        console.log(types)
+        return types;
+    }
+    function HandleSetFilter(value:string){
+        setFilterActive(value)
+    }
 
+    const optionsSummary = GetOptionDash();
+    const typesCampaign = GetAllTypeCampaign(); //para a proxima atualização
 
     return(
         <div className="flex flex-col h-screen">
@@ -50,6 +66,15 @@ export default function CampaignsActive() {
                     <div className=" text-github-text-muted flex w-full justify-between  text-sm" >
                         9 campanhas - acompanhamento de meta, realizado e premiação
                         <div className="flex gap-4 ">
+                            <div className="flex flex-col-reverse">
+                                
+                                <DarkSelect
+                                    options={optionsSummary}
+                                    value={filterActive}
+                                    onChange={(e)=> { HandleSetFilter(e)}}
+                                    placeholder="Tipo de campanha"
+                                    />
+                            </div>
                             <div className="flex flex-col">                                
                                 <div className="flex ">
                                     <CompetenceDatePicker
@@ -57,8 +82,9 @@ export default function CampaignsActive() {
                                         key={"datacompetency"}
                                         onApply={HandleSetDateCompetency}
                                     />
-                                </div>
+                                </div>                            
                             </div>
+                            
                             <div>
                                <ToggleTab onChange={(tab) => setActiveTab(tab)} />
                             </div>
@@ -126,6 +152,7 @@ export default function CampaignsActive() {
                 (
                     summary                    
                         .filter((e) => e.typeCampaign === activeTab)
+                        .filter((e)=> !filterActive || e.campaignTypeDescription === filterActive)
                         .map((e) => (
                         <CampaignCard
                             key={e.idCampaign}
@@ -134,6 +161,7 @@ export default function CampaignsActive() {
                             dinamic={false}
                             premio={e.totalAward}
                             status={"OK"}
+                            typeGoal={e.campaignTypeDescription === 'VENDAS'? 'Value': 'Others'}
                             goalValue={e.goalValue}
                             typeCampaign={e.campaignTypeDescription}
                             valueRealizado={e.assessedValue}
