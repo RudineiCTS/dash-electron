@@ -1,7 +1,7 @@
 import { IconType } from 'react-icons'  // ← importa o tipo
 import { LogoApp } from './logoApp'
 import { ReactNode } from 'react'
-import {FiActivity, FiArchive} from 'react-icons/fi'
+import {FiActivity, FiArchive, FiSearch} from 'react-icons/fi'
 import { NavLink } from 'react-router-dom'
 import { ButtonSideBar } from './ButtonSideBar'
 import { Lock} from "lucide-react";
@@ -32,20 +32,33 @@ export function SideBar({options,className,isMenuDefault,children,switchCampaign
                 isMenuDefault  == true ? (
                     <>
                     <div className='mt-4 w-full'>                        
-                        <div className={'text-github-text-muted flex flex-col gap-4 pl-4'}>                            
-                            <NavLink 
-                               className={({ isActive }) =>
+                        <div className={'text-github-text-muted flex flex-col gap-4 pl-4'}>    
+                            <div>
+                                <NavLink 
+                                className={({ isActive }) =>
                                     `flex items-center gap-5 cursor-pointer
-                                     bg-transparent p-2 rounded-md w-5/6
-                                    hover:text-github-btn-green-hover transition duration-500
-                                    ${isActive ? 'bg-other-badge p-2 rounded-md w-5/6 text-github-bg-focus' : 'text-gray-400'}`
+                                bg-transparent p-2 rounded-md w-5/6
+                                hover:text-github-btn-green-hover transition duration-500
+                                ${isActive ? 'bg-other-badge p-2 rounded-md w-5/6 text-github-bg-focus' : 'text-gray-400'}`
                                 }                            
                                 to={"campaigns"}
-                            >
-                                <FiArchive />
-                                Campanhas Rodando
-                                
-                            </NavLink>
+                                >
+                                    <FiArchive />
+                                    Campanhas Rodando                                                                
+                                </NavLink>
+                                <NavLink 
+                                className={({ isActive }) =>
+                                        `flex  cursor-pointer
+                                        bg-transparent p-2 rounded-md w-5/6
+                                        hover:text-github-btn-green-hover transition duration-500
+                                        ${isActive ? 'bg-other-badge p-2 rounded-md w-5/6 text-github-bg-focus' : 'text-gray-400'}`
+                                    }                            
+                                    to={"campaigns-advanced"}
+                                >
+                                 -   Relatório avançado                                                                                                            
+                                </NavLink>
+                            </div>                        
+                       
                             <NavLink 
                                 className={({ isActive }) =>
                                     `flex items-center gap-5 cursor-pointer

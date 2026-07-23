@@ -33,6 +33,7 @@ import CampaignsActive from './pages/CampaingsActive'
 import CampaignDetail from './pages/CampaignDetail'
 import Layout from './pages/Layout'
 import './index.css'
+import CampaignsAdvanced from './pages/CampaignAdvanced'
 
 createRoot(document.getElementById('app')!).render(
   <HashRouter>
@@ -41,6 +42,7 @@ createRoot(document.getElementById('app')!).render(
         <Route index element={<Home />} />
         <Route path="/campaigns" element={<CampaignsActive />} />
         <Route path="/campaigns/details/:id" element={<CampaignDetail />} />
+        <Route path="campaigns-advanced" element={<CampaignsAdvanced />} />
       </Route>
     </Routes>
   </HashRouter>

@@ -11,9 +11,9 @@ import { useState } from "react";
 import { campaignSummaryMock } from "../mock/campaignSummary";
 import { DarkSelect } from "../components/SelectOptionComponent/SelectOption";
 
-const teste = 2 as number
+const teste = 1  as number
 const dataReferencia = dayjs()
-  .subtract(1, 'month')   // volta um mês
+//   .subtract(1, 'month')   // volta um mês
   .endOf('month')         // vai pro último dia desse mês
   .format('YYYY-MM-DD');
 export default function CampaignsActive() {

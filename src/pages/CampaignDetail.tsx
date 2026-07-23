@@ -185,7 +185,8 @@ export default function CampaignDetail() {
             onClick={() => setIsActiveTab('resumo')}
             >
             Resumo de vendas
-          </span>        
+          </span>
+             
         </div>
       </header>
 
