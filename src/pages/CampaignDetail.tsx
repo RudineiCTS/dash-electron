@@ -4,18 +4,18 @@ import dayjs from "dayjs";
 import { FiArrowLeft } from "react-icons/fi";
 import { StatCard } from "../components/CampaignDetail/StatCard";
 import { FiltersBar, CampaignOption } from "../components/CampaignDetail/FiltersBar";
-import { PersonTable, PersonTableFilters } from "../components/CampaignDetail/PersonTable";
+import {  PersonTableFilters } from "../components/CampaignDetail/PersonTable";
 import { SalesFiltersBar } from "../components/CampaignDetail/SalesFiltersBar";
 import { SalesTable, SalesTableFilters } from "../components/CampaignDetail/SalesTable";
 import { CampaignSummary } from "../interfaces/CampaignSummary";
-import { campaignPersonRowsMock } from "../mock/campaignPersonDetail";
 import { campaignSalesRowsMock } from "../mock/campaignSalesDetail";
-import { flattenCampaignPersonRows } from "../utils/flattenCampaignPersonRows";
 import { formatCurrency } from "../utils/formateCurrency";
 import { formatPercent } from "../utils/formatPercent";
 import { exportCampaignPersonRowsToCsv, exportCampaignSalesRowsToCsv, exportCampaingTelesalesPersonRowsToCsv } from "../utils/csvExport";
 import { useCampaignDetails } from "../hook/useCampaignDetails";
 import { TelePersonTable } from "../components/CampaignDetail/TelePersonTable";
+import { EmptyState } from "../components/EmptyCampaignSellOuts/EmptyResult";
+import { AlertCircle } from "lucide-react";
 
 interface CampaignDetailLocationState {
   summary?: CampaignSummary;
@@ -45,11 +45,12 @@ export default function CampaignDetail() {
   const [salesFilters, setSalesFilters] = useState<SalesTableFilters>(defaultSalesFilters);
   const [isActiveTab, setIsActiveTab] = useState<"informacoes" | "resumo">("informacoes");
 
-  const { campaignsDetails, campaignResumeSellOut, loadingSellOut, errorSellOut } = useCampaignDetails(Number(id));
+
   
   const summary = state.summary;
   const allSummaries = state.allSummaries ?? (summary ? [summary] : []);
 
+  const { campaignsDetails, campaignResumeSellOut, loadingSellOut, errorSellOut } = useCampaignDetails(Number(id), summary?.isDynamic === null || false? false: true);
   //CASE PARA FARMA--------------------------------------------------------------------
   // const allPersonRows = flattenCampaignPersonRows(campaignPersonRowsMock);
   // const tipoOptions = Array.from(new Set(campaignsDetails .map((row) => row.tipo)));
@@ -224,7 +225,15 @@ export default function CampaignDetail() {
             onClearFilters={handleClearSalesFilters}
             onExportCsv={handleExportSalesCsv}
           />
-          <SalesTable rows={campaignResumeSellOut} filters={salesFilters} />
+          {summary?.isDynamic ? (
+            <EmptyState
+              icon={<AlertCircle size={32} />}
+              title="Não é possível pegar informação de campanha dinâmica"
+              description="Campanhas dinâmicas não possuem detalhamento de vendas disponível no momento."
+            />
+          ) : (
+            <SalesTable rows={campaignResumeSellOut} filters={salesFilters} />
+          )}
         </>
       )}
     </div>

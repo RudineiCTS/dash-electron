@@ -3,7 +3,7 @@ import { getCampaignResumeSellOutDetailsById, getCampaignSummaryDetailsById } fr
 import { CampaignResult } from "../interfaces/CampaignResultTelesales";
 import { CampaignSalesRow } from "../interfaces/CampaignSalesRow";
 
-export function useCampaignDetails(idCampaign:number){    
+export function useCampaignDetails(idCampaign:number, isDynamic?:boolean){    
     const [campaignsDetails, setCampaignsDetails] = useState<CampaignResult[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
@@ -31,6 +31,9 @@ export function useCampaignDetails(idCampaign:number){
 
     const fetchCampaignResumeSellOut = useCallback(async(signal?:AbortSignal) => {
       try {
+        if(isDynamic === true){
+          return 
+        }
         setLoadingSellOut(true);
         setErrorSellOut("")
         const data = await getCampaignResumeSellOutDetailsById(idCampaign!,signal);

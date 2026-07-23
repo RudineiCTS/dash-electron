@@ -11,4 +11,5 @@ export interface CampaignSummary {
   percentageAchieved: number;
   notes: string;
   typeCampaign?: string;
+  isDynamic?:boolean;
 }
