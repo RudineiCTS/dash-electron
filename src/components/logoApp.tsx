@@ -33,12 +33,12 @@ export function LogoApp({ className }: LogoAppProps) {
                 </svg>
 
                 <div className="flex tracking-tight">
-                    <span className="text-4xl font-extrabold text-white">Com</span>
-                    <span className="text-4xl font-extrabold text-green-600">pass</span>
+                    <span className="text-4xl font-extrabold text-github-text">Com</span>
+                    <span className="text-4xl font-extrabold text-github-btn-green-hover">pass</span>
                 </div>
             </div>
 
-            <span className="text-xs text-[#8A8A9A] tracking-[3px] uppercase mt-1">
+            <span className="text-xs text-github-text-muted tracking-[3px] uppercase mt-1">
                 Campanhas
             </span>
         </div>

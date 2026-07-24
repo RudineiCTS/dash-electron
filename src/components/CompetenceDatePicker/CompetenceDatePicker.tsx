@@ -58,7 +58,7 @@ export default function CompetenceDatePicker({
   const previewLastDay = lastDayOfMonth(pickerYear, pickerMonth);
 
   return (
-    <div className="flex justify-end bg-[#0d1117] px-4 font-sans">
+    <div className="flex justify-end bg-transparent px-4 font-sans">
       <div ref={containerRef} className="relative w-64">
         <span className="mb-1.5 block text-right text-[11px] font-semibold uppercase tracking-wider text-[#8b949e]">
           {label}
@@ -67,7 +67,7 @@ export default function CompetenceDatePicker({
         <button
           type="button"
           onClick={toggleOpen}
-          className="flex w-full items-center justify-between gap-2 rounded-lg border border-[#30363d] bg-[#161b22] px-3.5 py-2.5 text-sm text-[#e6edf3] transition-colors hover:border-[#3fb950]/50"
+          className="flex w-full items-center justify-between gap-2 rounded-lg border border-github-border bg-other-surface px-3.5 py-2.5 text-sm text-github-DEFAULT transition-colors hover:border-[#3fb950]/50"
         >
           <span className="flex items-center gap-2">
             <Calendar size={16} className="text-[#3fb950]" />
@@ -81,21 +81,21 @@ export default function CompetenceDatePicker({
         </button>
 
         {isOpen && (
-          <div className="absolute right-0 z-10 mt-2 w-72 rounded-xl border border-[#30363d] bg-[#161b22] p-4 shadow-2xl shadow-black/40">
+          <div className="absolute right-0 z-10 mt-2 w-72 rounded-xl border border-github-border bg-other-surface p-4 shadow-2xl shadow-black/40">
             <div className="mb-4 flex items-center justify-between">
               <button
                 type="button"
                 onClick={() => setPickerYear((y) => y - 1)}
-                className="rounded-md p-1.5 text-[#8b949e] transition-colors hover:bg-[#21262d] hover:text-[#e6edf3]"
+                className="rounded-md p-1.5 text-[#8b949e] transition-colors hover:bg-[#21262d] hover:text-github-DEFAULT"
                 aria-label="Ano anterior"
               >
                 <ChevronLeft size={18} />
               </button>
-              <span className="text-base font-semibold text-[#e6edf3]">{pickerYear}</span>
+              <span className="text-base font-semibold text-github-DEFAULT">{pickerYear}</span>
               <button
                 type="button"
                 onClick={() => setPickerYear((y) => y + 1)}
-                className="rounded-md p-1.5 text-[#8b949e] transition-colors hover:bg-[#21262d] hover:text-[#e6edf3]"
+                className="rounded-md p-1.5 text-[#8b949e] transition-colors hover:bg-[#21262d] hover:text-github-DEFAULT"
                 aria-label="Próximo ano"
               >
                 <ChevronRight size={18} />
@@ -123,7 +123,7 @@ export default function CompetenceDatePicker({
               })}
             </div>
 
-            <div className="mb-4 flex items-center justify-between border-t border-[#30363d] pt-3 text-sm">
+            <div className="mb-4 flex items-center justify-between border-t border-github-border pt-3 text-sm">
               <span className="text-[#8b949e]">Último dia do mês</span>
               <span className="font-semibold text-[#3fb950]">{formatDate(previewLastDay)}</span>
             </div>

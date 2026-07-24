@@ -34,8 +34,8 @@ export function DarkSelect({ options, value, onChange, placeholder, width = 200 
         onClick={() => setOpen(!open)}
         title={selected?.label}
         style={{ width }}
-        className="flex items-center gap-2 bg-[#161b22] border border-white/[0.07]
-                   rounded-lg px-3 py-2.5 text-white text-sm hover:border-white/[0.15] transition-colors"
+        className="flex items-center gap-2 bg-other-surface border border-white/[0.07]
+                   rounded-lg px-3 py-2.5 text-other-text text-sm hover:border-white/[0.15] transition-colors"
       >
         <span className="flex-1 min-w-0 truncate text-left">
           {selected ? selected.label : placeholder ?? "Selecione"}
@@ -49,7 +49,7 @@ export function DarkSelect({ options, value, onChange, placeholder, width = 200 
       {open && (
         <div
           style={{ width }}
-          className="absolute z-10 mt-1 bg-[#161b22] border border-white/[0.07] rounded-lg overflow-hidden"
+          className="absolute z-10 mt-1 bg-other-surface border text-other-text border-white/[0.07] rounded-lg overflow-hidden"
         >
           {options.map((opt) => (
             <div
@@ -59,9 +59,10 @@ export function DarkSelect({ options, value, onChange, placeholder, width = 200 
                 onChange(opt.value);
                 setOpen(false);
               }}
-              className={`px-3 py-2.5 text-sm cursor-pointer truncate hover:bg-white/[0.05] transition-colors
-                          ${opt.value === value ? "text-[#3fb950]" : "text-white"}`}
+              className={`px-3 py-2.5 text-sm cursor-pointer truncate hover:bg-other-hoverbg transition-colors
+                          ${opt.value === value ? "text-github-text-linkAlt" : "text-other-text"}`}
             >
+              {/* bg-white/[0.05] */}
               {opt.label}
             </div>
           ))}

@@ -48,7 +48,7 @@ export default function Layout() {
         {!hideSideBar && (
           <button
             onClick={() => setMobileOpen(true)}
-            className="lg:hidden p-3 text-white"
+            className="lg:hidden p-3 text-github-text"
             aria-label="Abrir menu"
           >
             <Menu size={22} />

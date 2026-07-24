@@ -98,24 +98,24 @@ export function DatePicker({ value, onChange, placeholder }: IDatePickerProps) {
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between bg-[#161b22] border border-white/[0.07]
-                   rounded-lg px-3.5 py-3 text-sm hover:border-white/[0.15] transition-colors"
+        className="w-full flex items-center justify-between bg-[var(--input-bg)] border border-[var(--input-border)]
+                   rounded-lg px-3.5 py-3 text-sm hover:border-[var(--input-border-focus)] transition-colors"
       >
-        <span className={value ? "text-white" : "text-[#6e7681]"}>{label}</span>
-        <Calendar size={16} className="text-[#3fb950]" />
+        <span className={value ? "text-[var(--input-text)]" : "text-[var(--input-placeholder)]"}>{label}</span>
+        <Calendar size={16} className="text-[var(--accent)]" />
       </button>
 
       {open && (
-        <div className="absolute z-10 mt-1 w-[320px] bg-[#0d1117] border border-white/[0.07] rounded-xl p-5">
+        <div className="absolute z-10 mt-1 w-[320px] bg-[var(--panel-bg)] border border-[var(--input-border)] rounded-xl p-5">
           {/* Navegação de mês */}
           <div className="flex items-center justify-between mb-4">
-            <button type="button" onClick={goToPrevMonth} className="text-[#8b949e] hover:text-white transition-colors p-1">
+            <button type="button" onClick={goToPrevMonth} className="text-github-text-muted hover:text-github-text transition-colors p-1">
               <ChevronLeft size={18} />
             </button>
-            <span className="text-white font-bold text-sm">
+            <span className="text-github-text font-bold text-sm">
               {MONTH_NAMES[viewMonth]} de {viewYear}
             </span>
-            <button type="button" onClick={goToNextMonth} className="text-[#8b949e] hover:text-white transition-colors p-1">
+            <button type="button" onClick={goToNextMonth} className="text-github-text-muted hover:text-github-text transition-colors p-1">
               <ChevronRight size={18} />
             </button>
           </div>
@@ -123,7 +123,7 @@ export function DatePicker({ value, onChange, placeholder }: IDatePickerProps) {
           {/* Cabeçalho dias da semana */}
           <div className="grid grid-cols-7 gap-1 mb-1.5">
             {WEEKDAYS.map((w, i) => (
-              <div key={i} className="text-center text-[11px] text-[#8b949e] font-semibold py-1">
+              <div key={i} className="text-center text-[11px] text-github-text-muted font-semibold py-1">
                 {w}
               </div>
             ))}
@@ -143,10 +143,10 @@ export function DatePicker({ value, onChange, placeholder }: IDatePickerProps) {
                     ${isSelected
                       ? "bg-[#2f81f7] text-white"
                       : cell.muted
-                      ? "text-[#3d4451] hover:bg-white/[0.08]"
-                      : "text-[#c9d1d9] hover:bg-white/[0.08]"
+                      ? "text-[var(--input-placeholder)] hover:bg-[var(--btn-secondary-hover-bg)]"
+                      : "text-[var(--input-text)] hover:bg-[var(--btn-secondary-hover-bg)]"
                     }
-                    ${isToday && !isSelected ? "font-bold ring-1 ring-inset ring-[#3fb950]" : ""}
+                    ${isToday && !isSelected ? "font-bold ring-1 ring-inset ring-[var(--accent)]" : ""}
                   `}
                 >
                   {cell.day}
@@ -156,11 +156,11 @@ export function DatePicker({ value, onChange, placeholder }: IDatePickerProps) {
           </div>
 
           {/* Ações */}
-          <div className="flex justify-between mt-4 pt-3 border-t border-white/[0.07]">
-            <button type="button" onClick={handleClear} className="text-[#3fb950] text-[13px] font-medium hover:underline">
+          <div className="flex justify-between mt-4 pt-3 border-t border-[var(--input-border)]">
+            <button type="button" onClick={handleClear} className="text-[var(--accent)] text-[13px] font-medium hover:underline">
               Limpar
             </button>
-            <button type="button" onClick={handleToday} className="text-[#3fb950] text-[13px] font-medium hover:underline">
+            <button type="button" onClick={handleToday} className="text-[var(--accent)] text-[13px] font-medium hover:underline">
               Hoje
             </button>
           </div>

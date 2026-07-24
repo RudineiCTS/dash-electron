@@ -3,13 +3,105 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── Tema escuro (padrão) ─────────────────────────── */
+:root,
+:root[data-theme='dark'] {
+  --gh-bg: #0d1117;
+  --gh-bg-card: #161b22;
+  --gh-bg-hover: #21262d;
+  --gh-bg-focus: #2ecb73;
+  --gh-text: #e6edf3;
+  --gh-text-muted: #8b949e;
+  --gh-text-link: #58a6ff;
+  --gh-text-linkAlt: #2ecb73;
+  --gh-border: #30363d;
+  --gh-btn-green: #238636;
+  --gh-btn-green-hover: #2ea043;
+  --gh-btn-dark: #21262d;
+
+  --other-bg: #0d1117;
+  --other-surface: #161b22;
+  --other-card: #10171f;
+  --other-border: rgba(255, 255, 255, 0.07);
+  --other-text: #ffffff;
+  --other-muted: #8b949e;
+  --other-green: #3fb950;
+  --other-green-dark: #1a2e1a;
+  --other-badge: #21262d;
+
+  --panel-bg: #0d1117;
+  --panel-border: rgba(63, 185, 80, 0.4);
+  --input-bg: #161b22;
+  --input-border: rgba(255, 255, 255, 0.07);
+  --input-border-focus: rgba(255, 255, 255, 0.2);
+  --input-text: #ffffff;
+  --input-placeholder: #6e7681;
+  --text-strong: #ffffff;
+  --text-faint: rgba(255, 255, 255, 0.4);
+  --accent: #3fb950;
+  --accent-strong: #3fb950;
+  --accent-strong-text: #0d1117;
+  --tab-active-bg: rgba(63, 185, 80, 0.15);
+  --tab-active-text: #3fb950;
+  --btn-secondary-border: rgba(255, 255, 255, 0.15);
+  --btn-secondary-text: #c9d1d9;
+  --btn-secondary-hover-bg: rgba(255, 255, 255, 0.05);
+  --scrollbar-thumb: #0d1117;
+}
+
+/* ── Tema claro ───────────────────────────────────── */
+:root[data-theme='light'] {
+  --gh-bg: #eef1f6;
+  --gh-bg-card: #ffffff;
+  --gh-bg-hover: #f1f2f6;
+  --gh-bg-focus: #1e2a4a;
+  --gh-text: #1a2138;
+  --gh-text-muted: #6b7280;
+  --gh-text-link: #2563eb;
+  --gh-text-linkAlt: #2563eb;
+  --gh-border: #e3e6ee;
+  --gh-btn-green: #f5921e;
+  --gh-btn-green-hover: #f5921e;
+  --gh-btn-dark: #eef1f6;
+
+  --other-bg: #eef1f6;
+  --other-surface: #ffffff;
+  --other-card: #ffffff;
+  --other-border: #e3e6ee;
+  --other-text: #1a2138;
+  --other-muted: #6b7280;
+  --other-green: #f5921e;
+  --other-green-dark: #fde7cc;
+  --other-badge: #eef1fb;
+
+  --panel-bg: #ffffff;
+  --panel-border: #e3e6ee;
+  --input-bg: #f3f4f6;
+  --input-border: #d8dce6;
+  --input-border-focus: #b7bdcc;
+  --input-text: #1a2138;
+  --input-placeholder: #9aa1b1;
+  --text-strong: #1a2138;
+  --text-faint: rgba(26, 33, 56, 0.45);
+  --accent: #f5921e;
+  --accent-strong: #232047;
+  --accent-strong-text: #ffffff;
+  --tab-active-bg: #232047;
+  --tab-active-text: #ffffff;
+  --btn-secondary-border: #d8dce6;
+  --btn-secondary-text: #1a2138;
+  --btn-secondary-hover-bg: #f3f4f6;
+  --scrollbar-thumb: #c7cbd6;
+}
+
 body {
   font-family:
     -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial,
-    sans-serif;  
+    sans-serif;
     margin-top: 5px;
     margin-bottom: 5px;
-    background-color: #0d1117;
+    background-color: var(--gh-bg);
+    transition: background-color 0.15s ease;
 }
 html, body, #root {
   height: 100%;
@@ -29,7 +121,7 @@ html, body, #root {
 }
 
 ::-webkit-scrollbar-thumb {
-   background-color: #0d1117;
+   background-color: var(--scrollbar-thumb);
   border-radius: 999px;
 }
 

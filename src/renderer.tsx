@@ -34,18 +34,21 @@ import CampaignDetail from './pages/CampaignDetail'
 import Layout from './pages/Layout'
 import './index.css'
 import CampaignsAdvanced from './pages/CampaignAdvanced'
+import { ThemeProvider } from './context/ThemeContext'
 
 createRoot(document.getElementById('app')!).render(
-  <HashRouter>
-    <Routes>
-      <Route path="/" element={<Layout />}>
-        <Route index element={<Home />} />
-        <Route path="/campaigns" element={<CampaignsActive />} />
-        <Route path="/campaigns/details/:id" element={<CampaignDetail />} />
-        <Route path="campaigns-advanced" element={<CampaignsAdvanced />} />
-      </Route>
-    </Routes>
-  </HashRouter>
+  <ThemeProvider>
+    <HashRouter>
+      <Routes>
+        <Route path="/" element={<Layout />}>
+          <Route index element={<Home />} />
+          <Route path="/campaigns" element={<CampaignsActive />} />
+          <Route path="/campaigns/details/:id" element={<CampaignDetail />} />
+          <Route path="campaigns-advanced" element={<CampaignsAdvanced />} />
+        </Route>
+      </Routes>
+    </HashRouter>
+  </ThemeProvider>
 )
 
 // const root = createRoot(document.getElementById('app'))

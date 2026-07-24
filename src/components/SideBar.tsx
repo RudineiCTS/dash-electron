@@ -1,10 +1,12 @@
 import { IconType } from 'react-icons'  // ← importa o tipo
 import { LogoApp } from './logoApp'
 import { ReactNode } from 'react'
-import {FiActivity, FiArchive, FiSearch} from 'react-icons/fi'
+import {FiActivity, FiArchive} from 'react-icons/fi'
 import { NavLink } from 'react-router-dom'
 import { ButtonSideBar } from './ButtonSideBar'
+import { ThemeToggle } from './ThemeToggle'
 import { Lock} from "lucide-react";
+
 export interface OptionSide{
     key:string | number,
     value: string,
@@ -90,7 +92,10 @@ export function SideBar({options,className,isMenuDefault,children,switchCampaign
                                     ))}
                             </ul>    
                         </div>
-                        <span className='text-github-bg-hover text-sm mt-8'>@Created by rudineicts</span>
+                        <div className="mt-auto mb-4 w-full flex flex-col items-center gap-3">
+                            <ThemeToggle />
+                            <span className='text-github-bg-hover text-sm'>@Created by rudineicts</span>
+                        </div>
                     </>
                 ):(
                     <>

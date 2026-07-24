@@ -11,7 +11,7 @@ import { useState } from "react";
 import { campaignSummaryMock } from "../mock/campaignSummary";
 import { DarkSelect } from "../components/SelectOptionComponent/SelectOption";
 
-const teste = 1  as number
+const teste = 2  as number
 const dataReferencia = dayjs()
 //   .subtract(1, 'month')   // volta um mês
   .endOf('month')         // vai pro último dia desse mês
@@ -106,21 +106,25 @@ export default function CampaignsActive() {
                             title="Meta Total"
                             subtitles="Objetivo das campanhas"
                             value={totalCard.totalMeta}
+                            focus={false}
                         />
                         <TopCardTopic
                                 title="Realizado Total"
                                 subtitles="Realizado total das campanhas"
                                 value={totalCard.totalValor}
+                                focus={false}
                                 />
                         <TopCardTopic
                                 title="Percentual total"
                                 subtitles="Percentual total referente ao objetivo total"
                                 value={totalCard.percentTotal}
+                                focus={false}
                                 />
                         <TopCardTopic
                                 title="Premiação Total"
                                 subtitles="Premiação total de todas as campanhas do mês"
                                 value={totalCard.premiacaoTotal}
+                                focus={true}
                                 />
                     </>
                 )}

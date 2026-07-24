@@ -10,29 +10,30 @@ module.exports = {
         github: {
           // ── Fundos ──────────────────────────────
           bg: {
-            DEFAULT: "#0d1117",   // fundo principal da página
-            card:    "#161b22",   // fundo de cards / painéis
-            hover:   "#21262d",   // hover de itens / bordas internas
-            focus:    "#2ecb73",
+            DEFAULT: "var(--gh-bg)",       // fundo principal da página
+            card:    "var(--gh-bg-card)",  // fundo de cards / painéis
+            hover:   "var(--gh-bg-hover)", // hover de itens / bordas internas
+            focus:   "var(--gh-bg-focus)",
           },
- 
+
           // ── Texto ───────────────────────────────
           text: {
-            DEFAULT:   "#e6edf3", // texto principal (branco suave)
-            muted:     "#8b949e", // texto secundário (cinza)
-            link:      "#58a6ff", // links azuis
+            DEFAULT:   "var(--gh-text)",       // texto principal
+            muted:     "var(--gh-text-muted)", // texto secundário (cinza)
+            link:      "var(--gh-text-link)",  // links
+            linkAlt:    "var(--gh-text-linkAlt)"
           },
- 
+
           // ── Bordas ──────────────────────────────
-          border: "#30363d",
- 
+          border: "var(--gh-border)",
+
           // ── Botões ──────────────────────────────
           btn: {
-            green:       "#238636", // botão verde "Code"
-            "green-hover": "#2ea043", // verde hover
-            dark:        "#21262d", // botão cinza escuro
+            green:       "var(--gh-btn-green)",       // botão/destaque de marca
+            "green-hover": "var(--gh-btn-green-hover)", // destaque hover
+            dark:        "var(--gh-btn-dark)",        // botão cinza escuro
           },
- 
+
           // ── Linguagens (barra de linguagens) ────
           lang: {
             typescript: "#3178c6",
@@ -42,15 +43,16 @@ module.exports = {
           },
         },
          other: {
-          bg:          '#0d1117',
-          surface:     '#161b22',
-          card:        '#10171f',
-          border:      'rgba(255,255,255,0.07)',
-          text:        '#ffffff',
-          muted:       '#8b949e',
-          green:       '#3fb950',
-          'green-dark':'#1a2e1a',
-          badge:       '#21262d',
+          bg:          'var(--other-bg)',
+          surface:     'var(--other-surface)',
+          card:        'var(--other-card)',
+          border:      'var(--other-border)',
+          text:        'var(--other-text)',
+          muted:       'var(--other-muted)',
+          green:       'var(--other-green)',
+          'green-dark':'var(--other-green-dark)',
+          badge:       'var(--other-badge)',
+          hoverbg:     'var(--btn-secondary-hover-bg)'
         }
       },
       keyframes:{
