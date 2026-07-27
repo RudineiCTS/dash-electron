@@ -42,19 +42,19 @@ export function SalesTable({ rows, filters }: SalesTableProps) {
 
   return (
     <div className="flex flex-col flex-1 min-h-0">
-      <div className="px-6 py-2 text-xs text-white/40 shrink-0">
+      <div className="px-6 py-2 text-xs text-other-muted shrink-0">
         {filtersActive
           ? `${filteredRows.length} registro(s) encontrado(s) de ${rows.length} no total`
           : `${rows.length} registro(s) no total`}
       </div>
       <div className="flex-1 overflow-auto px-6 pb-6">
         <table className="w-full text-sm border-collapse">
-          <thead className="sticky top-0 bg-[#0d1117]">
+          <thead className="sticky top-0 bg-other-bg">
             <tr>
               {headers.map((header) => (
                 <th
                   key={header}
-                  className="px-4 py-2 text-left text-[10px] font-medium tracking-widest text-white/40 uppercase whitespace-nowrap"
+                  className="px-4 py-2 text-left text-[10px] font-medium tracking-widest text-other-muted uppercase whitespace-nowrap"
                 >
                   {header}
                 </th>
@@ -63,20 +63,20 @@ export function SalesTable({ rows, filters }: SalesTableProps) {
           </thead>
           <tbody>
             {filteredRows.map((row) => (
-              <tr  className="border-t border-white/[0.05] hover:bg-white/[0.02]">
-                <td className="px-4 py-2 text-white/70 whitespace-nowrap">{row.cpfcnpj}</td>
-                <td className="px-4 py-2 text-white font-medium whitespace-nowrap">
+              <tr  className="border-t border-other-border hover:bg-other-surface">
+                <td className="px-4 py-2 text-other-muted whitespace-nowrap">{row.cpfcnpj}</td>
+                <td className="px-4 py-2 text-other-muted font-medium whitespace-nowrap">
                   {row.legalName}
                 </td>
-                <td className="px-4 py-2 text-white/70 whitespace-nowrap">{row.productName}</td>
-                <td className="px-4 py-2 text-white/50 text-xs whitespace-nowrap">
+                <td className="px-4 py-2  text-other-muted  whitespace-nowrap">{row.productName}</td>
+                <td className="px-4 py-2 text-other-muted text-xs whitespace-nowrap">
                   {row.productEan}
                 </td>
-                <td className="px-4 py-2 text-white/70 whitespace-nowrap">{row.quantitySold}</td>
-                <td className="px-4 py-2 text-[#3fb950] whitespace-nowrap">
+                <td className="px-4 py-2  text-other-muted  whitespace-nowrap">{row.quantitySold}</td>
+                <td className="px-4 py-2 text-other-green whitespace-nowrap">
                   {formatCurrency(row.valueSold)}
                 </td>
-                <td className="px-4 py-2 text-white/70 whitespace-nowrap">{row.sellerName}</td>
+                <td className="px-4 py-2 text-other-muted whitespace-nowrap">{row.sellerName}</td>
               </tr>
             ))}
           </tbody>

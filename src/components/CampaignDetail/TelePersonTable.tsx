@@ -75,16 +75,16 @@ export function TelePersonTable({ rows, filters }: PersonTableProps) {
 
               <span className="w-4 inline-block shrink-0" />
           
-            <span className="text-white font-medium">{row.operatorName}</span>
-            <span className="text-white/30 text-xs">{row.idPersonSales}</span>
+            <span className="text-other-muted font-medium">{row.operatorName}</span>
+            <span className="text-other-muted text-xs">{row.idPersonSales}</span>
           </div>
         </td>
         {/* <td className="px-4 py-2 text-white/70 whitespace-nowrap">{row.tipo}</td> */}
-        <td className="px-4 py-2 text-white/70 whitespace-nowrap">{formatCurrency(row.assessedValue)}</td>
-        <td className="px-4 py-2 text-white/70 whitespace-nowrap">{formatCurrency(row.individualTarget)}</td>
-        <td className="px-4 py-2 text-white/70 whitespace-nowrap">{formatPercent(row.percentageAchieved)}</td>
-        <td className="px-4 py-2 text-white/70 whitespace-nowrap">{row.ranking ?? "—"}</td>
-        <td className="px-4 py-2 text-[#3fb950] whitespace-nowrap">
+        <td className="px-4 py-2 text-other-muted whitespace-nowrap">{formatCurrency(row.assessedValue)}</td>
+        <td className="px-4 py-2 text-other-muted whitespace-nowrap">{formatCurrency(row.individualTarget)}</td>
+        <td className="px-4 py-2 text-other-muted whitespace-nowrap">{formatPercent(row.percentageAchieved)}</td>
+        <td className="px-4 py-2 text-other-muted whitespace-nowrap">{row.ranking ?? "—"}</td>
+        <td className="px-4 py-2 text-other-accent whitespace-nowrap">
           {row.award !== null ? formatCurrency(row.award) : "—"}
         </td>
       </>
@@ -93,19 +93,19 @@ export function TelePersonTable({ rows, filters }: PersonTableProps) {
 
   return (
     <div className="flex flex-col flex-1 min-h-0">
-      <div className="px-6 py-2 text-xs text-white/40 shrink-0">
+      <div className="px-6 py-2 text-xs text-other-muted shrink-0">
         {filtersActive
           ? `${filteredFlat.length} registro(s) encontrado(s) de ${allRows.length} no total`
           : `${allRows.length} registro(s) no total`}
       </div>
       <div className="flex-1 overflow-auto px-6 pb-6">
         <table className="w-full text-sm border-collapse">
-          <thead className="sticky top-0 bg-[#0d1117]">
+          <thead className="sticky top-0 bg-github-bg">
             <tr>
               {headers.map((header) => (
                 <th
                   key={header}
-                  className="px-4 py-2 text-left text-[10px] font-medium tracking-widest text-white/40 uppercase whitespace-nowrap"
+                  className="px-4 py-2 text-left text-[10px] font-medium tracking-widest text-other-muted uppercase whitespace-nowrap"
                 >
                   {header}
                 </th>
@@ -114,7 +114,7 @@ export function TelePersonTable({ rows, filters }: PersonTableProps) {
           </thead>
           <tbody>
             {filteredFlat.map((row) => (
-                  <tr key={row.idPersonSales} className="border-t border-white/[0.05] hover:bg-white/[0.02]">
+                  <tr key={row.idPersonSales} className="border-t border-github-border hover:to-other-border">
                     {renderRowCells(row, 0)}
                   </tr>
                 ))

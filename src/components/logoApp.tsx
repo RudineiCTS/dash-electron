@@ -15,7 +15,7 @@ export function LogoApp({ className }: LogoAppProps) {
                 >
                     <defs>
                         <linearGradient id="bussola-gradient" x1="0" y1="0" x2="100" y2="100">
-                            <stop offset="0%" stopColor="#3fb950" />
+                            <stop offset="0%" stopColor="var(--accent)" />
                             <stop offset="100%" stopColor="#1f8a3d" />
                         </linearGradient>
                     </defs>
@@ -29,7 +29,7 @@ export function LogoApp({ className }: LogoAppProps) {
                         strokeDasharray="220 283"
                         transform="rotate(-90 50 50)"
                     />
-                    <path d="M50 30 L64 55 L50 70 L36 55 Z" fill="#f0f2f4" />
+                    <path d="M50 30 L64 55 L50 70 L36 55 Z" style={{ fill: 'var(--gh-bg-focus)' }} />
                 </svg>
 
                 <div className="flex tracking-tight">

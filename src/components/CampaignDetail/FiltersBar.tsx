@@ -30,9 +30,9 @@ interface FiltersBarProps {
   onExportCsv: () => void;
 }
 
-const fieldLabel = "text-[10px] font-medium tracking-widest text-white/40 uppercase";
+const fieldLabel = "text-[10px] font-medium tracking-widest text-other-muted uppercase";
 const fieldControl =
-  "bg-[#10171f] border border-white/[0.07] rounded-md px-3 py-2 text-sm text-white outline-none focus:border-[#3fb950]/50";
+  "bg-other-card border border-white/[0.07] rounded-md px-3 py-2 text-sm text-github-text outline-none focus:border-other-green/50";
 
 export function FiltersBar({
   search,
@@ -138,7 +138,7 @@ export function FiltersBar({
 
       <button
         onClick={onClearFilters}
-        className="border border-white/[0.07] text-white/70 hover:text-white text-sm px-4 py-2 rounded-md transition-colors cursor-pointer"
+        className="border border-other-border text-other-muted hover:text-github-text-linkAlt text-sm px-4 py-2 rounded-md transition-colors cursor-pointer"
       >
         Limpar filtros
       </button>
@@ -146,14 +146,14 @@ export function FiltersBar({
       <div className="flex gap-2 ml-auto">
         <button
           onClick={onExportCsv}
-          className="flex items-center gap-2 border border-white/[0.07] text-white/70 hover:text-white text-sm px-4 py-2 rounded-md transition-colors cursor-pointer"
+          className="flex items-center gap-2 border border-other-border text-other-muted hover:text-github-text-linkAlt text-sm px-4 py-2 rounded-md transition-colors cursor-pointer"
         >
           <FiDownload /> CSV
         </button>
         <button
           disabled
           title="Exportação em Excel ainda não implementada"
-          className="flex items-center gap-2 bg-[#3fb950]/20 text-[#3fb950]/50 text-sm px-4 py-2 rounded-md cursor-not-allowed"
+          className="flex items-center gap-2 bg-other-green-dark text-other-green text-sm px-4 py-2 rounded-md cursor-not-allowed"
         >
           <FiDownload /> Excel
         </button>

@@ -2,7 +2,7 @@ import { Skeleton } from "./Skeleton";
 
 export function CampaignCardSkeleton() {
   return (
-    <div className="bg-[#10171f] border border-white/[0.07] rounded-[9px] p-4 flex flex-col gap-4">
+    <div className="bg-other-card border border-other-border rounded-[9px] p-4 flex flex-col gap-4">
       {/* Header */}
       <div className="flex items-center gap-3">
         <Skeleton variant="rect" className="w-8 h-5" />

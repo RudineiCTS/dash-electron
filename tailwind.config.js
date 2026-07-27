@@ -21,7 +21,9 @@ module.exports = {
             DEFAULT:   "var(--gh-text)",       // texto principal
             muted:     "var(--gh-text-muted)", // texto secundário (cinza)
             link:      "var(--gh-text-link)",  // links
-            linkAlt:    "var(--gh-text-linkAlt)"
+            linkAlt:    "var(--gh-text-linkAlt)",
+            textSecond: ' --btn-secondary-text: #1a2138',
+            textSecondHover:  '--btn-secondary-hover-bg: #f3f4f6'
           },
 
           // ── Bordas ──────────────────────────────
@@ -52,7 +54,8 @@ module.exports = {
           green:       'var(--other-green)',
           'green-dark':'var(--other-green-dark)',
           badge:       'var(--other-badge)',
-          hoverbg:     'var(--btn-secondary-hover-bg)'
+          hoverbg:     'var(--btn-secondary-hover-bg)',
+          accent: 'var(--accent)'
         }
       },
       keyframes:{

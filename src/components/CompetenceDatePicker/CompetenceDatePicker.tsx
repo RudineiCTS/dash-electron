@@ -70,13 +70,13 @@ export default function CompetenceDatePicker({
           className="flex w-full items-center justify-between gap-2 rounded-lg border border-github-border bg-other-surface px-3.5 py-2.5 text-sm text-github-DEFAULT transition-colors hover:border-[#3fb950]/50"
         >
           <span className="flex items-center gap-2">
-            <Calendar size={16} className="text-[#3fb950]" />
+            <Calendar size={16} className="text-other-green" />
             <span className="font-medium">{formatDate(appliedDate)}</span>
           </span>
           {isOpen ? (
-            <ChevronUp size={16} className="text-[#8b949e]" />
+            <ChevronUp size={16} className="text-other-muted" />
           ) : (
-            <ChevronDown size={16} className="text-[#8b949e]" />
+            <ChevronDown size={16} className="text-other-muted" />
           )}
         </button>
 
@@ -86,7 +86,7 @@ export default function CompetenceDatePicker({
               <button
                 type="button"
                 onClick={() => setPickerYear((y) => y - 1)}
-                className="rounded-md p-1.5 text-[#8b949e] transition-colors hover:bg-[#21262d] hover:text-github-DEFAULT"
+                className="rounded-md p-1.5 text-other-muted transition-colors hover:bg-other-badge hover:text-github-DEFAULT"
                 aria-label="Ano anterior"
               >
                 <ChevronLeft size={18} />
@@ -95,7 +95,7 @@ export default function CompetenceDatePicker({
               <button
                 type="button"
                 onClick={() => setPickerYear((y) => y + 1)}
-                className="rounded-md p-1.5 text-[#8b949e] transition-colors hover:bg-[#21262d] hover:text-github-DEFAULT"
+                className="rounded-md p-1.5 text-other-muted transition-colors hover:bg-other-badge hover:text-github-DEFAULT"
                 aria-label="Próximo ano"
               >
                 <ChevronRight size={18} />
@@ -113,8 +113,8 @@ export default function CompetenceDatePicker({
                     className={
                       "rounded-md py-2 text-sm font-medium transition-colors " +
                       (isSelected
-                        ? "bg-[#238636]/25 text-[#3fb950] ring-2 ring-amber-400/70"
-                        : "text-[#c9d1d9] hover:bg-[#21262d]")
+                        ? "bg-github-btn-green text-github-text-textSecond ring-2 ring-amber-400/70"
+                        : "text-github-text-textSecond hover:bg-other-badge")
                     }
                   >
                     {monthLabel}
@@ -124,14 +124,14 @@ export default function CompetenceDatePicker({
             </div>
 
             <div className="mb-4 flex items-center justify-between border-t border-github-border pt-3 text-sm">
-              <span className="text-[#8b949e]">Último dia do mês</span>
-              <span className="font-semibold text-[#3fb950]">{formatDate(previewLastDay)}</span>
+              <span className="text-other-muted">Último dia do mês</span>
+              <span className="font-semibold text-other-green">{formatDate(previewLastDay)}</span>
             </div>
 
             <button
               type="button"
               onClick={handleApply}
-              className="w-full rounded-lg bg-[#3fb950] py-2.5 text-sm font-semibold text-[#0d1117] transition-colors hover:bg-[#56d364]"
+              className="w-full rounded-lg bg-other-green py-2.5 text-sm font-semibold text-[#0d1117] transition-colors hover:bg-[#56d364]"
             >
               Aplicar
             </button>

@@ -2,9 +2,6 @@ import dayjs from 'dayjs'
 import {MdCampaign} from 'react-icons/md'
 import { OptionSide } from '../components/SideBar'
 import { useState } from 'react';
-import {campanhaDetalhe} from '../mock/campaign'
-import { Carousel } from '../components/Carousel';
-import { SideBarShowDetailsIten } from '../components/SideBarShowDetailsIten';
 import { useCampaign } from '../hook/useCampaign';
 import {getUltimoDiaDoMes} from '../utils/getLastDayInMonth'
 import InBuildingComponent from '../components/InBuildingComponent/InBuildingComponent';
@@ -52,8 +49,8 @@ export default function Home() {
                 <li
                 key={mes}
                 onClick={() => handleChangeMonthCampaign(mes)}
-                className={`rounded-full px-4 py-1 border border-green-600 text-sm font-medium transition-all cursor-pointer
-                  ${ativo === mes ? "bg-green-600 text-white" : "text-green-600 hover:bg-green-50"}`}      
+                className={`rounded-full px-4 py-1 border border-other-border text-sm font-medium transition-all cursor-pointer
+                  ${ativo === mes ? "bg-github-text-linkAlt text-white" : "text-other-green hover:bg-green-50"}`}      
                   >
                   {mes}
                 </li>

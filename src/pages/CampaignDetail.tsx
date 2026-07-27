@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import dayjs from "dayjs";
 import { FiArrowLeft } from "react-icons/fi";
+import { HiOutlineDocumentReport  } from "react-icons/hi";
 import { StatCard } from "../components/CampaignDetail/StatCard";
 import { FiltersBar, CampaignOption } from "../components/CampaignDetail/FiltersBar";
 import {  PersonTableFilters } from "../components/CampaignDetail/PersonTable";
@@ -16,6 +17,8 @@ import { useCampaignDetails } from "../hook/useCampaignDetails";
 import { TelePersonTable } from "../components/CampaignDetail/TelePersonTable";
 import { EmptyState } from "../components/EmptyCampaignSellOuts/EmptyResult";
 import { AlertCircle } from "lucide-react";
+import { CampaignConfigModal } from "../components/GlobalComponents/modal/ModalCampaignDetails";
+
 
 interface CampaignDetailLocationState {
   summary?: CampaignSummary;
@@ -45,7 +48,8 @@ export default function CampaignDetail() {
   const [salesFilters, setSalesFilters] = useState<SalesTableFilters>(defaultSalesFilters);
   const [isActiveTab, setIsActiveTab] = useState<"informacoes" | "resumo">("informacoes");
 
-
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+  const [selectedCampaignId, setSelectedCampaignId] = useState<number | null>(null);
   
   const summary = state.summary;
   const allSummaries = state.allSummaries ?? (summary ? [summary] : []);
@@ -95,6 +99,11 @@ export default function CampaignDetail() {
     );
   }
 
+  const handleOpenDetailsCampaign = (idCampaign: number) => {
+    setSelectedCampaignId(idCampaign);
+    setIsDetailsModalOpen(true);
+  };
+
   if (!summary) {
     return (
       <div className="flex flex-col items-center justify-center h-screen gap-4 text-github-text-muted">
@@ -110,10 +119,10 @@ export default function CampaignDetail() {
   }
 
   const isPremiado = summary.totalAward > 0;
-  console.log(campaignResumeSellOut)
+  
   return (
     <div className="flex flex-col h-screen">
-      <header className="flex flex-col shrink-0 border-b border-white/[0.07] pb-4">
+      <header className="flex flex-col shrink-0 border-b border-other-border pb-4">
         <div className="px-6 pt-4">
           <button
             onClick={() => navigate("/campaigns")}
@@ -125,7 +134,7 @@ export default function CampaignDetail() {
           <div className="flex items-start justify-between">
             <div className="flex flex-col gap-2">
               <div className="flex items-center gap-3">
-                <span className="bg-[#21262d] text-[#8b949e] text-xs font-medium px-2 py-1 rounded-md">
+                <span className="bg-github-btn-dark text-other-muted text-xs font-medium px-2 py-1 rounded-md">
                   #{summary.idCampaign}
                 </span>
                 <span className="text-xs text-github-btn-green-hover tracking-[2.5px] font-medium uppercase">
@@ -142,17 +151,23 @@ export default function CampaignDetail() {
                 <span
                   className={`text-xs font-medium px-3 py-0.5 rounded-full ${
                     isPremiado
-                      ? "bg-[#3fb950] text-[#0d1117]"
-                      : "border border-white/[0.07] text-white/40"
+                      ? "bg-other-green text-[#0d1117]"
+                      : "border border-other-muted text-other-muted"
                   }`}
                 >
                   {isPremiado ? "Premiado" : "Sem premiação"}
+                  
                 </span>
+                <HiOutlineDocumentReport 
+                  size={24} 
+                  className="cursor-pointer hover:text-other-accent"
+                  onClick={()=>handleOpenDetailsCampaign(summary.idCampaign)}  
+                />
               </div>
             </div>
 
-            <div className="flex flex-col items-end bg-[#10171f] border border-white/[0.07] rounded-md px-4 py-2">
-              <span className="text-[10px] tracking-widest text-white/40 uppercase">
+            <div className="flex flex-col items-end bg-other-card border border-white/[0.07] rounded-md px-4 py-2">
+              <span className="text-[10px] tracking-widest text-other-muted uppercase">
                 Data Competência
               </span>
               <strong className="text-github-text">
@@ -172,25 +187,26 @@ export default function CampaignDetail() {
         <div className="flex px-6 mt-4 border-b border-white/[0.07] gap-5  text-github-text">
           <span className={
             `text-sm font-medium  border-b-2 border-github-btn-green-hover pb-2 cursor-pointer 
-            ${isActiveTab === "informacoes" ? "border-github-btn-green-hover text-github-btn-green-hover" : "border-transparent"}`
+            ${isActiveTab === "resumo" ? "border-github-btn-green-hover text-github-btn-green-hover" : "border-transparent"}`
             }
-            onClick={() => setIsActiveTab('informacoes')} 
+            onClick={() => setIsActiveTab('resumo')} 
             >
-            Informações
+            Resumo de vendas
           </span>
           <span className={
             `text-sm font-medium  border-b-2 border-github-btn-green-hover pb-2  cursor-pointer
-            ${isActiveTab === "resumo" ? "border-github-btn-green-hover text-github-btn-green-hover" : "border-transparent"}`
+            ${isActiveTab === "informacoes" ? "border-github-btn-green-hover text-github-btn-green-hover" : "border-transparent"}`
             }
-            onClick={() => setIsActiveTab('resumo')}
+            onClick={() => setIsActiveTab('informacoes')}
             >
-            Resumo de vendas
+              Informações detalhadas
+            
           </span>
              
         </div>
       </header>
 
-      {isActiveTab === "informacoes" ? (
+      {isActiveTab === "resumo" ? (
         <>
           <FiltersBar
             search={filters.search}
@@ -234,6 +250,21 @@ export default function CampaignDetail() {
             />
           ) : (
             <SalesTable rows={campaignResumeSellOut} filters={salesFilters} />
+          )}
+          {isDetailsModalOpen && (
+            <CampaignConfigModal              
+              data={{
+                idCampaign: summary.idCampaign,
+                nome:summary.campaignDescription,
+                dataCompetencia:summary.competenceDate,
+                tipo:summary.typeCampaign ??'',
+                fimVigencia:'2026-06-30',
+                inicioVigencia:'2026-06-01',
+                status:'ATIVA'
+              }}
+
+              // onClose={() => setIsDetailsModalOpen(false)}
+            />
           )}
         </>
       )}

@@ -35,6 +35,8 @@ export default function CampaignsActive() {
     function GetOptionDash(){
         const optionSummary = [...new Set(summary.map((e)=> e.campaignTypeDescription))]
             .map((desc) => ({value:desc, label:desc}))
+
+        optionSummary.push({value: 'SemFiltro', label:'Sem Filtro'})
         return optionSummary
     }
     function GetAllTypeCampaign(){
@@ -43,7 +45,12 @@ export default function CampaignsActive() {
         return types;
     }
     function HandleSetFilter(value:string){
-        setFilterActive(value)
+        if(value === 'SemFiltro'){
+            setFilterActive('')
+        }else{
+            setFilterActive(value)
+        }
+
     }
 
     const optionsSummary = GetOptionDash();
@@ -64,7 +71,7 @@ export default function CampaignsActive() {
                         Campanhas Rodando
                     </h1>
                     <div className=" text-github-text-muted flex w-full justify-between  text-sm" >
-                        9 campanhas - acompanhamento de meta, realizado e premiação
+                        {summary.length} campanhas - acompanhamento de meta, realizado e premiação
                         <div className="flex gap-4 ">
                             <div className="flex flex-col-reverse">
                                 

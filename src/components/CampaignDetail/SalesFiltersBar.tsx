@@ -19,18 +19,17 @@ interface SalesFiltersBarProps {
   typeCampaign?: "TELEVENDAS" | "FARMA";
 }
 
-const fieldLabel = "text-[10px] font-medium tracking-widest text-white/40 uppercase";
+const fieldLabel = "text-[10px] font-medium tracking-widest text-other-muted uppercase";
 const fieldControl =
-  "bg-[#10171f] border border-white/[0.07] rounded-md px-3 py-2 text-sm text-white outline-none focus:border-[#3fb950]/50";
+  "bg-other-card border border-other-border rounded-md px-3 py-2 text-sm text-github-text outline-none focus:border-other-green";
 
 // Type guard: quando é TELEVENDAS, o array é de CampaignResult
 function isCampaignResultArray(
   options: CampaignOption[] | CampaignResult[],
   type: "TELEVENDAS" | "FARMA"
-): options is CampaignResult[] {
+): options is CampaignOption[] {
   return type === "TELEVENDAS";
 }
-
 export function SalesFiltersBar({
   search,
   onSearchChange,
@@ -45,7 +44,7 @@ export function SalesFiltersBar({
   typeCampaign = "TELEVENDAS",
 }: SalesFiltersBarProps) {
   return (
-    <div className="flex flex-wrap items-end gap-4 px-6 py-4 border-b border-white/[0.07]">
+    <div className="flex flex-wrap items-end gap-4 px-6 py-4 border-b border-other-border">
       <div className="flex flex-col gap-1">
         <label className={fieldLabel}>Buscar</label>
         <input
@@ -66,14 +65,14 @@ export function SalesFiltersBar({
           {isCampaignResultArray(campaignOptions, typeCampaign)
             ? campaignOptions.map((option) => (
                 // TODO: ajustar para os campos reais de CampaignResult
-                <option key={option.idCampaign} value={option.idCampaign}>
-                  {option.campaignDescription}
+                <option key={option.id} value={option.id}>
+                  {option.label}
                 </option>
               ))
             : campaignOptions.map((option) => (
                 // TODO: ajustar para os campos reais de CampaignOption
-                <option key={option.id} value={option.id}>
-                  {option.label}
+                <option key={option.idCampaign} value={option.idCampaign}>
+                  {option.campaignTypeDescription}
                 </option>
               ))}
         </select>
@@ -97,7 +96,7 @@ export function SalesFiltersBar({
 
       <button
         onClick={onClearFilters}
-        className="border border-white/[0.07] text-white/70 hover:text-white text-sm px-4 py-2 rounded-md transition-colors cursor-pointer"
+        className="border border-other-border text-other-muted hover:text-github-text-linkAlt text-sm px-4 py-2 rounded-md transition-colors cursor-pointer"
       >
         Limpar filtros
       </button>
@@ -105,14 +104,14 @@ export function SalesFiltersBar({
       <div className="flex gap-2 ml-auto">
         <button
           onClick={onExportCsv}
-          className="flex items-center gap-2 border border-white/[0.07] text-white/70 hover:text-white text-sm px-4 py-2 rounded-md transition-colors cursor-pointer"
+          className="flex items-center gap-2 border border-other-border text-other-muted hover:text-github-text-linkAlt text-sm px-4 py-2 rounded-md transition-colors cursor-pointer"
         >
           <FiDownload /> CSV
         </button>
         <button
           disabled
           title="Exportação em Excel ainda não implementada"
-          className="flex items-center gap-2 bg-[#3fb950]/20 text-[#3fb950]/50 text-sm px-4 py-2 rounded-md cursor-not-allowed"
+          className="flex items-center gap-2 bg-other-green-dark text-other-green text-sm px-4 py-2 rounded-md cursor-not-allowed"
         >
           <FiDownload /> Excel
         </button>
