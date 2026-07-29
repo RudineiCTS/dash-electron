@@ -253,17 +253,8 @@ export default function CampaignDetail() {
           )}
           {isDetailsModalOpen && (
             <CampaignConfigModal              
-              data={{
-                idCampaign: summary.idCampaign,
-                nome:summary.campaignDescription,
-                dataCompetencia:summary.competenceDate,
-                tipo:summary.typeCampaign ??'',
-                fimVigencia:'2026-06-30',
-                inicioVigencia:'2026-06-01',
-                status:'ATIVA'
-              }}
-
-              // onClose={() => setIsDetailsModalOpen(false)}
+              data={summary}
+               onCloseModal={() => setIsDetailsModalOpen(false)}
             />
           )}
         </>

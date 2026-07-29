@@ -11,5 +11,16 @@ export interface CampaignSummary {
   percentageAchieved: number;
   notes: string;
   typeCampaign?: string;
-  isDynamic?:boolean;
+  isDynamic?: boolean | null;
+
+  idCompetencePeriodStatus: number;
+  startDate: string; // ISO 8601 datetime - ex: "2026-07-01T00:00:00"
+  endDate: string; // ISO 8601 datetime - ex: "2026-07-30T00:00:00"
+  totalRanking: number;
+  idAssessmentType: number;
+  idCalculationMethod: number;
+  validationRule: number;
+  valueType: number;
+  earlyEndDate: string | null;
+  considersExclusives: boolean;
 }

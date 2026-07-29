@@ -55,7 +55,8 @@ module.exports = {
           'green-dark':'var(--other-green-dark)',
           badge:       'var(--other-badge)',
           hoverbg:     'var(--btn-secondary-hover-bg)',
-          accent: 'var(--accent)'
+          accent: 'var(--accent)',
+          bgAlternative: 'var(--bg-alternative)'
         }
       },
       keyframes:{

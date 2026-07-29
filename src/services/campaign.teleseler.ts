@@ -1,9 +1,10 @@
 import { CampaignCompetencePeriod } from "src/interfaces/CampaignResume";
-import { api } from "./api";
+import { api, apiParams } from "./api";
 import dayjs from "dayjs";
 import { CampaignSummary } from "../interfaces/CampaignSummary";
 import { CampaignResult } from "../interfaces/CampaignResultTelesales";
 import { CampaignSalesRow } from "../interfaces/CampaignSalesRow";
+import { ClientCampaignType, LineProductCampaignType, ManufacturesCampaignType, ProductCampaignType,PaginationType } from "../interfaces/TParamsCampaign";
 
 export async function getCamapignTelesalerPerPeriod(date: Date| string, signal?: AbortSignal): Promise<CampaignCompetencePeriod[]>{
     const formattedDate = dayjs(date).format('YYYY-MM-DD');
@@ -38,4 +39,44 @@ export async function getCampaignResumeSellOutDetailsById(idCampaign:number, sig
     );
     return response.data;
 
+}
+export async function getCampaignParamsManufactures(idCampaign:number, signal?:AbortSignal):Promise<ManufacturesCampaignType[]>{
+    const response = await apiParams.get<ManufacturesCampaignType[]>(
+        `fabricante/${idCampaign}`,
+        {signal}
+    );
+    return response.data
+}
+export async function getCampaignParamsLineProducts(idCampaign:number, signal?:AbortSignal):Promise<LineProductCampaignType[]>{
+    const response = await apiParams.get<LineProductCampaignType[]>(
+        `linha/${idCampaign}`,
+        {signal}
+    );
+    return response.data
+}
+export async function getCampaignParamsProducts(idCampaign:number, signal?:AbortSignal):Promise<ProductCampaignType[]>{
+    const response = await apiParams.get<ProductCampaignType[]>(
+        `produt/${idCampaign}`,
+        {signal}
+    );
+    return response.data
+}
+export async function getCampaignParamsClient(idCampaign:number, pagination?:PaginationType,  signal?:AbortSignal):Promise<ClientCampaignType[]>{
+    if(!pagination){
+
+        const response = await apiParams.get<ClientCampaignType[]>(
+            `cliente/${idCampaign}`,            
+            {signal}
+        );
+        return response.data
+    }else{
+         const response = await apiParams.get<ClientCampaignType[]>(
+            `cliente/${idCampaign}`,
+            {params: {
+                pageNumber: pagination.pageNumber,
+                pageSize:pagination.pageSize
+            }, signal}
+        );
+        return response.data
+    }
 }

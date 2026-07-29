@@ -3,6 +3,12 @@ import { FiX } from "react-icons/fi";
 import { Identification } from "../IdentificacionComponent/Identificacion";
 import { PublicTarget } from "../PublicTargetComponent/PublicTarget";
 import { TargetControl } from "../TargetControlComponent/TargetControl";
+import { ListCardItem } from "../ListCardItemComponent/ListCardItem";
+import { itensTest, ListManyItens } from "../ListManyItensComponente/ListManyItens";
+import { CampaignSummary } from "../../../interfaces/CampaignSummary";
+import dayjs from "dayjs";
+import { useParamsCampaign } from "../../../hook/useParamsCampaign";
+
 
 type CampaignConfigTab =
   | "informacoes"
@@ -37,9 +43,9 @@ interface CampaignConfigData {
 }
 
 interface CampaignConfigModalProps {
-  data: CampaignConfigData;
-
-  onSaveAndReprocess?: (data: CampaignConfigData) => void;
+  data: CampaignSummary;
+  onSaveAndReprocess?: (data: CampaignSummary) => void;
+  onCloseModal:()=>void
 
 }
 
@@ -55,11 +61,25 @@ const statusStyles: Record<CampaignConfigData["status"], string> = {
 export function CampaignConfigModal({
   data,  
   onSaveAndReprocess,
+  onCloseModal
 }: CampaignConfigModalProps) {
   const [activeTab, setActiveTab] = useState<CampaignConfigTab>("informacoes");
-  const [form, setForm] = useState<CampaignConfigData>(data);
+  const [form, setForm] = useState<CampaignSummary>(data);
+  const {clientList,client,manufactures,lineProducts,products, getCampaignClientByID,fetchCampaignParams,pagination} = useParamsCampaign(form.idCampaign);
+  
+function VerifyStatusCampaign(earlyEndDate: string | null, endDate: string): "ATIVA" | "ENCERRADA" | "INATIVA" {
+  const hoje = dayjs();
 
+  if (earlyEndDate && !dayjs(earlyEndDate).isAfter(hoje, 'day')) {
+    return "ENCERRADA";
+  }
 
+  if (!dayjs(endDate).isAfter(hoje, 'day')) {
+    return "ENCERRADA";
+  }
+
+  return "ATIVA";
+}
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
@@ -76,21 +96,21 @@ export function CampaignConfigModal({
                   Configuração da campanha
                 </h2>
                 <span
-                  className={`rounded-full px-2.5 py-0.5 text-[10px] font-semibold tracking-wide ${statusStyles[form.status]}`}
+                  className={`rounded-full px-2.5 py-0.5 text-[10px] font-semibold tracking-wide ${statusStyles[VerifyStatusCampaign(form.earlyEndDate,form.endDate)]}`}
                 >
-                  {form.status}
+                  {VerifyStatusCampaign(form.earlyEndDate,form.endDate)}
                 </span>
               </div>
-              <p className="text-sm text-other-muted">
-                texte · {form.tipo} · vigência {form.inicioVigencia} a{" "}
-                {form.fimVigencia} · competência {form.dataCompetencia}
+              <p className="text-sm text-other-muted uppercase">
+                TIPO · {form.campaignTypeDescription} · vigência {dayjs(form.startDate).format('DD/MM/YYYY')} a{" "}
+                {dayjs(form.endDate).format('DD/MM/YYYY')} · competência {dayjs(form.competenceDate).format('DD/MM/YYYY')}
               </p>
             </div>
           </div>
 
           <div className="flex items-center gap-2">            
             <button
-              onClick={()=>console.log()}
+              onClick={onCloseModal}
               aria-label="Fechar"
               className="flex h-8 w-8 items-center justify-center rounded-md border border-[var(--btn-secondary-border)] text-other-muted transition-colors hover:bg-[var(--btn-secondary-hover-bg)] cursor-pointer"
             >
@@ -114,28 +134,28 @@ export function CampaignConfigModal({
                 }`}
               >
                 {tab.label}
-                {tab.count !== undefined && (
+                {/* {tab.count !== undefined && (
                   <span className="rounded-md bg-other-badge px-1.5 py-0.5 text-[11px] font-semibold text-other-muted">
                     {tab.count.toLocaleString("pt-BR")}
                   </span>
-                )}
+                )} */}
               </button>
             );
           })}
         </div>
 
         {/* Body */}
-        <div className="flex-1 overflow-y-auto px-6 py-6">
+        <div className="flex-1 overflow-y-auto px-6 py-6 bg-other-bgAlternative">
           {activeTab === "informacoes" ? (
-            <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-6 bg-other-bgAlternative">
               {/* Identificação */}
                 <Identification
-                    nome="kimberly"
-                    dataCompetencia="2026-06-30"
-                    dataInicio="2026-01-01"
-                    dataFim="2026-06-30"
-                    fornecedor="Kimberly faber"
-                    tipo="Vendas"                    
+                    nome={form.campaignDescription}
+                    dataCompetencia={form.competenceDate}
+                    dataInicio={form.startDate}
+                    dataFim={form.endDate}
+                    fornecedor={''}
+                    tipo={form.campaignTypeDescription}
                 />
 
               {/* Público e abrangência / Objetivo e controle */}
@@ -152,6 +172,37 @@ export function CampaignConfigModal({
 
               </div>
             </div>
+          ) : activeTab === "escopo" ? (
+            <div className="flex flex-col gap-6 ">
+              <div className="flex gap-4 justify-between">
+                  <ListCardItem
+                    NomeItens="Fabricantes"
+                    />
+                  <ListCardItem
+                    NomeItens="Linha Produto"
+                  />
+                </div>
+                {/* lista de produtos */}
+                <ListManyItens
+                  headerTable={['ID','DESCRIÇÃO','CODBARRAS', 'FABRICANTES', 'AÇÃO']}
+                  itens={itensTest}
+                  nomeList="Produtos"
+                  onBuscar={()=>console.log('teste')}              
+                  totalAtivos={itensTest.length}
+                  totalItens={ itensTest.length}            
+                />
+                {/* lista de clientes */}
+                <ListManyItens
+                  headerTable={['ID','DESCRIÇÃO','CODBARRAS', 'FABRICANTES', 'AÇÃO']}
+                  itens={itensTest}
+                  nomeList="Clientes"
+                  onBuscar={()=>console.log('teste')}              
+                  totalAtivos={itensTest.length}
+                  totalItens={ itensTest.length}            
+                />
+            </div>
+
+
           ) : (
             <div className="flex h-full items-center justify-center py-16 text-sm text-other-muted">
               Conteúdo da aba "{TABS.find((t) => t.key === activeTab)?.label}"
@@ -161,9 +212,7 @@ export function CampaignConfigModal({
         </div>
 
         {/* Footer */}
-        <div className="flex shrink-0 items-center justify-between border-t border-other-border px-6 py-4">
-          
-
+        <div className="flex shrink-0 items-center justify-between border-t border-other-border px-6 py-4">          
           <div className="flex items-center gap-3">
         
             <button

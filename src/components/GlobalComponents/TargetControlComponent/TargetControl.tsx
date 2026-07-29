@@ -5,7 +5,10 @@ const fieldLabel =
   "text-[10px] font-medium tracking-widest text-other-muted uppercase";
 
 const fieldControl =
-  "w-full bg-[var(--input-bg)] border border-[var(--input-border)] rounded-md px-3 py-2.5 text-sm text-[var(--input-text)] outline-none transition-colors focus:border-[var(--input-border-focus)]";
+  "w-full bg-[var(--input-bg)] border border-[var(--input-border)] rounded-md px-3 py-2.5 text-sm text-[var(--input-text)] outline-none transition-colors focus:border-[var(--input-border-focus)] ";
+
+const fieldControlDisable =
+  "w-full bg-ohter-muted border border-[var(--input-border)] rounded-md px-3 py-2.5 text-sm text-[var(--input-text)] outline-none transition-colors focus:border-[var(--input-border-focus)]  cursor-not-allowed";
 
 interface TargetControlProps{
     objetivo:number,
@@ -58,17 +61,15 @@ function formatCurrencyInput(value: number) {
               />
             </div>
             <div className="flex flex-col gap-1.5">
-              <label className={fieldLabel}>Prioridade / desempate</label>
+              <label className={fieldLabel}>NÃO INCLUIDO</label>
               <select
-                className={fieldControl}
+                className={fieldControlDisable}
                 value={props.prioridade}
                 // onChange={(e) =>
                 //   setForm((f) => ({ ...f, prioridade: e.target.value }))
                 // }
               >
-                <option value="1">1 — alta</option>
-                <option value="2">2 — média</option>
-                <option value="3">3 — baixa</option>
+
               </select>
             </div>
             <div className="flex flex-col gap-1.5">
@@ -86,8 +87,6 @@ function formatCurrencyInput(value: number) {
                 // }
               >
                 <option value="mensal">Mensal</option>
-                <option value="semanal">Semanal</option>
-                <option value="quinzenal">Quinzenal</option>
               </select>
             </div>
           </div>
