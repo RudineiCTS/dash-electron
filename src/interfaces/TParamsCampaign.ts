@@ -31,20 +31,35 @@ export type LineProductCampaignType = {
 	isValid: boolean
 }
 
-export type ProductCampaignType = {
-    idCampaign: number,
+export type ProductCampaign = {
+	idCampaign: number,
 	idProduct:number,
 	name: string,
-	isValid: boolean
+	isValid: boolean,
 }
-export type ClientCampaignType = {
+
+export type ProductCampaignType = {
+	items :ProductCampaign[]
+	totalCount?:number,
+	pageNumber?:number,
+	pageSize?:number,
+	totalPages?:number
+}
+export type ClientCampaign = {
     idCampaign: number,
 	idClients:number,
 	clientName: string,
 	cpfCnpj: string,
 	city: string,
     state:string,
-	isValid: boolean
+	isValid: boolean,
+}
+export type ClientCampaignType = {
+	items :ClientCampaign[],
+	totalCount?:number,
+	pageNumber?:number,
+	pageSize?:number,
+	totalPages?:number
 }
 
 export type PaginationType = {

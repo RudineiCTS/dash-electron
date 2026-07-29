@@ -20,27 +20,30 @@ type ListManyItensProps = {
   totalAtivos: number;  
   selecionados?: number[];
   pagination?:PaginationType;
+  onBuscar: (termo: string) => void;
+  onExportarLista?: () => void;
+  onChangePage:(e:number) =>void;
+
+  //proximo build
   onToggleSelecionado?: (id: number) => void;
   onRemover?: (id: number) => void;
-  onBuscar: (termo: string) => void;
   onImportarCsv?: () => void;
   onAdicionarProduto?: () => void;
-  onExportarLista?: () => void;
   onLimparTodos?: () => void;
 };
 
 export function ListManyItens({
   nomeList,
-  itens,
-  totalItens,
+  itens,  
   totalAtivos,
-  headerTable,
-  selecionados,
+  headerTable,  
+  onChangePage,
   pagination,
   onBuscar,  
   onExportarLista,
   onLimparTodos,
 }: ListManyItensProps) {
+  
   return (
     <div className="flex flex-col gap-4 bg-github-bg-card p-4 rounded-lg">
       {/* Header */}
@@ -50,7 +53,7 @@ export function ListManyItens({
             {nomeList} Vinculados
           </span>
           <span className="text-sm text-[--text-faint]">
-            {totalItens.toLocaleString("pt-BR")} {nomeList} ·{" "}
+            {/* {totalItens.toLocaleString("pt-BR")} {nomeList} ·{" "} */}
             <span className="text-[--accent]">
               {totalAtivos.toLocaleString("pt-BR")} ativos
             </span>{" "}
@@ -61,7 +64,7 @@ export function ListManyItens({
         <div className="flex gap-2">
           <input
             type="text"
-            placeholder="Buscar por ID, descrição ou EAN"
+            placeholder="Buscar por ID"
             onChange={(e) => onBuscar(e.target.value)}
             className="bg-[--input-bg] border border-[--input-border] text-[--input-text] placeholder-[--input-placeholder] 
                     rounded-md px-3 py-2 text-sm w-72 focus:outline-none focus:border-[--input-border-focus]"
@@ -128,7 +131,7 @@ export function ListManyItens({
       {/* Footer */}
       <div className="flex justify-between items-center">
         <span className="text-sm text-[--text-faint]">
-          Mostrando {itens.length} de {totalItens.toLocaleString("pt-BR")} · rolagem virtualizada
+          {/* Mostrando {itens.length} de {totalItens.toLocaleString("pt-BR")} · rolagem virtualizada */}
         </span>
 
         <div className="flex gap-2">
@@ -136,7 +139,7 @@ export function ListManyItens({
             <div>              
               <Pagination
                 pagination={pagination}
-                onPageChange={()=>{}}
+                onPageChange={ (e)=>onChangePage(e) }
               />
             </div>
           )}

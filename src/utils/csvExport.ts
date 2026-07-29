@@ -1,11 +1,13 @@
+import { CampaignResult } from "../interfaces/CampaignResultTelesales";
 import { CampaignPersonRow } from "../interfaces/CampaignPersonRow";
 import { CampaignSalesRow } from "../interfaces/CampaignSalesRow";
+import { ProductCampaign } from "../interfaces/TParamsCampaign";
 
-function csvEscape(value: string | number | null): string {
+export function csvEscape(value: string | number | null): string {
   return `"${String(value ?? "").replace(/"/g, '""')}"`;
 }
 
-function downloadCsv(headers: string[], rows: (string | number | null)[][], filename: string) {
+export function downloadCsv(headers: string[], rows: (string | number | null)[][], filename: string) {
   const lines = rows.map((row) => row.map(csvEscape).join(";"));
   const csv = [headers.map(csvEscape).join(";"), ...lines].join("\r\n");
   const BOM = "﻿";
@@ -98,14 +100,29 @@ export function exportCampaignSalesRowsToCsv(rows: CampaignSalesRow[], filename:
   ];
 
   const data = rows.map((row) => [
-    row.cnpj,
-    row.razaoSocial,
-    row.produto,
-    row.codBarras,
-    row.quantidade,
-    row.total,
-    row.nomeVendedor,
+    row.cpfcnpj,
+    row.legalName,
+    row.productName,
+    row.productEan,
+    row.quantitySold,
+    row.valueSold,
+    row.sellerName,
   ]);
 
   downloadCsv(headers, data, filename);
+}
+
+export function exportProductsToCsv(rows:ProductCampaign[], filename:string){
+  const header = [
+    "ID Campanha",
+    "ID Produto",
+    "Descrição",
+    "Ativo"
+  ]
+  const data = rows.map((row)=>[
+    row.idCampaign,
+    row.idProduct,
+    row.name,
+    row.isValid
+  ])
 }

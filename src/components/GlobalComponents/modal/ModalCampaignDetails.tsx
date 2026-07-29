@@ -8,6 +8,7 @@ import { ItemManyProp, ListManyItens } from "../ListManyItensComponente/ListMany
 import { CampaignSummary } from "../../../interfaces/CampaignSummary";
 import dayjs from "dayjs";
 import { useParamsCampaign } from "../../../hook/useParamsCampaign";
+import { exportProductsToCsv } from "../../../utils/csvExport";
 
 
 type CampaignConfigTab =
@@ -71,9 +72,13 @@ export function CampaignConfigModal({
     manufactures,
     lineProducts,
     products,
-    getCampaignClientByID,
-    fetchCampaignParams,
-    pagination,
+    goToClientsPage,
+    setClientsPageSize,
+    goToProductsPage,
+    setProductsPageSize,
+    productsList,
+    paginationClients,
+    paginationProducts,
     loading
   } = useParamsCampaign(form.idCampaign);
   
@@ -90,13 +95,9 @@ export function CampaignConfigModal({
 
     return "ATIVA";
   }  
-  function ShowValuesInArrayLine<T>(value: T[], field: keyof T): T[keyof T][] {
-    return value.map((item) => item[field]);
-  }
   function ShowValuesInLineString<T>(value: T[], field:keyof T, separator = ', '):string {
     return value.map((i)=> String(i[field])).join(separator)
   }
-
   //MAPEIA LISTA DE ITENS
   function mapManufacturesToItens():ItensProps[] {
     const mapManufactures:ItensProps[] = manufactures.map((m)=> {
@@ -122,7 +123,7 @@ export function CampaignConfigModal({
   }
   //MAPEIA LISTA DE MUITOS ITENS
   function mapManyProductsToIten():ItemManyProp[]{
-    return products.map((e)=>({
+    return productsList.map((e)=>({
       id: e.idProduct,
       ativo: e.isValid,
       descricao:e.name      
@@ -130,13 +131,22 @@ export function CampaignConfigModal({
   }
   
   function mapManyClientsToIten():ItemManyProp[]{
-    return client.map((e)=>({
+    return clientList.map((e)=>({
       id: e.idClients,
       ativo: e.isValid,
       descricao:e.clientName,
       cidadeUF: `${e.city}/ ${e.state}`      
     }))
   }
+
+    function handleExportCsv() {
+      exportProductsToCsv(
+        productsList,
+        `campanha-${ form.idCampaign + " - Produtos"}.csv`
+      );
+    }
+
+    
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
@@ -247,8 +257,11 @@ export function CampaignConfigModal({
                   itens={mapManyProductsToIten()}
                   nomeList="Produtos"
                   onBuscar={()=>console.log('teste')}              
-                  totalAtivos={10}
-                  totalItens={ 10}            
+                  totalAtivos={paginationProducts.totalCount}
+                  totalItens={paginationProducts.totalCount}  
+                  pagination={paginationProducts}  
+                  onChangePage={goToProductsPage}   
+                  onExportarLista={handleExportCsv}    
                 />
                 {/* lista de clientes */}
                 <ListManyItens
@@ -256,8 +269,10 @@ export function CampaignConfigModal({
                   itens={mapManyClientsToIten()}
                   nomeList="Clientes"
                   onBuscar={()=>console.log('teste')}              
-                  totalAtivos={10}
-                  totalItens={ 10}            
+                  totalAtivos={paginationClients.totalCount}
+                  totalItens={paginationClients.totalCount}            
+                  pagination={paginationClients} 
+                  onChangePage={goToClientsPage}          
                 />
             </div>
 
