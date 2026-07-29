@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 
 const sectionLabel =
   "text-[10px] font-semibold tracking-widest text-other-muted uppercase";
@@ -57,7 +58,7 @@ export function Identification({
                <label className={fieldLabel}>Fornecedor / patrocinador</label>
                <input
                  className={fieldControl}
-                 value={'teste forncedor'}    
+                 value={fornecedor}    
                  
                />
              </div>
@@ -65,7 +66,7 @@ export function Identification({
                <label className={fieldLabel}>Início da vigência</label>
                <input
                  className={fieldControl}
-                 value={'2026-06-01'}
+                 value={dayjs(dataInicio).format('DD/MM/YYYY')}
                 
                />
              </div>
@@ -73,7 +74,7 @@ export function Identification({
                <label className={fieldLabel}>Fim da vigência</label>
                <input
                  className={fieldControl}
-                 value={'2026-06-30'}
+                 value={dayjs(dataFim).format('DD/MM/YYYY')}
                   
                />
              </div>
@@ -81,7 +82,7 @@ export function Identification({
                <label className={fieldLabel}>Data de competência</label>
                <input
                  className={fieldControl}
-                 value={'2026-06-30'}
+                 value={dayjs(dataCompetencia).format('DD/MM/YYYY')}
                   
                />
              </div>

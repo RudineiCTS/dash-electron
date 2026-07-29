@@ -62,15 +62,14 @@ function formatCurrencyInput(value: number) {
             </div>
             <div className="flex flex-col gap-1.5">
               <label className={fieldLabel}>NÃO INCLUIDO</label>
-              <select
-                className={fieldControlDisable}
-                value={props.prioridade}
+              <div
+                className={fieldControlDisable}                
                 // onChange={(e) =>
                 //   setForm((f) => ({ ...f, prioridade: e.target.value }))
                 // }
               >
 
-              </select>
+              </div>
             </div>
             <div className="flex flex-col gap-1.5">
               <label className={fieldLabel}>

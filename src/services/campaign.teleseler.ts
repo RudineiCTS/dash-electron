@@ -56,7 +56,7 @@ export async function getCampaignParamsLineProducts(idCampaign:number, signal?:A
 }
 export async function getCampaignParamsProducts(idCampaign:number, signal?:AbortSignal):Promise<ProductCampaignType[]>{
     const response = await apiParams.get<ProductCampaignType[]>(
-        `produt/${idCampaign}`,
+        `produto/${idCampaign}`,
         {signal}
     );
     return response.data

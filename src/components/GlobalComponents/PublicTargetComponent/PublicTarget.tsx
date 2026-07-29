@@ -64,7 +64,7 @@ export function PublicTarget(props:PublicTargetProps){
                 //   setForm((f) => ({ ...f, filiais: e.target.value }))
                 // }
               >
-                <option value="todas">Todas (7 filiais)</option>
+                <option value="geral">Geral</option>
                 <option value="parcial">Selecionar filiais</option>
               </select>
             </div>
@@ -72,16 +72,13 @@ export function PublicTarget(props:PublicTargetProps){
               <label className={fieldLabel}>Canal</label>
               <select
                 className={fieldControl}
-                value={'1'}
+                value={'Televendas'}
                 // onChange={(e) =>
                 //   setForm((f) => ({ ...f, canal: e.target.value }))
                 // }
               >
-                <option value="forca_televendas">
-                  Força de venda + Televendas
-                </option>
-                <option value="forca">Força de venda</option>
-                <option value="televendas">Televendas</option>
+                <option value="Televendas">Televendas</option>                
+                <option value="Bees">Bees</option>
               </select>
             </div>
           </div>

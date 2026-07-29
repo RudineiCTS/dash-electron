@@ -251,14 +251,15 @@ export default function CampaignDetail() {
           ) : (
             <SalesTable rows={campaignResumeSellOut} filters={salesFilters} />
           )}
-          {isDetailsModalOpen && (
+         
+        </>
+      )}
+       {isDetailsModalOpen && (
             <CampaignConfigModal              
               data={summary}
                onCloseModal={() => setIsDetailsModalOpen(false)}
             />
           )}
-        </>
-      )}
     </div>
   );
 }

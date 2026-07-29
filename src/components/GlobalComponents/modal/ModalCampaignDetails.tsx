@@ -3,8 +3,8 @@ import { FiX } from "react-icons/fi";
 import { Identification } from "../IdentificacionComponent/Identificacion";
 import { PublicTarget } from "../PublicTargetComponent/PublicTarget";
 import { TargetControl } from "../TargetControlComponent/TargetControl";
-import { ListCardItem } from "../ListCardItemComponent/ListCardItem";
-import { itensTest, ListManyItens } from "../ListManyItensComponente/ListManyItens";
+import { ItensProps, ListCardItem } from "../ListCardItemComponent/ListCardItem";
+import { ItemManyProp, ListManyItens } from "../ListManyItensComponente/ListManyItens";
 import { CampaignSummary } from "../../../interfaces/CampaignSummary";
 import dayjs from "dayjs";
 import { useParamsCampaign } from "../../../hook/useParamsCampaign";
@@ -65,21 +65,78 @@ export function CampaignConfigModal({
 }: CampaignConfigModalProps) {
   const [activeTab, setActiveTab] = useState<CampaignConfigTab>("informacoes");
   const [form, setForm] = useState<CampaignSummary>(data);
-  const {clientList,client,manufactures,lineProducts,products, getCampaignClientByID,fetchCampaignParams,pagination} = useParamsCampaign(form.idCampaign);
+  const {
+    clientList,
+    client,
+    manufactures,
+    lineProducts,
+    products,
+    getCampaignClientByID,
+    fetchCampaignParams,
+    pagination,
+    loading
+  } = useParamsCampaign(form.idCampaign);
   
-function VerifyStatusCampaign(earlyEndDate: string | null, endDate: string): "ATIVA" | "ENCERRADA" | "INATIVA" {
-  const hoje = dayjs();
+  function VerifyStatusCampaign(earlyEndDate: string | null, endDate: string): "ATIVA" | "ENCERRADA" | "INATIVA" {
+    const hoje = dayjs();
 
-  if (earlyEndDate && !dayjs(earlyEndDate).isAfter(hoje, 'day')) {
-    return "ENCERRADA";
+    if (earlyEndDate && !dayjs(earlyEndDate).isAfter(hoje, 'day')) {
+      return "ENCERRADA";
+    }
+
+    if (!dayjs(endDate).isAfter(hoje, 'day')) {
+      return "ENCERRADA";
+    }
+
+    return "ATIVA";
+  }  
+  function ShowValuesInArrayLine<T>(value: T[], field: keyof T): T[keyof T][] {
+    return value.map((item) => item[field]);
+  }
+  function ShowValuesInLineString<T>(value: T[], field:keyof T, separator = ', '):string {
+    return value.map((i)=> String(i[field])).join(separator)
   }
 
-  if (!dayjs(endDate).isAfter(hoje, 'day')) {
-    return "ENCERRADA";
+  //MAPEIA LISTA DE ITENS
+  function mapManufacturesToItens():ItensProps[] {
+    const mapManufactures:ItensProps[] = manufactures.map((m)=> {
+        return {
+          id: m.idCampaign,
+          idItem: m.idManufacturer,
+          nomeItem: m.name,
+          isValido: m.isValid          
+        }
+    })
+    return mapManufactures;
   }
-
-  return "ATIVA";
-}
+  function mapLineProductsToItens():ItensProps[] {
+    const mapLineProducts:ItensProps[] = lineProducts.map((m)=> {
+        return {
+          id: m.idCampaign,
+          idItem: m.idProductLine,
+          nomeItem: m.name,
+          isValido: m.isValid          
+        }
+    })
+    return mapLineProducts;
+  }
+  //MAPEIA LISTA DE MUITOS ITENS
+  function mapManyProductsToIten():ItemManyProp[]{
+    return products.map((e)=>({
+      id: e.idProduct,
+      ativo: e.isValid,
+      descricao:e.name      
+    }))
+  }
+  
+  function mapManyClientsToIten():ItemManyProp[]{
+    return client.map((e)=>({
+      id: e.idClients,
+      ativo: e.isValid,
+      descricao:e.clientName,
+      cidadeUF: `${e.city}/ ${e.state}`      
+    }))
+  }
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
@@ -154,20 +211,20 @@ function VerifyStatusCampaign(earlyEndDate: string | null, endDate: string): "AT
                     dataCompetencia={form.competenceDate}
                     dataInicio={form.startDate}
                     dataFim={form.endDate}
-                    fornecedor={''}
+                    fornecedor={ShowValuesInLineString(manufactures,'name')}
                     tipo={form.campaignTypeDescription}
                 />
 
               {/* Público e abrangência / Objetivo e controle */}
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <PublicTarget 
-                    premiados={['Vendedor']}
+                    premiados={['televendas']}
                 />
                 <TargetControl
-                    objetivo={220000}
+                    objetivo={form.goalValue}
                     periodicidadeApuracao="Mensal"
                     prioridade={1}
-                    tetoPremiacao={18000}
+                    tetoPremiacao={form.totalPot}
                 />
 
               </div>
@@ -177,28 +234,30 @@ function VerifyStatusCampaign(earlyEndDate: string | null, endDate: string): "AT
               <div className="flex gap-4 justify-between">
                   <ListCardItem
                     NomeItens="Fabricantes"
+                    itens={mapManufacturesToItens()}
                     />
                   <ListCardItem
                     NomeItens="Linha Produto"
+                    itens={mapLineProductsToItens()}
                   />
                 </div>
                 {/* lista de produtos */}
                 <ListManyItens
                   headerTable={['ID','DESCRIÇÃO','CODBARRAS', 'FABRICANTES', 'AÇÃO']}
-                  itens={itensTest}
+                  itens={mapManyProductsToIten()}
                   nomeList="Produtos"
                   onBuscar={()=>console.log('teste')}              
-                  totalAtivos={itensTest.length}
-                  totalItens={ itensTest.length}            
+                  totalAtivos={10}
+                  totalItens={ 10}            
                 />
                 {/* lista de clientes */}
                 <ListManyItens
-                  headerTable={['ID','DESCRIÇÃO','CODBARRAS', 'FABRICANTES', 'AÇÃO']}
-                  itens={itensTest}
+                  headerTable={['ID','NOME','CIDADE/UF', 'AÇÃO']}
+                  itens={mapManyClientsToIten()}
                   nomeList="Clientes"
                   onBuscar={()=>console.log('teste')}              
-                  totalAtivos={itensTest.length}
-                  totalItens={ itensTest.length}            
+                  totalAtivos={10}
+                  totalItens={ 10}            
                 />
             </div>
 

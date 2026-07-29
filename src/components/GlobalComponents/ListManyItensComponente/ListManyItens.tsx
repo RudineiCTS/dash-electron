@@ -1,77 +1,7 @@
-export const itensTest:ItemProp[] = [
-  {
-    id: 104882,
-    descricao: 'ABS INTIMUS TODA PROTEGIDA SUAVE C/ABS C/08',
-    codBarras: '7896007540617',
-    fabricante: 'KIMBERLY-CLARK BRASIL',
-    ativo:true
-  },
-  {
-    id: 104883,
-    descricao: 'ABS INTIMUS TODA PROTEGIDA NOT SUAVE C/ABS C/08',
-    codBarras: '7896007540662',
-    fabricante: 'KIMBERLY-CLARK BRASIL',
-    ativo:true
-  },
-  {
-    id: 112904,
-    descricao: 'ABS INTI GEL DAYS PROT DIARIO S/ABS C/PERF L80P70',
-    codBarras: '7896007546022',
-    fabricante: 'INTIMUS COMERCIAL',
-    ativo:true
-  },
-  {
-    id: 118220,
-    descricao: 'TOALHA UMEDECIDA HUGGIES HIGIENE DIÁRIA C/120',
-    codBarras: '7896018751002',
-    fabricante: 'HUGGIES DISTRIB.',
-    ativo:true
-  },
-  {
-    id: 121455,
-    descricao: 'FRALDA HUGGIES PROT ACOLCHOADA ROUP BAG XG C/64',
-    codBarras: '7896007552887',
-    fabricante: 'KIMBERLY-CLARK BRASIL',
-    ativo:true
-  },
-    {
-    id: 104882,
-    descricao: 'ABS INTIMUS TODA PROTEGIDA SUAVE C/ABS C/08',
-    codBarras: '7896007540617',
-    fabricante: 'KIMBERLY-CLARK BRASIL',
-    ativo:true
-  },
-  {
-    id: 104883,
-    descricao: 'ABS INTIMUS TODA PROTEGIDA NOT SUAVE C/ABS C/08',
-    codBarras: '7896007540662',
-    fabricante: 'KIMBERLY-CLARK BRASIL',
-    ativo:true
-  },
-  {
-    id: 112904,
-    descricao: 'ABS INTI GEL DAYS PROT DIARIO S/ABS C/PERF L80P70',
-    codBarras: '7896007546022',
-    fabricante: 'INTIMUS COMERCIAL',
-    ativo:true
-  },
-  {
-    id: 118220,
-    descricao: 'TOALHA UMEDECIDA HUGGIES HIGIENE DIÁRIA C/120',
-    codBarras: '7896018751002',
-    fabricante: 'HUGGIES DISTRIB.',
-    ativo:true
-  },
-  {
-    id: 121455,
-    descricao: 'FRALDA HUGGIES PROT ACOLCHOADA ROUP BAG XG C/64',
-    codBarras: '7896007552887',
-    fabricante: 'KIMBERLY-CLARK BRASIL',
-    ativo:true
-  },
-];
+import { PaginationType } from "../../../interfaces/TParamsCampaign";
+import { Pagination } from "../../PaginationComponent/Pagination";
 
-type ItemProp = {
+export type ItemManyProp = {
   id: number;
   descricao: string;
   codBarras?: string;
@@ -84,11 +14,12 @@ type ItemProp = {
 
 type ListManyItensProps = {
   nomeList:string;
-  itens: ItemProp[];
+  itens: ItemManyProp[];
   headerTable:string[];
   totalItens: number;
   totalAtivos: number;  
   selecionados?: number[];
+  pagination?:PaginationType;
   onToggleSelecionado?: (id: number) => void;
   onRemover?: (id: number) => void;
   onBuscar: (termo: string) => void;
@@ -105,6 +36,7 @@ export function ListManyItens({
   totalAtivos,
   headerTable,
   selecionados,
+  pagination,
   onBuscar,  
   onExportarLista,
   onLimparTodos,
@@ -200,6 +132,15 @@ export function ListManyItens({
         </span>
 
         <div className="flex gap-2">
+          { pagination && (
+            <div>              
+              <Pagination
+                pagination={pagination}
+                onPageChange={()=>{}}
+              />
+            </div>
+          )}
+         
           <button
             onClick={onExportarLista}
             className="border border-[--btn-secondary-border] text-[--btn-secondary-text] rounded-md px-4 py-2 text-sm hover:bg-[--btn-secondary-hover-bg] transition-colors"
