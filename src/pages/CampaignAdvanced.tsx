@@ -1,5 +1,5 @@
 import { FiArrowLeft, FiTrash } from "react-icons/fi";
-import { Navigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { StatCard } from "../components/CampaignDetail/StatCard";
 import { CampaignFiltersPanel, TabView } from "../components/ContainerFilter/ContainerFilter";
 import { useState } from "react";
@@ -10,7 +10,7 @@ export default function CampaignsAdvanced() {
     const [name, setName] = useState("");
     const [startDate, setStartDate] = useState<Date | undefined>(undefined);
     const [endDate, setEndDate] = useState<Date | undefined>(undefined);    
-
+    const navigate = useNavigate();
     function HandleChangeStartDate(valueDate:Date| undefined){
       setStartDate(valueDate)
     }
@@ -26,9 +26,9 @@ export default function CampaignsAdvanced() {
     return(
         <>
          <header className="flex flex-col shrink-0 border-b border-github-border pb-4">
-            <div className="px-6 pt-4">
+            <div className="px-6 pt-4">             
               <button
-                onClick={() => {}}
+                  onClick={() => navigate("/")}
                 className="flex items-center gap-2 text-sm text-github-text-muted hover:text-github-text transition-colors cursor-pointer mb-4"
               >
                 <FiArrowLeft /> Relatório Avançado
@@ -47,107 +47,13 @@ export default function CampaignsAdvanced() {
                 </div>                                                
               </div>
 
-              <CampaignFiltersPanel 
-                onSearch={()=>{}} 
-                startDate={startDate}
-                endDate={endDate}
-                onChangeStartDate={HandleChangeStartDate}
-                onChangeEndDate={HandleChangeEndDate}
-                name={name}
-                activeTab={activeTab}
-                onChangeActiveTab={HandleChangeActiveTab}
-                onChangeName={HandleChangeName}
-                />
             </div>
         
-                <div className="flex gap-4 px-6 mt-4">
-                  <StatCard label="Objetivo" value={'1000'} />
-                  <StatCard label="Valor Apurado" value={'2000'} />
-                  <StatCard label="% Realizado" value={'300'} />
-                  <StatCard label="Premiação Total" value={'8585'} highlight />
-                </div>
-        
-                <div className="flex px-6 mt-4 border-b border-github-border gap-5  text-github-text">
-                </div>
+              
+               
               </header>
               <main className="flex flex-col gap-4 mx-4 mt-4 ">
-               <CampaignCardTotal 
-                  key={1}
-                  idCampaign={1}
-                  awardsValue={200}
-                  dateCompetency="31/07/2026"
-                  goalValue={3500}
-                  name="Ache"
-                  percentRealizedValue={100}
-                  realizedValue={300}
-                  typeCampaign={"Valor"}
-               />
-                 <CampaignCardTotal 
-                  key={1}
-                  idCampaign={1}
-                  awardsValue={200}
-                  dateCompetency="31/07/2026"
-                  goalValue={3500}
-                  name="Ache"
-                  percentRealizedValue={100}
-                  realizedValue={300}
-                  typeCampaign={"Valor"}
-               />
-                 <CampaignCardTotal 
-                  key={1}
-                  idCampaign={1}
-                  awardsValue={200}
-                  dateCompetency="31/07/2026"
-                  goalValue={3500}
-                  name="Ache"
-                  percentRealizedValue={100}
-                  realizedValue={300}
-                  typeCampaign={"Valor"}
-               />
-                 <CampaignCardTotal 
-                  key={1}
-                  idCampaign={1}
-                  awardsValue={200}
-                  dateCompetency="31/07/2026"
-                  goalValue={3500}
-                  name="Ache"
-                  percentRealizedValue={100}
-                  realizedValue={300}
-                  typeCampaign={"Valor"}
-               />
-                 <CampaignCardTotal 
-                  key={1}
-                  idCampaign={1}
-                  awardsValue={200}
-                  dateCompetency="31/07/2026"
-                  goalValue={3500}
-                  name="Ache"
-                  percentRealizedValue={100}
-                  realizedValue={300}
-                  typeCampaign={"Valor"}
-               />
-                 <CampaignCardTotal 
-                  key={1}
-                  idCampaign={1}
-                  awardsValue={200}
-                  dateCompetency="31/07/2026"
-                  goalValue={3500}
-                  name="Ache"
-                  percentRealizedValue={100}
-                  realizedValue={300}
-                  typeCampaign={"Valor"}
-               />
-                 <CampaignCardTotal 
-                  key={1}
-                  idCampaign={1}
-                  awardsValue={200}
-                  dateCompetency="31/07/2026"
-                  goalValue={3500}
-                  name="Ache"
-                  percentRealizedValue={100}
-                  realizedValue={300}
-                  typeCampaign={"Valor"}
-               />
+           
               </main>
         </>
     )

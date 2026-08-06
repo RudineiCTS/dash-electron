@@ -94,7 +94,7 @@ export default function CampaignDetail() {
 
   function handleExportSalesCsv() {
     exportCampaignSalesRowsToCsv(
-      campaignSalesRowsMock,
+      campaignResumeSellOut,
       `campanha-${id ?? summary?.idCampaign ?? "detalhe"}-vendas.csv`
     );
   }

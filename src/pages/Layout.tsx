@@ -5,7 +5,7 @@ import { SideBar } from '../components/SideBar'
 import { useState } from 'react';
 import { Menu, X } from 'lucide-react';
 
-const routesWithoutSideBar = ['/campaigns/details/:id']
+const routesWithoutSideBar = ['/campaigns/details/:id', 'campaigns-advanced']
 
 export default function Layout() {
   const [campaignType, setCamapignType] = useState(1);

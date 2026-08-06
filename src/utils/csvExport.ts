@@ -88,7 +88,11 @@ export function exportCampaingTelesalesPersonRowsToCsv(rows: CampaignResult[], f
 }
 
 
-export function exportCampaignSalesRowsToCsv(rows: CampaignSalesRow[], filename: string) {
+export function exportCampaignSalesRowsToCsv(
+  rows: CampaignSalesRow[][],
+  filename: string
+) {
+  
   const headers = [
     "CNPJ",
     "Razão Social",
@@ -99,15 +103,15 @@ export function exportCampaignSalesRowsToCsv(rows: CampaignSalesRow[], filename:
     "Nome Vendedor",
   ];
 
-  const data = rows.map((row) => [
-    row.cpfcnpj,
-    row.legalName,
-    row.productName,
-    row.productEan,
-    row.quantitySold,
-    row.valueSold,
-    row.sellerName,
-  ]);
+    const data = rows.flat().map(row => [
+      `="${row.cpfcnpj}"`,
+      row.legalName,
+      row.productName,
+      `="${row.productEan}"`,
+      row.quantitySold,
+      row.valueSold,
+      row.sellerName,
+    ]);
 
   downloadCsv(headers, data, filename);
 }
