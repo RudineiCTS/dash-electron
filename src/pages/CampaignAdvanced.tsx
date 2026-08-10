@@ -10,6 +10,7 @@ import PeriodoSeletor from "../components/ComponetesTelesales/PeriodSelector/Per
 import CardIndicador from "../components/ComponetesTelesales/CardIndicador/CardIndicador";
 import { SubTopicos } from "../components/ComponetesTelesales/SubTopicos/SubTopicos";
 import EvolucaoMensalSequencial, {LinhaEvolucaoMensal} from "../components/ComponetesTelesales/SequentialMonthlyTrend/SequentialMonthlyTrend";
+import EvolucaoGraficoMesAMes, {PontoEvolucaoMensal} from "../components/ComponetesTelesales/GraphicTrend/GraphicTrends";
 
 
 export default function CampaignsAdvanced() {
@@ -48,6 +49,11 @@ export default function CampaignsAdvanced() {
         crescValor: 13.89,
         crescPosit: 11.08,
       },
+    ]);
+    const [dadosGraficoEvolucao, setDadosGraficoEvolucao] = useState<PontoEvolucaoMensal[]>([
+      { mes: 'Maio', valorVendido: 1284930.50, positivacao: 412 },
+      { mes: 'Junho', valorVendido: 1052470.80, positivacao: 388 },
+      { mes: 'Julho', valorVendido: 1198640.25, positivacao: 431 },
     ]);
     const navigate = useNavigate();
     function HandleChangeStartDate(valueDate:Date| undefined){
@@ -109,7 +115,7 @@ export default function CampaignsAdvanced() {
             </div>
             
           </header>
-          <main className="flex flex-col gap-4 mx-4 mt-4 ">
+          <main className="flex flex-col gap-4 mx-4 mt-4 mb-10">
             <FiltroBar
               onAplicarFiltros={()=>{}}
               linhasProduto={[]}
@@ -176,6 +182,12 @@ export default function CampaignsAdvanced() {
                 rodapeEsquerda=""
               />
 
+            </section>
+            <section className="flex w-full items-center justify-center">
+              <EvolucaoGraficoMesAMes
+                dados={dadosGraficoEvolucao}
+                className="w-2/4"
+              />
             </section>
 
           </main>
