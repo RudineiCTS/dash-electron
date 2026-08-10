@@ -1,5 +1,5 @@
 import { PaginationType } from "../../../interfaces/TParamsCampaign";
-import { Pagination } from "../../PaginationComponent/Pagination";
+import { Pagination } from "../../shared/PaginationComponent/Pagination";
 
 export type ItemManyProp = {
   id: number;

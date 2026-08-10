@@ -1,6 +1,6 @@
-import { formatCurrency } from "../../utils/formateCurrency";
-import { formatPercent } from "../../utils/formatPercent";
-import { CampaignResult } from "../../interfaces/CampaignResultTelesales";
+import { formatCurrency } from "../../../utils/formateCurrency";
+import { formatPercent } from "../../../utils/formatPercent";
+import { CampaignResult } from "../../../interfaces/CampaignResultTelesales";
 
 export interface PersonTableFilters {
   search: string;

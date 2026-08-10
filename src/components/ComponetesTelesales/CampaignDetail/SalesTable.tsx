@@ -1,5 +1,5 @@
-import { CampaignSalesRow } from "../../interfaces/CampaignSalesRow";
-import { formatCurrency } from "../../utils/formateCurrency";
+import { CampaignSalesRow } from "../../../interfaces/CampaignSalesRow";
+import { formatCurrency } from "../../../utils/formateCurrency";
 
 export interface SalesTableFilters {
   search: string;

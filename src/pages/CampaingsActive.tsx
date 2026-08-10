@@ -6,10 +6,10 @@ import { CampaignCardSkeleton } from "../components/Skeleton/CampaignCardSkeleto
 import { useCampaign } from "../hook/useCampaign";
 import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
-import CompetenceDatePicker from "../components/CompetenceDatePicker/CompetenceDatePicker";
+import CompetenceDatePicker from "../components/ComponetesTelesales/CompetenceDatePicker/CompetenceDatePicker";
 import { useState } from "react";
 import { campaignSummaryMock } from "../mock/campaignSummary";
-import { DarkSelect } from "../components/SelectOptionComponent/SelectOption";
+import { DarkSelect } from "../components/shared/SelectOptionComponent/SelectOption";
 
 const teste = 2  as number
 const dataReferencia = dayjs()

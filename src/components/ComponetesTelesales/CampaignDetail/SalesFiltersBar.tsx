@@ -1,6 +1,6 @@
 import { FiDownload } from "react-icons/fi";
 import { CampaignOption } from "./FiltersBar";
-import { CampaignResult } from "../../interfaces/CampaignResultTelesales";
+import { CampaignResult } from "../../../interfaces/CampaignResultTelesales";
 
 interface SalesFiltersBarProps {
   search: string;

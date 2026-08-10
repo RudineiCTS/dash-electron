@@ -6,6 +6,9 @@ module.exports = {
   ],
  theme: {
     extend: {
+      fontFamily:{
+          poppins:['Poppins','sans-serif']
+      },
       colors: {
         github: {
           // ── Fundos ──────────────────────────────
@@ -56,7 +59,10 @@ module.exports = {
           badge:       'var(--other-badge)',
           hoverbg:     'var(--btn-secondary-hover-bg)',
           accent: 'var(--accent)',
-          bgAlternative: 'var(--bg-alternative)'
+          bgAlternative: 'var(--bg-alternative)',
+          secondaryBlue: 'var(--blue-seconday)',
+          orange: 'var(--orange-seconday)',
+         
         }
       },
       keyframes:{

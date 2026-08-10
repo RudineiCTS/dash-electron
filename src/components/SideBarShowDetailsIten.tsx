@@ -1,11 +1,11 @@
 import { useState } from "react";
-import { DataRow } from "./ComponentControls/DataRow";
-import { Divider } from "./ComponentControls/Divider";
-import { Label } from "./ComponentControls/Label";
-import { Tag } from "./ComponentControls/Tag";
+import { DataRow } from "./shared/ComponentControls/DataRow";
+import { Divider } from "./shared/ComponentControls/Divider";
+import { Label } from "./shared/ComponentControls/Label";
+import { Tag } from "./shared/ComponentControls/Tag";
 import { Campaign } from "src/interfaces/TCampaign";
-import { Value } from "./ComponentControls/Value";
-import { Chip } from "./ComponentControls/Chip";
+import { Value } from "./shared/ComponentControls/Value";
+import { Chip } from "./shared/ComponentControls/Chip";
 
 const statusConfig = {
   ativa: { label: "Ativa", color: "#E8B84B", dot: "#E8B84B" },

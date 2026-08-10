@@ -1,4 +1,4 @@
-import { PaginationType } from "../../interfaces/TParamsCampaign";
+import { PaginationType } from "../../../interfaces/TParamsCampaign";
 
 type PaginationProps = {
   pagination: PaginationType;

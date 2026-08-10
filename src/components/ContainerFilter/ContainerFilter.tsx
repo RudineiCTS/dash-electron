@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { DatePicker } from "../DatePicker/DatePickerComponent";
+
+import { DatePicker } from "../shared/DatePicker/DatePickerComponent";
 import dayjs from "dayjs";
 
 interface ICampaignFiltersPanelProps {

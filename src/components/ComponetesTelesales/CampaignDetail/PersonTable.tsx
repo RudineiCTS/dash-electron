@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { FiChevronDown, FiChevronRight } from "react-icons/fi";
-import { CampaignPersonRow } from "../../interfaces/CampaignPersonRow";
-import { formatCurrency } from "../../utils/formateCurrency";
-import { formatPercent } from "../../utils/formatPercent";
-import { flattenCampaignPersonRows } from "../../utils/flattenCampaignPersonRows";
+import { CampaignPersonRow } from "../../../interfaces/CampaignPersonRow";
+import { formatCurrency } from "../../../utils/formateCurrency";
+import { formatPercent } from "../../../utils/formatPercent";
+import { flattenCampaignPersonRows } from "../../../utils/flattenCampaignPersonRows";
 
 export interface PersonTableFilters {
   search: string;
