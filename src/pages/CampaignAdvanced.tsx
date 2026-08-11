@@ -176,19 +176,22 @@ export default function CampaignsAdvanced() {
                 title="Evolução mensal sequencial"
                 valueTopic={2}
               />
-              <EvolucaoMensalSequencial
-                dados={dadosSequenciaTrend}
-                rodapeDireita=""
-                rodapeEsquerda=""
-              />
+              <div className='flex gap-6'>
+
+                <EvolucaoMensalSequencial
+                  dados={dadosSequenciaTrend}
+                  rodapeDireita=""
+                  rodapeEsquerda=""
+                  className="w-full"
+                  />
+                <EvolucaoGraficoMesAMes
+                  dados={dadosGraficoEvolucao}
+                  className="w-full"
+                  /> 
+              </div>
 
             </section>
-            <section className="flex w-full items-center justify-center">
-              <EvolucaoGraficoMesAMes
-                dados={dadosGraficoEvolucao}
-                className="w-2/4"
-              />
-            </section>
+            
 
           </main>
         </>
