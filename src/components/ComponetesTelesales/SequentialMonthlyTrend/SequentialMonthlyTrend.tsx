@@ -62,7 +62,7 @@ const EvolucaoMensalSequencial: React.FC<EvolucaoMensalSequencialProps> = ({
       <div className="grid grid-cols-[1.2fr_1.4fr_1fr_1fr_1fr] items-center bg-[#32307b] px-6 py-4">
         <span className="text-xs font-bold uppercase tracking-wide text-white">Mês</span>
         <span className="text-center text-xs font-bold uppercase tracking-wide text-white">
-          Valor vendido
+          Valor 
         </span>
         <span className="text-center text-xs font-bold uppercase tracking-wide text-white">
           Positivação

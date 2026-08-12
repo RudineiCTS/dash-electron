@@ -5,7 +5,8 @@ export interface FiltrosValues {
   dataInicio: string;
   dataFim: string;
   incluirGrandesContas: boolean;
-  linhaProduto: string;
+  linhaProduto?: string;
+  fabricante:string
 }
 
 interface FiltroBarProps {
@@ -36,9 +37,10 @@ const FiltroBar: React.FC<FiltroBarProps> = ({
   const [linhaProduto, setLinhaProduto] = useState(
     valoresIniciais?.linhaProduto ?? linhasProduto[0]
   );
+  const [fabricante, setFabricante] = useState('');
 
   const handleAplicar = () => {
-    onAplicarFiltros({ dataInicio, dataFim, incluirGrandesContas, linhaProduto });
+    onAplicarFiltros({ dataInicio, dataFim, incluirGrandesContas, linhaProduto, fabricante });
   };
 
   return (
@@ -109,8 +111,24 @@ const FiltroBar: React.FC<FiltroBarProps> = ({
         </button>
       </div>
 
-      {/* Linha de Produto */}
+      {/* Fabricante */}
       <div className="flex flex-col gap-1.5 min-w-[150px]">
+        <label
+          htmlFor="filtro-Fabricante"
+          className="text-[11px] font-bold uppercase tracking-wide text-gray-400"
+        >
+          Fabricante
+        </label>
+        <input 
+          type="number"  
+          id="filtro-Fabricante"
+          className={`${inputClasses}`}
+          value={fabricante}
+          onChange={(e)=> setFabricante(e.target.value)}
+          />
+      </div>
+      {/* Linha de Produto */}
+      {/* <div className="flex flex-col gap-1.5 min-w-[150px]">
         <label
           htmlFor="filtro-linha-produto"
           className="text-[11px] font-bold uppercase tracking-wide text-gray-400"
@@ -135,7 +153,7 @@ const FiltroBar: React.FC<FiltroBarProps> = ({
             className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
           />
         </div>
-      </div>
+      </div> */}
 
       {/* Botão aplicar */}
       <button
