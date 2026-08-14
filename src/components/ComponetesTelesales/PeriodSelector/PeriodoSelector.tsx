@@ -66,18 +66,6 @@ const PeriodoSeletor: React.FC<PeriodoSeletorProps> = ({
         </span>
       </div>
       <div className='flex mb-10 gap-4'>
-      <Input
-        label='Fabricante'
-        value=''
-        typeStyle='fieldClassAlternative'
-        onChangeValue={()=>{}}
-      />
-      <Input
-        label=''
-        value=''
-        typeStyle='fieldClassAlternative'
-        onChangeValue={()=>{}}
-      />
         {/* <div className="flex flex-col">
           <label className="text-[11px] font-bold uppercase tracking-wide text-gray-400">
               Fabricante

@@ -15,11 +15,16 @@ import EvolucaoGraficoMesAMes, {PontoEvolucaoMensal} from "../components/Compone
 import { SellOutSummaryInterface } from "../interfaces/sellOutSummaryType";
 import { useCampaignPanelAdvanced } from "../hook/useCampaignPanelAdvanced";
 import { MonthlyTrendSkeleton } from "../components/Skeleton/CampaignPanelAdvancedSkeleton/MonthlyTrendSkeleton";
+import DynamicReportTab from "../components/ComponetesTelesales/DynamicReport/DynamicReportTab";
 
 dayjs.locale('pt-br');
+
+type CampaignAdvancedTab = "comparativo" | "dinamico";
+
 export default function CampaignsAdvanced() {
-    const [filtros, setFiltros] = useState<FiltrosValues>()   
-    const navigate = useNavigate();        
+    const [filtros, setFiltros] = useState<FiltrosValues>()
+    const [activeTab, setActiveTab] = useState<CampaignAdvancedTab>("comparativo");
+    const navigate = useNavigate();
 
     const filterData:SellOutSummaryInterface | null= useMemo(()=>{
       if(!filtros) return null
@@ -156,93 +161,124 @@ export default function CampaignsAdvanced() {
             </div>
             
           </header>
+
+          <div className="flex gap-2 mx-4 mt-4 bg-gray-100 rounded-xl p-1.5 w-fit">
+            <button
+              type="button"
+              onClick={() => setActiveTab("comparativo")}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
+                activeTab === "comparativo"
+                  ? "bg-white text-other-secondaryBlue shadow-sm"
+                  : "text-gray-500 hover:text-other-secondaryBlue"
+              }`}
+            >
+              Comparativo de Vendas
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab("dinamico")}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
+                activeTab === "dinamico"
+                  ? "bg-white text-other-secondaryBlue shadow-sm"
+                  : "text-gray-500 hover:text-other-secondaryBlue"
+              }`}
+            >
+              Relatório Dinâmico
+            </button>
+          </div>
+
           <main className="flex flex-col gap-4 mx-4 mt-4 mb-10">
-            <FiltroBar
-              onAplicarFiltros={(e)=>{setFiltros(e)}}
-              linhasProduto={[]}
-              valoresIniciais={filtros}
-            />
-
-            <section className="flex flex-col gap-6">
-              <SubTopicos
-                title="Comparativo entre dois períodos"
-                valueTopic={1}
-              />
-
-              <div className="flex w-full gap-6 ">
-                <PeriodoSeletor
-                  ano="2025"
-                  mes={"Janeiro"}
-                  onAnoChange={()=>{}}
-                  onMesChange={()=>{}}
-                  className="w-full"
-                  variant="primaria"
-
+            {activeTab === "comparativo" && (
+              <>
+                <FiltroBar
+                  onAplicarFiltros={(e)=>{setFiltros(e)}}
+                  linhasProduto={[]}
+                  valoresIniciais={filtros}
                 />
-                <PeriodoSeletor
-                  ano="2025"
-                  mes={"Janeiro"}
-                  onAnoChange={()=>{}}
-                  onMesChange={()=>{}}
-                  className="w-full"
-                  variant="secundaria"                  
-                />
-              </div>
 
-              <div className="flex w-full gap-6">
-                <CardIndicador
-                  periodoA={{label:'Perido A', valor:'2.000,00',}}
-                  periodoB={{label:'Periodo B', valor:'1.500,00',}}
-                  tipo="valor-vendido"
-                  variacaoAbsoluta="-200"
-                  variacaoPercentual={-700}
-                  variant="primaria"
-                  className="w-full"
-                />
-                <CardIndicador
-                  periodoA={{label:'Perido A', valor:'2.000,00',}}
-                  periodoB={{label:'Periodo B', valor:'1.500,00',}}
-                  tipo="positivacao"
-                  variacaoAbsoluta="-200"
-                  variacaoPercentual={-700}
-                  variant="secundaria"
-                  className="w-full"
-                />
-              </div>
+                <section className="flex flex-col gap-6">
+                  <SubTopicos
+                    title="Comparativo entre dois períodos"
+                    valueTopic={1}
+                  />
 
-            </section>
+                  <div className="flex w-full gap-6 ">
+                    <PeriodoSeletor
+                      ano="2025"
+                      mes={"Janeiro"}
+                      onAnoChange={()=>{}}
+                      onMesChange={()=>{}}
+                      className="w-full"
+                      variant="primaria"
 
-            <section className="flex flex-col gap-6">
-              <SubTopicos
-                title="Evolução mensal sequencial"
-                valueTopic={2}
-              />
-              <div className='flex gap-6'>
+                    />
+                    <PeriodoSeletor
+                      ano="2025"
+                      mes={"Janeiro"}
+                      onAnoChange={()=>{}}
+                      onMesChange={()=>{}}
+                      className="w-full"
+                      variant="secundaria"
+                    />
+                  </div>
 
-              {loading ? 
-                (
-                <MonthlyTrendSkeleton/>
-                )
-                :(
-                  <>
-                    <EvolucaoMensalSequencial
-                      dados={dadosSequenciaTrend}
-                      rodapeDireita=""
-                      rodapeEsquerda=""
+                  <div className="flex w-full gap-6">
+                    <CardIndicador
+                      periodoA={{label:'Perido A', valor:'2.000,00',}}
+                      periodoB={{label:'Periodo B', valor:'1.500,00',}}
+                      tipo="valor-vendido"
+                      variacaoAbsoluta="-200"
+                      variacaoPercentual={-700}
+                      variant="primaria"
                       className="w-full"
                     />
-                    <EvolucaoGraficoMesAMes
-                      dados={dadosGraficoEvolucao}
-                      className="w-full h-fit"
+                    <CardIndicador
+                      periodoA={{label:'Perido A', valor:'2.000,00',}}
+                      periodoB={{label:'Periodo B', valor:'1.500,00',}}
+                      tipo="positivacao"
+                      variacaoAbsoluta="-200"
+                      variacaoPercentual={-700}
+                      variant="secundaria"
+                      className="w-full"
                     />
-                </> 
-                )
-              }
+                  </div>
 
-              </div>
+                </section>
 
-            </section>
-            
+                <section className="flex flex-col gap-6">
+                  <SubTopicos
+                    title="Evolução mensal sequencial"
+                    valueTopic={2}
+                  />
+                  <div className='flex gap-6'>
+
+                  {loading ?
+                    (
+                    <MonthlyTrendSkeleton/>
+                    )
+                    :(
+                      <>
+                        <EvolucaoMensalSequencial
+                          dados={dadosSequenciaTrend}
+                          rodapeDireita=""
+                          rodapeEsquerda=""
+                          className="w-full"
+                        />
+                        <EvolucaoGraficoMesAMes
+                          dados={dadosGraficoEvolucao}
+                          className="w-full h-fit"
+                        />
+                    </>
+                    )
+                  }
+
+                  </div>
+
+                </section>
+              </>
+            )}
+
+            {activeTab === "dinamico" && <DynamicReportTab />}
 
           </main>
         </>
