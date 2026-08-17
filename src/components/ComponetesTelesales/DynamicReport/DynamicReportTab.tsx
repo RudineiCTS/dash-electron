@@ -61,10 +61,15 @@ export default function DynamicReportTab() {
     }
 
     function handleLoadScope() {
+
         setReport(undefined);
     }
 
     const activeFilters = filters.filter((f) => f.values.length > 0);
+
+    const hasCompetence = scope.mesCompetencia.trim() !== "";
+    const hasCampaignOrManufacturer = scope.idCampanha.trim() !== "" || scope.idFabricante.trim() !== "";
+    const scopeValid = hasCompetence && hasCampaignOrManufacturer;
 
     function handleGerarRelatorio() {
         const request: DynamicReportRequest = {
@@ -79,6 +84,8 @@ export default function DynamicReportTab() {
             metrics,
             filters: activeFilters,
         };
+
+        console.log(request);
         generateReport(request);
     }
 
@@ -145,13 +152,23 @@ export default function DynamicReportTab() {
                     <div className="flex flex-col gap-2">
                         <button
                             type="button"
-                            disabled={metrics.length === 0 || loading}
+                            disabled={!scopeValid || metrics.length === 0 || loading}
                             onClick={handleGerarRelatorio}
                             className="h-11 rounded-lg bg-gradient-to-b from-[#ea9a2d] to-[#dd8100] text-sm font-semibold text-white
                                        hover:brightness-105 active:brightness-95 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                         >
                             {loading ? "Gerando..." : "Gerar relatório"}
                         </button>
+
+                        {!scopeValid && (
+                            <p className="text-xs text-[#dd8100]">
+                                Selecione o Mês Competência e informe ID Campanha ou ID Fabricante no escopo da consulta.
+                            </p>
+                        )}
+
+                        {scopeValid && metrics.length === 0 && (
+                            <p className="text-xs text-[#dd8100]">Adicione ao menos uma métrica para gerar o relatório.</p>
+                        )}
 
                         <p className="text-xs text-gray-400">
                             {groupBy.length} dimensão(ões) · {metrics.length} métrica(s) · {activeFilters.length} filtro(s)

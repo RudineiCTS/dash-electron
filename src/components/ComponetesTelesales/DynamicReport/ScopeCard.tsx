@@ -1,4 +1,6 @@
+import dayjs from "dayjs";
 import { FiFilter } from "react-icons/fi";
+import CompetenceDatePicker from "../CompetenceDatePicker/CompetenceDatePicker";
 
 export interface DynamicReportScopeForm {
     idCampanha: string;
@@ -12,6 +14,12 @@ interface ScopeCardProps {
     onChange: (scope: DynamicReportScopeForm) => void;
     onClearScope: () => void;
     onLoadScope: () => void;
+}
+
+function parseCompetenceDate(mesCompetencia: string): Date {
+    if (!mesCompetencia) return dayjs().endOf("month").toDate();
+    const parsed = dayjs(`${mesCompetencia}-01`);
+    return parsed.isValid() ? parsed.endOf("month").toDate() : dayjs().endOf("month").toDate();
 }
 
 const inputClasses =
@@ -42,7 +50,7 @@ export default function ScopeCard({ scope, onChange, onClearScope, onLoadScope }
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 <div className="flex flex-col gap-1.5">
                     <label className="text-[11px] font-bold uppercase tracking-wide text-gray-400">
-                        ID Campanha
+                        ID Campanha <span className="text-[#dd8100]">*</span>
                     </label>
                     <input
                         className={inputClasses}
@@ -54,7 +62,7 @@ export default function ScopeCard({ scope, onChange, onClearScope, onLoadScope }
 
                 <div className="flex flex-col gap-1.5">
                     <label className="text-[11px] font-bold uppercase tracking-wide text-gray-400">
-                        ID Fabricante
+                        ID Fabricante <span className="text-[#dd8100]">*</span>
                     </label>
                     <input
                         className={inputClasses}
@@ -76,18 +84,24 @@ export default function ScopeCard({ scope, onChange, onClearScope, onLoadScope }
                     />
                 </div>
 
-                <div className="flex flex-col gap-1.5">
+                <div className="flex flex-col gap-1.5 sm:col-span-2 lg:col-span-1">
                     <label className="text-[11px] font-bold uppercase tracking-wide text-gray-400">
-                        Mês Competência
+                        Mês Competência <span className="text-[#dd8100]">*</span>
                     </label>
-                    <input
-                        className={inputClasses}
-                        placeholder="Todas as competências"
-                        value={scope.mesCompetencia}
-                        onChange={(e) => onChange({ ...scope, mesCompetencia: e.target.value })}
-                    />
+                    <div className="-mx-4 -my-1 flex w-full">
+                        <CompetenceDatePicker
+                            key={scope.mesCompetencia}
+                            label=""
+                            initialDate={parseCompetenceDate(scope.mesCompetencia)}
+                            onApply={(date) => onChange({ ...scope, mesCompetencia: dayjs(date).format("YYYY-MM") })}
+                        />
+                    </div>
                 </div>
             </div>
+
+            <p className="text-xs text-gray-400 -mt-1">
+                * Mês Competência é obrigatório. Informe também ID Campanha ou ID Fabricante (pelo menos um dos dois).
+            </p>
 
             <div className="flex items-center justify-between flex-wrap gap-3 pt-2 border-t border-gray-100">
                 <span className="text-sm text-gray-500">{summary}</span>

@@ -44,6 +44,7 @@ export default function ResultPreviewTable({ groupBy, metrics, rows, totals, loa
                         <table className="w-full text-sm">
                             <thead>
                                 <tr className="bg-[#32307B] text-white">
+                                    {groupBy.length === 0 && <th className="px-4 py-3"></th>}
                                     {groupBy.map((key) => (
                                         <th key={key} className="text-left px-4 py-3 font-semibold uppercase text-xs tracking-wide">
                                             {getFieldLabel(key)}
@@ -59,6 +60,7 @@ export default function ResultPreviewTable({ groupBy, metrics, rows, totals, loa
                             <tbody>
                                 {rows.map((row, index) => (
                                     <tr key={index} className="border-t border-gray-100">
+                                        {groupBy.length === 0 && <td className="px-4 py-3"></td>}
                                         {groupBy.map((key) => (
                                             <td key={key} className="px-4 py-3 font-medium text-gray-800">
                                                 {row.dimensions[key] ?? "-"}
