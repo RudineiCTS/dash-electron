@@ -15,7 +15,7 @@ import EvolucaoGraficoMesAMes, {PontoEvolucaoMensal} from "../components/Compone
 import { SellOutSummaryInterface } from "../interfaces/sellOutSummaryType";
 import { useCampaignPanelAdvanced } from "../hook/useCampaignPanelAdvanced";
 import { MonthlyTrendSkeleton } from "../components/Skeleton/CampaignPanelAdvancedSkeleton/MonthlyTrendSkeleton";
-import DynamicReportTab from "../components/ComponetesTelesales/DynamicReport/DynamicReportTab";
+import DynamicReportTab from "../components/ComponetesTelesales/DynamicReport_DISABLED/DynamicReportTab";
 
 dayjs.locale('pt-br');
 
@@ -174,7 +174,7 @@ export default function CampaignsAdvanced() {
             >
               Comparativo de Vendas
             </button>
-            <button
+            {/* <button
               type="button"
               onClick={() => setActiveTab("dinamico")}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
@@ -184,7 +184,7 @@ export default function CampaignsAdvanced() {
               }`}
             >
               Relatório Dinâmico
-            </button>
+            </button> */}
           </div>
 
           <main className="flex flex-col gap-4 mx-4 mt-4 mb-10">
@@ -278,7 +278,7 @@ export default function CampaignsAdvanced() {
               </>
             )}
 
-            {activeTab === "dinamico" && <DynamicReportTab />}
+            {/* {activeTab === "dinamico" && <DynamicReportTab />} */}
 
           </main>
         </>

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { ChevronDown } from 'lucide-react'; // troque pela sua lib de ícones, se for outra
+import dayjs from 'dayjs';
+import { isValidPeriod } from '../utils/IsValidPeriod';
 
 export interface FiltrosValues {
   dataInicio: string;
@@ -40,6 +41,7 @@ const FiltroBar: React.FC<FiltroBarProps> = ({
   const [fabricante, setFabricante] = useState('');
 
   const handleAplicar = () => {
+    const isValid = isValidPeriod(dataInicio, dataFim)
     onAplicarFiltros({ dataInicio, dataFim, incluirGrandesContas, linhaProduto, fabricante });
   };
 
