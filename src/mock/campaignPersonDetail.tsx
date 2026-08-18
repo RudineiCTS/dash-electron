@@ -4,7 +4,7 @@ import { CampaignPersonRow } from "../interfaces/CampaignPersonRow";
 export const campaignPersonRowsMock: CampaignPersonRow[] = [
   {
     id: "159452",
-    pessoa: "Daniel Campos Prestes",
+    pessoa: "Ancelotti",
     matricula: "#159452",
     tipo: "Gerente",
     objetivo: 0,
@@ -17,7 +17,7 @@ export const campaignPersonRowsMock: CampaignPersonRow[] = [
     children: [
       {
         id: "159452-self",
-        pessoa: "Daniel Campos Prestes",
+        pessoa: "Ancelotti atacante",
         matricula: "#159452",
         tipo: "Gerente",
         objetivo: 0,
@@ -31,9 +31,9 @@ export const campaignPersonRowsMock: CampaignPersonRow[] = [
       },
       {
         id: "153639",
-        pessoa: "Camila Azzi Pereira",
+        pessoa: "Vini Jr ",
         matricula: "#153639",
-        tipo: "Grandes Contas",
+        tipo: "Vendedor Group A",
         objetivo: 0,
         valorApurado: 0,
         percentualRealizado: 0,
@@ -41,13 +41,13 @@ export const campaignPersonRowsMock: CampaignPersonRow[] = [
         premiacao: null,
         dataCalculo: "30/06 22:10",
         log: "Sem vendas no período",
-        group: "Grandes Contas",
+        group: "Vendedor Group A",
       },
       {
         id: "166344",
-        pessoa: "Jose Geraldo Rodrigues de Lima Junior",
+        pessoa: "Neymar Jr",
         matricula: "#166344",
-        tipo: "Grandes Contas",
+        tipo: "Vendedor Group B",
         objetivo: 0,
         valorApurado: 0,
         percentualRealizado: 0,
@@ -55,13 +55,13 @@ export const campaignPersonRowsMock: CampaignPersonRow[] = [
         premiacao: null,
         dataCalculo: "30/06 22:10",
         log: "Sem vendas no período",
-        group: "Grandes Contas",
+        group: "Vendedor Group B",
       },
     ],
   },
   {
     id: "65332",
-    pessoa: "Andre Sebastiao da Silva",
+    pessoa: "Haalland",
     matricula: "#65332",
     tipo: "Supervisor",
     objetivo: 0,
@@ -74,7 +74,7 @@ export const campaignPersonRowsMock: CampaignPersonRow[] = [
     children: [
       {
         id: "201001",
-        pessoa: "Marcos Vinicius Alves",
+        pessoa: "Berg",
         matricula: "#201001",
         tipo: "Vendedor",
         objetivo: 0,
@@ -87,7 +87,7 @@ export const campaignPersonRowsMock: CampaignPersonRow[] = [
       },
       {
         id: "201002",
-        pessoa: "Bruna Ferreira Lopes",
+        pessoa: "Puyol",
         matricula: "#201002",
         tipo: "Vendedor",
         objetivo: 0,
@@ -102,7 +102,7 @@ export const campaignPersonRowsMock: CampaignPersonRow[] = [
   },
   {
     id: "154579",
-    pessoa: "Daniela Alves Marques",
+    pessoa: "Yamal",
     matricula: "#154579",
     tipo: "Supervisor",
     objetivo: 0,
@@ -115,7 +115,7 @@ export const campaignPersonRowsMock: CampaignPersonRow[] = [
   },
   {
     id: "7916",
-    pessoa: "Paulo Sérgio de Macena",
+    pessoa: "Yabem",
     matricula: "#7916",
     tipo: "Gerente",
     objetivo: 0,
@@ -128,7 +128,7 @@ export const campaignPersonRowsMock: CampaignPersonRow[] = [
   },
   {
     id: "1690",
-    pessoa: "Rodrigo Ryscon Francisco",
+    pessoa: "Yamalmasmelhorou",
     matricula: "#1690",
     tipo: "Gerente",
     objetivo: 0,

@@ -12,7 +12,7 @@ const competenceDate = dayjs()
 export const campaignSummaryMock: CampaignSummary[] = [
   {
     idCampaign: 1,
-    campaignDescription: "Campanha Cremer",
+    campaignDescription: "Campanha A",
     competenceDate,
     campaignTypeDescription: "Valor por quantidade",
     goalValue: 12000,
@@ -25,7 +25,7 @@ export const campaignSummaryMock: CampaignSummary[] = [
   },
   {
     idCampaign: 2,
-    campaignDescription: "Campanha Televendas",
+    campaignDescription: "Campanha B",
     competenceDate,
     campaignTypeDescription: "Meta por volume",
     goalValue: 30000,
@@ -38,7 +38,7 @@ export const campaignSummaryMock: CampaignSummary[] = [
   },
   {
     idCampaign: 3,
-    campaignDescription: "Campanha Derma Plus",
+    campaignDescription: "Campanha C Plus",
     competenceDate,
     campaignTypeDescription: "Bonificação por mix",
     goalValue: 8000,
@@ -51,7 +51,7 @@ export const campaignSummaryMock: CampaignSummary[] = [
   },
   {
     idCampaign: 4,
-    campaignDescription: "Campanha Antibióticos",
+    campaignDescription: "Campanha T",
     competenceDate,
     campaignTypeDescription: "Desconto progressivo",
     goalValue: 18000,
@@ -64,7 +64,7 @@ export const campaignSummaryMock: CampaignSummary[] = [
   },
   {
     idCampaign: 5,
-    campaignDescription: "Campanha Vitaminas",
+    campaignDescription: "Campanha G",
     competenceDate,
     campaignTypeDescription: "Bonificação em produtos",
     goalValue: 9500,
@@ -77,7 +77,7 @@ export const campaignSummaryMock: CampaignSummary[] = [
   },
   {
     idCampaign: 6,
-    campaignDescription: "Campanha Genéricos",
+    campaignDescription: "Campanha R",
     competenceDate,
     campaignTypeDescription: "Meta por SKU",
     goalValue: 14000,
@@ -90,7 +90,7 @@ export const campaignSummaryMock: CampaignSummary[] = [
   },
   {
     idCampaign: 7,
-    campaignDescription: "Campanha Oncológicos",
+    campaignDescription: "Campanha T",
     competenceDate,
     campaignTypeDescription: "Suporte dedicado",
     goalValue: 25000,
@@ -103,7 +103,7 @@ export const campaignSummaryMock: CampaignSummary[] = [
   },
   {
     idCampaign: 8,
-    campaignDescription: "Campanha Higiene Infantil",
+    campaignDescription: "Campanha H H",
     competenceDate,
     campaignTypeDescription: "Bonificação em fraldas",
     goalValue: 10000,
@@ -116,7 +116,7 @@ export const campaignSummaryMock: CampaignSummary[] = [
   },
   {
     idCampaign: 9,
-    campaignDescription: "Campanha MSD",
+    campaignDescription: "Campanha 12",
     competenceDate,
     campaignTypeDescription: "Incentivo de prescrição",
     goalValue: 20000,

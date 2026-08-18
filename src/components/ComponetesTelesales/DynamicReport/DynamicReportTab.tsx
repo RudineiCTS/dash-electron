@@ -8,7 +8,7 @@ import GroupingPresetCard from "./GroupingPresetCard";
 import AreaChipsCard from "./AreaChipsCard";
 import FiltersCard from "./FiltersCard";
 import ResultPreviewTable from "./ResultPreviewTable";
-import { getFieldLabel } from "./fields";
+import { AVAILABLE_FIELDS, getFieldLabel } from "./fields";
 
 const EMPTY_SCOPE: DynamicReportScopeForm = {
     idCampanha: "",
@@ -20,7 +20,9 @@ const EMPTY_SCOPE: DynamicReportScopeForm = {
 function toNumberList(raw: string): number[] {
     return raw
         .split(",")
-        .map((v) => Number(v.trim()))
+        .map((v) => v.trim())
+        .filter((v) => v !== "")
+        .map((v) => Number(v))
         .filter((n) => !Number.isNaN(n));
 }
 
@@ -38,7 +40,7 @@ export default function DynamicReportTab() {
     const [metrics, setMetrics] = useState<string[]>([]);
     const [filters, setFilters] = useState<DynamicReportFilter[]>([]);
 
-    const { report, setReport, loading, error, generateReport } = useDynamicReport();
+    const { report, setReport, loading, error, setError, generateReport } = useDynamicReport();
 
     function addUnique(list: string[], key: string): string[] {
         return list.includes(key) ? list : [...list, key];
@@ -61,8 +63,37 @@ export default function DynamicReportTab() {
     }
 
     function handleLoadScope() {
-
         setReport(undefined);
+        setError("");
+
+        if (!scopeValid) {
+            setError("Selecione o Mês Competência e informe ID Campanha ou ID Fabricante no escopo da consulta.");
+            return;
+        }
+
+        // "Carregar dados" é uma prévia rápida baseada só no escopo: zera agrupamento/
+        // colunas/filtros configurados abaixo e usa todas as métricas disponíveis, pra
+        // trazer um total "Totalizado" da base recortada antes do usuário montar o
+        // relatório detalhado com o FieldsPanel.
+        const defaultMetrics = AVAILABLE_FIELDS.filter((f) => f.kind === "metric").map((f) => f.key);
+
+        setGroupBy([]);
+        setColumns([]);
+        setFilters([]);
+        setMetrics(defaultMetrics);
+
+        generateReport({
+            scope: {
+                idCampaigns: toNumberList(scope.idCampanha),
+                idManufacturers: toNumberList(scope.idFabricante),
+                productLines: toStringList(scope.linha),
+                competenceMonths: toStringList(scope.mesCompetencia),
+            },
+            groupBy: [],
+            columns: [],
+            metrics: defaultMetrics,
+            filters: [],
+        });
     }
 
     const activeFilters = filters.filter((f) => f.values.length > 0);
