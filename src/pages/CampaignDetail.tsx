@@ -9,10 +9,10 @@ import {  PersonTableFilters } from "../components/ComponetesTelesales/CampaignD
 import { SalesFiltersBar } from "../components/ComponetesTelesales/CampaignDetail/SalesFiltersBar";
 import { SalesTable, SalesTableFilters } from "../components/ComponetesTelesales/CampaignDetail/SalesTable";
 import { CampaignSummary } from "../interfaces/CampaignSummary";
-import { campaignSalesRowsMock } from "../mock/campaignSalesDetail";
+import { } from "../mock/campaignSalesDetail";
 import { formatCurrency } from "../utils/formateCurrency";
 import { formatPercent } from "../utils/formatPercent";
-import { exportCampaignPersonRowsToCsv, exportCampaignSalesRowsToCsv, exportCampaingTelesalesPersonRowsToCsv } from "../utils/csvExport";
+import { exportCampaignSalesRowsToCsv, exportCampaingTelesalesPersonRowsToCsv } from "../utils/csvExport";
 import { useCampaignDetails } from "../hook/useCampaignDetails";
 import { TelePersonTable } from "../components/ComponetesTelesales/CampaignDetail/TelePersonTable";
 import { EmptyState } from "../components/ComponetesTelesales/EmptyCampaignSellOuts/EmptyResult";

@@ -1,11 +1,11 @@
 import { IconType } from 'react-icons'  // ← importa o tipo
 import { LogoApp } from './logoApp'
 import { ReactNode } from 'react'
-import {FiActivity, FiArchive} from 'react-icons/fi'
+import {FiActivity, FiArchive, FiBarChart2} from 'react-icons/fi'
 import { NavLink } from 'react-router-dom'
 import { ButtonSideBar } from './ButtonSideBar'
 import { ThemeToggle } from './ThemeToggle'
-import { Lock} from "lucide-react";
+import {Lock} from "lucide-react";
 
 export interface OptionSide{
     key:string | number,
@@ -23,7 +23,8 @@ export interface SideBarProps{
     className?:string,
     children?: ReactNode
 }
-
+const styleButton = 'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-[#5c5c74] cursor-pointer transition-colors hover:bg-[#f7f7fb]';
+const styleButtonActive = 'relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-azul bg-azul-tint '
 export function SideBar({options,className,isMenuDefault,children,switchCampaign,optionActive }:SideBarProps){
     function handleSelectOption(e:number){
         switchCampaign(e)
@@ -33,46 +34,46 @@ export function SideBar({options,className,isMenuDefault,children,switchCampaign
             {
                 isMenuDefault  == true ? (
                     <>
-                    <div className='mt-4 w-full'>                        
-                        <div className={'text-github-text-muted flex flex-col gap-4 pl-4'}>    
-                            <div>
+                    <div className='mt-4 w-full '>                        
+                        <div className={'text-github-text-muted flex flex-col gap-2 pl-4'}>    
+                           <h1 className='px-3 text-sm font-medium' >
+                                <strong className='text-base'>
+                                     Geral -
+                                </strong>  Fn Analise 
+                            </h1>
+                            <div className='border-b mb-3 pb-2'>
                                 <NavLink 
-                                className={({ isActive }) =>
-                                    `flex items-center gap-5 cursor-pointer
-                                bg-transparent p-2 rounded-md w-5/6
-                                hover:text-github-btn-green-hover transition duration-500
-                                ${isActive ? 'bg-other-badge p-2 rounded-md w-5/6 text-github-bg-focus' : 'text-gray-400'}`
-                                }                            
-                                to={"campaigns"}
+                                    className={({ isActive }) =>`${styleButton}${isActive ?  styleButtonActive : ''}`}                            
+                                    to={"campaigns"}
                                 >
-                                    <FiArchive />
-                                    Campanhas Rodando                                                                
+                                    <FiActivity className="w-[17px] h-[17px] shrink-0 opacity-70 group-[.active]:opacity-100 group-[.active]:text-azul"/>
+                                        Campanhas Rodando                                                                
                                 </NavLink>
                                 <NavLink 
-                                className={({ isActive }) =>
-                                        `flex  cursor-pointer
-                                        bg-transparent p-2 rounded-md w-5/6
-                                        hover:text-github-btn-green-hover transition duration-500
-                                        ${isActive ? 'bg-other-badge p-2 rounded-md w-5/6 text-github-bg-focus' : 'text-gray-400'}`
+                               className={({ isActive }) =>
+                                    `${styleButton}
+                                ${isActive ?  styleButtonActive : ''}`
                                     }                            
                                     to={"campaigns-advanced"}
                                 >
-                                 -   Relatório avançado                                                                                                            
+                                    <FiBarChart2/>
+                                    Relatório avançado                                                                                                            
                                 </NavLink>
                             </div>                        
-                       
-                            <NavLink 
-                                className={({ isActive }) =>
-                                    `flex items-center gap-5 cursor-pointer
-                                     bg-transparent p-2 rounded-md w-5/6
-                                    hover:text-github-btn-green-hover transition duration-500
-                                    ${isActive ? 'bg-other-badge p-2 rounded-md w-5/6 text-github-bg-focus' : 'text-gray-400'}`
-                                }    
-                                to={"/"}                                
-                            >
-                                <FiActivity />
-                                Campanhas Recebidas
-                            </NavLink>
+                            <div>
+                                <h1 className='px-3 text-sm font-medium' >
+                                    <strong className="text-base">
+                                         Arquivos -
+                                    </strong>  Fn Arquivos 
+                                </h1>
+                                <NavLink 
+                                    className={({ isActive }) => `${styleButton} ${isActive ?  styleButtonActive : ''}`}    
+                                    to={"/"}                                
+                                    >
+                                    <FiArchive />
+                                    Campanhas Recebidas
+                                </NavLink>
+                            </div>    
                         </div>
                     </div>
                     <LogoApp/>

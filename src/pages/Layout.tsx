@@ -36,6 +36,7 @@ export default function Layout() {
             options={items}
             className={`flex flex-col bg-other-card w-80 max-w-80 h-screen
                         fixed lg:static z-50 transition-transform duration-200
+                        
                         ${mobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}`}
             optionActive={campaignType}
             switchCampaign={handleSwitchCampaign}

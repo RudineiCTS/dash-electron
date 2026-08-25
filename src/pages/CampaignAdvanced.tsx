@@ -21,25 +21,50 @@ dayjs.locale('pt-br');
 
 type CampaignAdvancedTab = "comparativo" | "dinamico";
 
+const MESES = [
+  'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+  'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro',
+];
+
+function parseCodigosList(valor?: string): number[] {
+  if (!valor) return [];
+  return valor
+    .split(';')
+    .map((codigo) => codigo.trim())
+    .filter(Boolean)
+    .map(Number)
+    .filter((codigo) => !Number.isNaN(codigo));
+}
+
+function getYearMonthKey(ano: string, mes: string): string {
+  const indiceMes = MESES.indexOf(mes);
+  if (indiceMes === -1) return '';
+  return `${ano}-${String(indiceMes + 1).padStart(2, '0')}`;
+}
+
 export default function CampaignsAdvanced() {
     const [filtros, setFiltros] = useState<FiltrosValues>()
     const [activeTab, setActiveTab] = useState<CampaignAdvancedTab>("comparativo");
     const navigate = useNavigate();
 
+    const anoAtual = String(dayjs().year());
+    const [periodoA, setPeriodoA] = useState({ ano: anoAtual, mes: MESES[dayjs().month()] });
+    const [periodoB, setPeriodoB] = useState({ ano: anoAtual, mes: MESES[dayjs().subtract(1, 'month').month()] });
+
     const filterData:SellOutSummaryInterface | null= useMemo(()=>{
       if(!filtros) return null
-      return {      
+      return {
         startDate: dayjs(filtros?.dataInicio).toDate(),
         endDate: dayjs(filtros?.dataFim).toDate(),
-        idManufacturer: [Number(filtros?.fabricante)],
+        idManufacturer: parseCodigosList(filtros?.fabricante),
         products: [],
-        productLine: [],
+        productLine: parseCodigosList(filtros?.linhaProduto),
         idComissionScenario: 102,
         clients: [],
         consideraGrandesContas: filtros?.incluirGrandesContas ?? false,
     }
   },[filtros])
-  
+
     const {sellOutSummary, loading, error, setError} = useCampaignPanelAdvanced(filterData ?? null);
     useEffect(() => {
       if (!error) return;
@@ -50,7 +75,7 @@ export default function CampaignsAdvanced() {
 
       return () => clearTimeout(timer); // limpa o timer se error mudar antes de disparar
     }, [error]);
-    
+
     function formatarMoeda(valor: number): string {
       return valor.toLocaleString('pt-BR', {
         style: 'currency',
@@ -85,6 +110,40 @@ export default function CampaignsAdvanced() {
         });
       }, [sellOutSummary]);
 
+    const dadosPeriodoA = useMemo(() => {
+      const chave = getYearMonthKey(periodoA.ano, periodoA.mes);
+      return sellOutSummary?.find((item) => item.yearMonth === chave);
+    }, [sellOutSummary, periodoA]);
+
+    const dadosPeriodoB = useMemo(() => {
+      const chave = getYearMonthKey(periodoB.ano, periodoB.mes);
+      return sellOutSummary?.find((item) => item.yearMonth === chave);
+    }, [sellOutSummary, periodoB]);
+
+    const comparativoValorVendido = useMemo(() => {
+      const valorA = dadosPeriodoA?.soldValue ?? 0;
+      const valorB = dadosPeriodoB?.soldValue ?? 0;
+      const variacaoAbsoluta = valorB - valorA;
+      return {
+        valorA,
+        valorB,
+        variacaoAbsoluta,
+        variacaoPercentual: calcularCrescimento(valorB, valorA) ?? 0,
+      };
+    }, [dadosPeriodoA, dadosPeriodoB]);
+
+    const comparativoPositivacao = useMemo(() => {
+      const clientesA = dadosPeriodoA?.clientCount ?? 0;
+      const clientesB = dadosPeriodoB?.clientCount ?? 0;
+      const variacaoAbsoluta = clientesB - clientesA;
+      return {
+        clientesA,
+        clientesB,
+        variacaoAbsoluta,
+        variacaoPercentual: calcularCrescimento(clientesB, clientesA) ?? 0,
+      };
+    }, [dadosPeriodoA, dadosPeriodoB]);
+
     const dadosGraficoEvolucao: PontoEvolucaoMensal[] = useMemo(() => {
       if (!sellOutSummary || sellOutSummary.length === 0) {
         return [];
@@ -95,7 +154,7 @@ export default function CampaignsAdvanced() {
       return items.map((item) => {
         const dataMes = dayjs(item.yearMonth, 'YYYY-MM');
         return {
-          mes: dataMes.format('MMM'), // ajuste conforme o formato que PontoEvolucaoMensal espera
+          mes: dataMes.format('YYYY MM'),
           valorVendido: item.soldValue,
           positivacao: item.clientCount,
         };
@@ -104,7 +163,7 @@ export default function CampaignsAdvanced() {
     return(
       
         <>
-          {error && 
+          {error &&
             <div className="absolute w-full">
               <div className=" flex gap-10 items-center  justify-center bg-red-300/50 backdrop-blur-sm rounded-b-md p-1 mx-4 relative text-sm">
                 <h1>Erro</h1>
@@ -204,19 +263,19 @@ export default function CampaignsAdvanced() {
 
                   <div className="flex w-full gap-6 ">
                     <PeriodoSeletor
-                      ano="2025"
-                      mes={"Janeiro"}
-                      onAnoChange={()=>{}}
-                      onMesChange={()=>{}}
+                      ano={periodoA.ano}
+                      mes={periodoA.mes}
+                      onAnoChange={(ano) => setPeriodoA((prev) => ({ ...prev, ano }))}
+                      onMesChange={(mes) => setPeriodoA((prev) => ({ ...prev, mes }))}
                       className="w-full"
                       variant="primaria"
 
                     />
                     <PeriodoSeletor
-                      ano="2025"
-                      mes={"Janeiro"}
-                      onAnoChange={()=>{}}
-                      onMesChange={()=>{}}
+                      ano={periodoB.ano}
+                      mes={periodoB.mes}
+                      onAnoChange={(ano) => setPeriodoB((prev) => ({ ...prev, ano }))}
+                      onMesChange={(mes) => setPeriodoB((prev) => ({ ...prev, mes }))}
                       className="w-full"
                       variant="secundaria"
                     />
@@ -224,20 +283,20 @@ export default function CampaignsAdvanced() {
 
                   <div className="flex w-full gap-6">
                     <CardIndicador
-                      periodoA={{label:'Perido A', valor:'2.000,00',}}
-                      periodoB={{label:'Periodo B', valor:'1.500,00',}}
+                      periodoA={{label:`Período A · ${periodoA.mes}/${periodoA.ano}`, valor: formatarMoeda(comparativoValorVendido.valorA)}}
+                      periodoB={{label:`Período B · ${periodoB.mes}/${periodoB.ano}`, valor: formatarMoeda(comparativoValorVendido.valorB)}}
                       tipo="valor-vendido"
-                      variacaoAbsoluta="-200"
-                      variacaoPercentual={-700}
+                      variacaoAbsoluta={`${comparativoValorVendido.variacaoAbsoluta < 0 ? '-' : '+'}${formatarMoeda(Math.abs(comparativoValorVendido.variacaoAbsoluta))}`}
+                      variacaoPercentual={comparativoValorVendido.variacaoPercentual}
                       variant="primaria"
                       className="w-full"
                     />
                     <CardIndicador
-                      periodoA={{label:'Perido A', valor:'2.000,00',}}
-                      periodoB={{label:'Periodo B', valor:'1.500,00',}}
+                      periodoA={{label:`Período A · ${periodoA.mes}/${periodoA.ano}`, valor: `${comparativoPositivacao.clientesA} clientes`}}
+                      periodoB={{label:`Período B · ${periodoB.mes}/${periodoB.ano}`, valor: `${comparativoPositivacao.clientesB} clientes`}}
                       tipo="positivacao"
-                      variacaoAbsoluta="-200"
-                      variacaoPercentual={-700}
+                      variacaoAbsoluta={`${comparativoPositivacao.variacaoAbsoluta < 0 ? '-' : '+'}${Math.abs(comparativoPositivacao.variacaoAbsoluta)} clientes`}
+                      variacaoPercentual={comparativoPositivacao.variacaoPercentual}
                       variant="secundaria"
                       className="w-full"
                     />

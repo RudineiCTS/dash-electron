@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import dayjs from 'dayjs';
-import { isValidPeriod } from '../utils/IsValidPeriod';
+import { isValidPeriod } from '../../../utils/IsValidPeriod';
+import { ChevronDown } from 'lucide-react';
 
 export interface FiltrosValues {
   dataInicio: string;
@@ -39,9 +40,26 @@ const FiltroBar: React.FC<FiltroBarProps> = ({
     valoresIniciais?.linhaProduto ?? linhasProduto[0]
   );
   const [fabricante, setFabricante] = useState('');
+  const [erro, setErro] = useState('');
 
   const handleAplicar = () => {
-    const isValid = isValidPeriod(dataInicio, dataFim)
+    const periodoValido = isValidPeriod(dayjs(dataInicio).toDate(), dayjs(dataFim).toDate());
+    if (!periodoValido) {
+      setErro('Selecione um período válido: a data início deve ser anterior ou igual à data fim.');
+      return;
+    }
+
+    const fabricantesInformados = fabricante
+      .split(';')
+      .map((codigo) => codigo.trim())
+      .filter(Boolean);
+
+    if (fabricantesInformados.length === 0) {
+      setErro('Informe ao menos um código de fabricante.');
+      return;
+    }
+
+    setErro('');
     onAplicarFiltros({ dataInicio, dataFim, incluirGrandesContas, linhaProduto, fabricante });
   };
 
@@ -121,41 +139,37 @@ const FiltroBar: React.FC<FiltroBarProps> = ({
         >
           Fabricante
         </label>
-        <input 
-          type="number"  
+        <input
+          type="text"
           id="filtro-Fabricante"
+          placeholder="Ex: 101;205"
           className={`${inputClasses}`}
           value={fabricante}
           onChange={(e)=> setFabricante(e.target.value)}
           />
       </div>
       {/* Linha de Produto */}
-      {/* <div className="flex flex-col gap-1.5 min-w-[150px]">
+       
+      <div className="flex flex-col gap-1.5 min-w-[150px]">
         <label
-          htmlFor="filtro-linha-produto"
+          htmlFor="filtro-linhaProduto"
           className="text-[11px] font-bold uppercase tracking-wide text-gray-400"
         >
-          Linha de Produto
+          Linha Produto
         </label>
-        <div className="relative">
-          <select
-            id="filtro-linha-produto"
-            value={linhaProduto}
-            onChange={(e) => setLinhaProduto(e.target.value)}
-            className={`${inputClasses} min-w-[220px] appearance-none pr-8 cursor-pointer`}
-          >
-            {linhasProduto.map((linha) => (
-              <option key={linha} value={linha}>
-                {linha}
-              </option>
-            ))}
-          </select>
-          <ChevronDown
-            size={14}
-            className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
+        <input
+          type="text"
+          id="filtro-linhaProduto"
+          placeholder="Ex: 10;20"
+          className={`${inputClasses}`}
+          value={linhaProduto}
+          onChange={(e)=> setLinhaProduto(e.target.value)}
           />
-        </div>
-      </div> */}
+      </div>
+
+      {erro && (
+        <span className="w-full text-xs font-medium text-red-500">{erro}</span>
+      )}
 
       {/* Botão aplicar */}
       <button
