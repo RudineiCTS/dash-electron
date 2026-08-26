@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import dayjs from 'dayjs';
-import { isValidPeriod } from '../../../utils/IsValidPeriod';
+import { isValidPeriod } from '../../../../utils/IsValidPeriod';
 import { ChevronDown } from 'lucide-react';
 
 export interface FiltrosValues {

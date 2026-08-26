@@ -4,7 +4,7 @@ interface ITopCardTopic{
     title:string;
     subtitles:string;
     value: number;
-    focus:boolean;
+    focus?:boolean;
     
 }
 export function TopCardTopic({title,subtitles,value, focus= false}:ITopCardTopic){

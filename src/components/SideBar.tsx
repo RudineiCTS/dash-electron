@@ -1,7 +1,7 @@
 import { IconType } from 'react-icons'  // ← importa o tipo
 import { LogoApp } from './logoApp'
 import { ReactNode } from 'react'
-import {FiActivity, FiArchive, FiBarChart2} from 'react-icons/fi'
+import {FiActivity, FiArchive, FiBarChart2, FiBook} from 'react-icons/fi'
 import { NavLink } from 'react-router-dom'
 import { ButtonSideBar } from './ButtonSideBar'
 import { ThemeToggle } from './ThemeToggle'
@@ -59,6 +59,15 @@ export function SideBar({options,className,isMenuDefault,children,switchCampaign
                                     <FiBarChart2/>
                                     Relatório avançado                                                                                                            
                                 </NavLink>
+                                <NavLink 
+                                    className={({ isActive }) =>
+                                        `${styleButton}
+                                    ${isActive ?  styleButtonActive : ''}`}                            
+                                        to={"campaigns-history"}
+                                >
+                                    <FiBook />
+                                    Histórico de campanhas                                                                                                            
+                                </NavLink>
                             </div>                        
                             <div>
                                 <h1 className='px-3 text-sm font-medium' >
@@ -73,7 +82,8 @@ export function SideBar({options,className,isMenuDefault,children,switchCampaign
                                     <FiArchive />
                                     Campanhas Recebidas
                                 </NavLink>
-                            </div>    
+                            </div> 
+                               
                         </div>
                     </div>
                     <LogoApp/>

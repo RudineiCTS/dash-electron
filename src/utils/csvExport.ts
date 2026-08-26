@@ -89,10 +89,10 @@ export function exportCampaingTelesalesPersonRowsToCsv(rows: CampaignResult[], f
 
 
 export function exportCampaignSalesRowsToCsv(
-  rows: CampaignSalesRow[][],
+  rows: CampaignSalesRow[],
   filename: string
 ) {
-  
+
   const headers = [
     "CNPJ",
     "Razão Social",
@@ -103,7 +103,7 @@ export function exportCampaignSalesRowsToCsv(
     "Nome Vendedor",
   ];
 
-    const data = rows.flat().map(row => [
+    const data = rows.map(row => [
       `="${row.cpfcnpj}"`,
       row.legalName,
       row.productName,

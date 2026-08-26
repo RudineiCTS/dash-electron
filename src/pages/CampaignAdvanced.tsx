@@ -5,7 +5,7 @@ import { FiArrowLeft } from "react-icons/fi";
 import dayjs from "dayjs";
 import 'dayjs/locale/pt-br'
 
-import FiltroBar, { FiltrosValues } from "../components/ComponetesTelesales/FilterCampanhaTelevendas/FilterComponent";
+import FiltroBar, { FiltrosValues } from "../components/ComponetesTelesales/FilterComponents/FilterCampanhaTelevendas/FilterComponent";
 import Button from "../components/shared/Button/ButtonComponent";
 import PeriodoSeletor from "../components/ComponetesTelesales/PeriodSelector/PeriodoSelector";
 import CardIndicador from "../components/ComponetesTelesales/CardIndicador/CardIndicador";
@@ -233,17 +233,6 @@ export default function CampaignsAdvanced() {
             >
               Comparativo de Vendas
             </button>
-            {/* <button
-              type="button"
-              onClick={() => setActiveTab("dinamico")}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
-                activeTab === "dinamico"
-                  ? "bg-white text-other-secondaryBlue shadow-sm"
-                  : "text-gray-500 hover:text-other-secondaryBlue"
-              }`}
-            >
-              Relatório Dinâmico
-            </button> */}
           </div>
 
           <main className="flex flex-col gap-4 mx-4 mt-4 mb-10">
@@ -336,9 +325,6 @@ export default function CampaignsAdvanced() {
                 </section>
               </>
             )}
-
-            {/* {activeTab === "dinamico" && <DynamicReportTab />} */}
-
           </main>
         </>
     )

@@ -28,6 +28,7 @@ interface FiltersBarProps {
 
   onClearFilters: () => void;
   onExportCsv: () => void;
+  onExportExcel: () => void;
 }
 
 const fieldLabel = "text-[10px] font-medium tracking-widest text-other-muted uppercase";
@@ -52,6 +53,7 @@ export function FiltersBar({
   onPercentMaxChange,
   onClearFilters,
   onExportCsv,
+  onExportExcel,
 }: FiltersBarProps) {
   return (
     <div className="flex flex-wrap items-end gap-4 px-6 py-4 border-b border-white/[0.07]">
@@ -151,9 +153,9 @@ export function FiltersBar({
           <FiDownload /> CSV
         </button>
         <button
-          disabled
-          title="Exportação em Excel ainda não implementada"
-          className="flex items-center gap-2 bg-other-green-dark text-other-green text-sm px-4 py-2 rounded-md cursor-not-allowed"
+          onClick={onExportExcel}
+          title="Exportar para Excel"
+          className="flex items-center gap-2 bg-other-green-dark text-other-green text-sm px-4 py-2 rounded-md transition-colors cursor-pointer hover:brightness-110"
         >
           <FiDownload /> Excel
         </button>

@@ -43,9 +43,9 @@ export function useCampaignDetails(idCampaign:number, isDynamic?:boolean){
         // Não trata erro de abort como erro real
         if (err instanceof Error && err.name === 'AbortError') return;
 
-        setError(`Erro ao buscar Campanhas pelo período ${idCampaign}`);
+        setErrorSellOut(`Erro ao buscar Campanhas pelo período ${idCampaign}`);
       } finally {
-        setLoading(false);
+        setLoadingSellOut(false);
       }
       },[idCampaign])
 

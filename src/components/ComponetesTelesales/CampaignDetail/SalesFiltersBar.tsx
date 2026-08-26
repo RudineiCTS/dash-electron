@@ -16,6 +16,7 @@ interface SalesFiltersBarProps {
 
   onClearFilters: () => void;
   onExportCsv: () => void;
+  onExportExcel: () => void;
   typeCampaign?: "TELEVENDAS" | "FARMA";
 }
 
@@ -41,6 +42,7 @@ export function SalesFiltersBar({
   onVendedorChange,
   onClearFilters,
   onExportCsv,
+  onExportExcel,
   typeCampaign = "TELEVENDAS",
 }: SalesFiltersBarProps) {
   return (
@@ -109,9 +111,9 @@ export function SalesFiltersBar({
           <FiDownload /> CSV
         </button>
         <button
-          disabled
-          title="Exportação em Excel ainda não implementada"
-          className="flex items-center gap-2 bg-other-green-dark text-other-green text-sm px-4 py-2 rounded-md cursor-not-allowed"
+          onClick={onExportExcel}
+          title="Exportar para Excel"
+          className="flex items-center gap-2 bg-other-green-dark text-other-green text-sm px-4 py-2 rounded-md transition-colors cursor-pointer hover:brightness-110"
         >
           <FiDownload /> Excel
         </button>

@@ -35,6 +35,7 @@ import Layout from './pages/Layout'
 import './index.css'
 import CampaignsAdvanced from './pages/CampaignAdvanced'
 import { ThemeProvider } from './context/ThemeContext'
+import { CampaignHistory } from './pages/CampaignHistory'
 
 createRoot(document.getElementById('app')!).render(
   <ThemeProvider>
@@ -45,6 +46,7 @@ createRoot(document.getElementById('app')!).render(
           <Route path="/campaigns" element={<CampaignsActive />} />
           <Route path="/campaigns/details/:id" element={<CampaignDetail />} />
           <Route path="campaigns-advanced" element={<CampaignsAdvanced />} />
+          <Route path="campaigns-history" element={<CampaignHistory />} />
         </Route>
       </Routes>
     </HashRouter>

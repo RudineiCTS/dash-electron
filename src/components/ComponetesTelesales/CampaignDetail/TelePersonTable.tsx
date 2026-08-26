@@ -80,8 +80,9 @@ export function TelePersonTable({ rows, filters }: PersonTableProps) {
           </div>
         </td>
         {/* <td className="px-4 py-2 text-white/70 whitespace-nowrap">{row.tipo}</td> */}
-        <td className="px-4 py-2 text-other-muted whitespace-nowrap">{formatCurrency(row.assessedValue)}</td>
         <td className="px-4 py-2 text-other-muted whitespace-nowrap">{formatCurrency(row.individualTarget)}</td>
+        <td className="px-4 py-2 text-other-muted whitespace-nowrap">{row.campaignTypeDescription === 'QUANTIDADE VENDIDA' ? row.assessedValue 
+                                                                      : row.campaignTypeDescription === 'POSITIVAÇÃO' ? row.assessedValue : formatCurrency(row.assessedValue)}</td>
         <td className="px-4 py-2 text-other-muted whitespace-nowrap">{formatPercent(row.percentageAchieved)}</td>
         <td className="px-4 py-2 text-other-muted whitespace-nowrap">{row.ranking ?? "—"}</td>
         <td className="px-4 py-2 text-other-accent whitespace-nowrap">

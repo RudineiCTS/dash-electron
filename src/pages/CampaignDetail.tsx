@@ -13,11 +13,13 @@ import { } from "../mock/campaignSalesDetail";
 import { formatCurrency } from "../utils/formateCurrency";
 import { formatPercent } from "../utils/formatPercent";
 import { exportCampaignSalesRowsToCsv, exportCampaingTelesalesPersonRowsToCsv } from "../utils/csvExport";
+import { exportCampaignSalesRowsToExcel, exportCampaingTelesalesPersonRowsToExcel } from "../utils/excelExport";
 import { useCampaignDetails } from "../hook/useCampaignDetails";
 import { TelePersonTable } from "../components/ComponetesTelesales/CampaignDetail/TelePersonTable";
 import { EmptyState } from "../components/ComponetesTelesales/EmptyCampaignSellOuts/EmptyResult";
 import { AlertCircle } from "lucide-react";
 import { CampaignConfigModal } from "../components/GlobalComponents/modal/ModalCampaignDetails";
+import { SalesTableSkeleton } from "../components/Skeleton/CampaignDetailSkeleton/SalesTableSkeleton";
 
 
 interface CampaignDetailLocationState {
@@ -96,6 +98,20 @@ export default function CampaignDetail() {
     exportCampaignSalesRowsToCsv(
       campaignResumeSellOut,
       `campanha-${id ?? summary?.idCampaign ?? "detalhe"}-vendas.csv`
+    );
+  }
+
+  function handleExportExcel() {
+    exportCampaingTelesalesPersonRowsToExcel(
+      campaignsDetails,
+      `campanha-${id ?? summary?.idCampaign ?? "detalhe"}.xlsx`
+    );
+  }
+
+  function handleExportSalesExcel() {
+    exportCampaignSalesRowsToExcel(
+      campaignResumeSellOut,
+      `campanha-${id ?? summary?.idCampaign ?? "detalhe"}-vendas.xlsx`
     );
   }
 
@@ -225,6 +241,7 @@ export default function CampaignDetail() {
             onPercentMaxChange={(percentMax) => setFilters((f) => ({ ...f, percentMax }))}
             onClearFilters={handleClearFilters}
             onExportCsv={handleExportCsv}
+            onExportExcel={handleExportExcel}
           />
           <TelePersonTable rows={campaignsDetails} filters={filters} />
         </>
@@ -241,12 +258,21 @@ export default function CampaignDetail() {
             onVendedorChange={(vendedor) => setSalesFilters((f) => ({ ...f, vendedor }))}
             onClearFilters={handleClearSalesFilters}
             onExportCsv={handleExportSalesCsv}
+            onExportExcel={handleExportSalesExcel}
           />
           {summary?.isDynamic ? (
             <EmptyState
               icon={<AlertCircle size={32} />}
               title="Não é possível pegar informação de campanha dinâmica"
               description="Campanhas dinâmicas não possuem detalhamento de vendas disponível no momento."
+            />
+          ) : loadingSellOut ? (
+            <SalesTableSkeleton />
+          ) : errorSellOut ? (
+            <EmptyState
+              icon={<AlertCircle size={32} />}
+              title="Erro ao carregar as informações"
+              description={errorSellOut}
             />
           ) : (
             <SalesTable rows={campaignResumeSellOut} filters={salesFilters} />
