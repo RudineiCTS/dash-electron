@@ -58,7 +58,8 @@ export default function FilterBar({
                   {c.label}
                 </option>
               ))}
-            </select>
+              
+            </select>            
             <FiChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-azul" />
           </div>
         </div>

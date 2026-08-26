@@ -16,6 +16,24 @@ export function downloadExcel(
   XLSX.writeFile(workbook, filename);
 }
 
+export interface ExcelSheet {
+  name: string;
+  /** cada linha já vem pronta (inclui cabeçalho, blocos de contexto, linhas em branco, etc.) */
+  rows: (string | number | null)[][];
+}
+
+export function downloadExcelMultiSheet(sheets: ExcelSheet[], filename: string) {
+  const workbook = XLSX.utils.book_new();
+
+  sheets.forEach((sheet) => {
+    const data = sheet.rows.map((row) => row.map((value) => value ?? ""));
+    const worksheet = XLSX.utils.aoa_to_sheet(data);
+    XLSX.utils.book_append_sheet(workbook, worksheet, sheet.name.slice(0, 31));
+  });
+
+  XLSX.writeFile(workbook, filename);
+}
+
 export function exportCampaignPersonRowsToExcel(rows: CampaignPersonRow[], filename: string) {
   const headers = [
     "Pessoa",

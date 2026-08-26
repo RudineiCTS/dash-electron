@@ -31,3 +31,39 @@ export function getUltimoDiaDoMes(nomeMes: string, ano?: number): string {
     .endOf('month')
     .format('DD/MM/YYYY');
 }
+
+/** Primeiro dia do mês em formato ISO (YYYY-MM-DD), pronto para query params de API. */
+export function getInicioDoMes(nomeMes: string, ano?: number): string {
+  const mesNormalizado = nomeMes.toLowerCase().trim();
+  const mesIndex = MESES[mesNormalizado];
+
+  if (mesIndex === undefined) {
+    throw new Error(`Mês inválido: "${nomeMes}"`);
+  }
+
+  const anoReferencia = ano ?? dayjs().year();
+
+  return dayjs()
+    .year(anoReferencia)
+    .month(mesIndex)
+    .startOf('month')
+    .format('YYYY-MM-DD');
+}
+
+/** Último dia do mês em formato ISO (YYYY-MM-DD), pronto para query params de API. */
+export function getFimDoMesISO(nomeMes: string, ano?: number): string {
+  const mesNormalizado = nomeMes.toLowerCase().trim();
+  const mesIndex = MESES[mesNormalizado];
+
+  if (mesIndex === undefined) {
+    throw new Error(`Mês inválido: "${nomeMes}"`);
+  }
+
+  const anoReferencia = ano ?? dayjs().year();
+
+  return dayjs()
+    .year(anoReferencia)
+    .month(mesIndex)
+    .endOf('month')
+    .format('YYYY-MM-DD');
+}

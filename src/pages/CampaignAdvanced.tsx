@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FiCopy,FiDownload } from "react-icons/fi";
+import { FiDownload } from "react-icons/fi";
 import { FiArrowLeft } from "react-icons/fi";
 import dayjs from "dayjs";
 import 'dayjs/locale/pt-br'
@@ -15,7 +15,9 @@ import EvolucaoGraficoMesAMes, {PontoEvolucaoMensal} from "../components/Compone
 import { SellOutSummaryInterface } from "../interfaces/sellOutSummaryType";
 import { useCampaignPanelAdvanced } from "../hook/useCampaignPanelAdvanced";
 import { MonthlyTrendSkeleton } from "../components/Skeleton/CampaignPanelAdvancedSkeleton/MonthlyTrendSkeleton";
+import { ComparativoPeriodosSkeleton } from "../components/Skeleton/CampaignPanelAdvancedSkeleton/ComparativoPeriodosSkeleton";
 import DynamicReportTab from "../components/ComponetesTelesales/DynamicReport_DISABLED/DynamicReportTab";
+import { downloadExcelMultiSheet } from "../utils/excelExport";
 
 dayjs.locale('pt-br');
 
@@ -160,6 +162,64 @@ export default function CampaignsAdvanced() {
         };
       });
     }, [sellOutSummary]);
+
+    function handleExportExcel() {
+      if (!sellOutSummary || sellOutSummary.length === 0) return;
+
+      const rotuloPeriodoA = `${periodoA.mes}/${periodoA.ano}`;
+      const rotuloPeriodoB = `${periodoB.mes}/${periodoB.ano}`;
+
+      const linhasComparativo: (string | number | null)[][] = [
+        ['Comparativo de Vendas e Positivação'],
+        [],
+        ['Período do filtro', `${filtros?.dataInicio ?? ''} a ${filtros?.dataFim ?? ''}`],
+        ['Fabricante', filtros?.fabricante || '—'],
+        ['Linha de Produto', filtros?.linhaProduto || 'Todas'],
+        ['Considera Grandes Contas', filtros?.incluirGrandesContas ? 'Sim' : 'Não'],
+        [],
+        ['Indicador', `Período A (${rotuloPeriodoA})`, `Período B (${rotuloPeriodoB})`, 'Variação Absoluta', 'Variação %'],
+        [
+          'Valor Vendido (R$)',
+          comparativoValorVendido.valorA,
+          comparativoValorVendido.valorB,
+          comparativoValorVendido.variacaoAbsoluta,
+          Number(comparativoValorVendido.variacaoPercentual.toFixed(2)),
+        ],
+        [
+          'Positivação (clientes)',
+          comparativoPositivacao.clientesA,
+          comparativoPositivacao.clientesB,
+          comparativoPositivacao.variacaoAbsoluta,
+          Number(comparativoPositivacao.variacaoPercentual.toFixed(2)),
+        ],
+      ];
+
+      const items = sellOutSummary;
+      const linhasEvolucao: (string | number | null)[][] = [
+        ['Ano-Mês', 'Valor Vendido (R$)', 'Positivação (clientes)', 'Cresc. Valor (%)', 'Cresc. Positivação (%)'],
+        ...items.map((item, index) => {
+          const anterior = items[index - 1];
+          const crescValor = calcularCrescimento(item.soldValue, anterior?.soldValue);
+          const crescPosit = calcularCrescimento(item.clientCount, anterior?.clientCount);
+          return [
+            item.yearMonth,
+            item.soldValue,
+            item.clientCount,
+            crescValor === null ? null : Number(crescValor.toFixed(2)),
+            crescPosit === null ? null : Number(crescPosit.toFixed(2)),
+          ];
+        }),
+      ];
+
+      downloadExcelMultiSheet(
+        [
+          { name: 'Comparativo', rows: linhasComparativo },
+          { name: 'Evolução Mensal', rows: linhasEvolucao },
+        ],
+        `comparativo-vendas-positivacao-${dayjs().format('YYYYMMDD-HHmm')}.xlsx`
+      );
+    }
+
     return(
       
         <>
@@ -202,17 +262,12 @@ export default function CampaignsAdvanced() {
                   </div>  
                   <div className="ml-4 text-other-muted text-sm">Desempenho consolidado dos canais Televendas e Bees</div>
                   <div className="flex gap-4">
-                    <Button 
-                      label="Copiar Dados"
-                      icon={<FiCopy/>}
-                      variant={'secundario'}
-                      onClick={()=>{}}
-                    ></Button>
                     <Button
-                      label="Copiar Dados"
+                      label="Exportar Excel"
                       icon={<FiDownload/>}
                       variant={'primario'}
-                      onClick={()=>{}}
+                      disabled={!sellOutSummary || sellOutSummary.length === 0}
+                      onClick={handleExportExcel}
                     ></Button>
                   </div>
                 </div>                 
@@ -250,47 +305,52 @@ export default function CampaignsAdvanced() {
                     valueTopic={1}
                   />
 
-                  <div className="flex w-full gap-6 ">
-                    <PeriodoSeletor
-                      ano={periodoA.ano}
-                      mes={periodoA.mes}
-                      onAnoChange={(ano) => setPeriodoA((prev) => ({ ...prev, ano }))}
-                      onMesChange={(mes) => setPeriodoA((prev) => ({ ...prev, mes }))}
-                      className="w-full"
-                      variant="primaria"
+                  {loading ? (
+                    <ComparativoPeriodosSkeleton />
+                  ) : (
+                    <>
+                      <div className="flex w-full gap-6 ">
+                        <PeriodoSeletor
+                          ano={periodoA.ano}
+                          mes={periodoA.mes}
+                          onAnoChange={(ano) => setPeriodoA((prev) => ({ ...prev, ano }))}
+                          onMesChange={(mes) => setPeriodoA((prev) => ({ ...prev, mes }))}
+                          className="w-full"
+                          variant="primaria"
 
-                    />
-                    <PeriodoSeletor
-                      ano={periodoB.ano}
-                      mes={periodoB.mes}
-                      onAnoChange={(ano) => setPeriodoB((prev) => ({ ...prev, ano }))}
-                      onMesChange={(mes) => setPeriodoB((prev) => ({ ...prev, mes }))}
-                      className="w-full"
-                      variant="secundaria"
-                    />
-                  </div>
+                        />
+                        <PeriodoSeletor
+                          ano={periodoB.ano}
+                          mes={periodoB.mes}
+                          onAnoChange={(ano) => setPeriodoB((prev) => ({ ...prev, ano }))}
+                          onMesChange={(mes) => setPeriodoB((prev) => ({ ...prev, mes }))}
+                          className="w-full"
+                          variant="secundaria"
+                        />
+                      </div>
 
-                  <div className="flex w-full gap-6">
-                    <CardIndicador
-                      periodoA={{label:`Período A · ${periodoA.mes}/${periodoA.ano}`, valor: formatarMoeda(comparativoValorVendido.valorA)}}
-                      periodoB={{label:`Período B · ${periodoB.mes}/${periodoB.ano}`, valor: formatarMoeda(comparativoValorVendido.valorB)}}
-                      tipo="valor-vendido"
-                      variacaoAbsoluta={`${comparativoValorVendido.variacaoAbsoluta < 0 ? '-' : '+'}${formatarMoeda(Math.abs(comparativoValorVendido.variacaoAbsoluta))}`}
-                      variacaoPercentual={comparativoValorVendido.variacaoPercentual}
-                      variant="primaria"
-                      className="w-full"
-                    />
-                    <CardIndicador
-                      periodoA={{label:`Período A · ${periodoA.mes}/${periodoA.ano}`, valor: `${comparativoPositivacao.clientesA} clientes`}}
-                      periodoB={{label:`Período B · ${periodoB.mes}/${periodoB.ano}`, valor: `${comparativoPositivacao.clientesB} clientes`}}
-                      tipo="positivacao"
-                      variacaoAbsoluta={`${comparativoPositivacao.variacaoAbsoluta < 0 ? '-' : '+'}${Math.abs(comparativoPositivacao.variacaoAbsoluta)} clientes`}
-                      variacaoPercentual={comparativoPositivacao.variacaoPercentual}
-                      variant="secundaria"
-                      className="w-full"
-                    />
-                  </div>
-
+                      <div className="flex w-full gap-6">
+                        <CardIndicador
+                          periodoA={{label:`Período A · ${periodoA.mes}/${periodoA.ano}`, valor: formatarMoeda(comparativoValorVendido.valorA)}}
+                          periodoB={{label:`Período B · ${periodoB.mes}/${periodoB.ano}`, valor: formatarMoeda(comparativoValorVendido.valorB)}}
+                          tipo="valor-vendido"
+                          variacaoAbsoluta={`${comparativoValorVendido.variacaoAbsoluta < 0 ? '-' : '+'}${formatarMoeda(Math.abs(comparativoValorVendido.variacaoAbsoluta))}`}
+                          variacaoPercentual={comparativoValorVendido.variacaoPercentual}
+                          variant="primaria"
+                          className="w-full"
+                        />
+                        <CardIndicador
+                          periodoA={{label:`Período A · ${periodoA.mes}/${periodoA.ano}`, valor: `${comparativoPositivacao.clientesA} clientes`}}
+                          periodoB={{label:`Período B · ${periodoB.mes}/${periodoB.ano}`, valor: `${comparativoPositivacao.clientesB} clientes`}}
+                          tipo="positivacao"
+                          variacaoAbsoluta={`${comparativoPositivacao.variacaoAbsoluta < 0 ? '-' : '+'}${Math.abs(comparativoPositivacao.variacaoAbsoluta)} clientes`}
+                          variacaoPercentual={comparativoPositivacao.variacaoPercentual}
+                          variant="secundaria"
+                          className="w-full"
+                        />
+                      </div>
+                    </>
+                  )}
                 </section>
 
                 <section className="flex flex-col gap-6">

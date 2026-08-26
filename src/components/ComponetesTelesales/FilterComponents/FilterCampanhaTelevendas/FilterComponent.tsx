@@ -175,7 +175,7 @@ const FiltroBar: React.FC<FiltroBarProps> = ({
       <button
         type="button"
         onClick={handleAplicar}
-        className="ml-auto h-10 rounded-lg bg-gradient-to-b from-[#ea9a2d] to-[#dd8100] px-5 text-sm font-semibold text-white transition-[filter] hover:brightness-105 active:brightness-95"
+        className="ml-auto h-10 rounded-lg bg-other-orange px-5 text-sm font-semibold text-white transition-[filter] hover:brightness-105 active:brightness-95"
       >
         Aplicar filtros
       </button>
