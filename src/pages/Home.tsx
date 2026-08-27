@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import { MdCampaign } from 'react-icons/md'
 import { OptionSide } from '../components/SideBar'
 import { useMemo, useState } from 'react';
@@ -10,20 +11,33 @@ export const items: OptionSide[] = [
   { key: 2, value: 'Campanha Comercial', icon: MdCampaign,status:'locked'  },
 ]
 
-const MESES_DISPONIVEIS = ["Abril", "Maio", "Junho", "Julho", "Agosto"];
+function capitalizar(texto: string): string {
+  return texto.charAt(0).toUpperCase() + texto.slice(1);
+}
+function getMesesDisponiveis(): string[] {
+  const meses: string[] = [];
+  for (let i = -2; i <= 2; i++) {
+    meses.push(capitalizar(dayjs().add(i, 'month').format('MMMM')));
+}
+  return meses;
+}
+const mesAtual = capitalizar(dayjs().format('MMMM')); // "Agosto"
+const anoAtual = dayjs().year();
+const MESES_DISPONIVEIS =  getMesesDisponiveis();
+const iconesSortidos = ['💎', '📢', '📣', '💊', '🛟', '🕋', '🏗️', '🗽', '🔥', '💈'];
 
 export default function Home() {
-  const anoAtual = new Date().getFullYear();
-  const [ativo, setAtivo] = useState("Junho");
+  const [ativo, setAtivo] = useState(mesAtual);
   const [periodo, setPeriodo] = useState({
-    inicio: getInicioDoMes("Junho", anoAtual),
-    fim: getFimDoMesISO("Junho", anoAtual),
+    inicio: getInicioDoMes(mesAtual, anoAtual),
+    fim: getFimDoMesISO(mesAtual, anoAtual),
   });
 
   const filtroRegistro = useMemo(() => ({
     inclusionDateFrom: periodo.inicio,
     inclusionDateTo: periodo.fim,
   }), [periodo]);
+
 
   const { campaignRegistrations, loading, error } = useCampaignRegistration(filtroRegistro);
 
@@ -34,6 +48,12 @@ export default function Home() {
       fim: getFimDoMesISO(mes, anoAtual),
     });
   }
+
+  function sortearIcone(): string {
+    const indice = Math.floor(Math.random() * iconesSortidos.length);
+    return iconesSortidos[indice];
+  }
+
 
   return (
     <div className='flex h-screen overflow-hidden'>
@@ -69,7 +89,7 @@ export default function Home() {
             <p className='text-center text-sm text-other-muted'>Nenhuma campanha recebida nesse período.</p>
           ) : (
             campaignRegistrations.map((campaign) => (
-              <CardCampaignReceived key={campaign.idCampaign} campaign={campaign} />
+              <CardCampaignReceived key={campaign.idCampaign} campaign={campaign} icone={sortearIcone()} />
             ))
           )}
 

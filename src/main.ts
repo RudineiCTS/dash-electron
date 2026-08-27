@@ -12,6 +12,12 @@ const createWindow = () => {
   const mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
+    titleBarStyle: 'hidden',
+    titleBarOverlay: {
+      color: '#32307B',       // fundo da área dos botões (bate com o resto da barra)
+      symbolColor: '#FFFFFF', // cor dos ícones minimizar/maximizar/fechar
+      height: 44,             // altura da barra — combine com a altura do seu header React
+    },
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
     },

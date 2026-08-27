@@ -36,13 +36,14 @@ import './index.css'
 import CampaignsAdvanced from './pages/CampaignAdvanced'
 import { ThemeProvider } from './context/ThemeContext'
 import { CampaignHistory } from './pages/CampaignHistory'
+import InBuild from './pages/InBuild'
 
 createRoot(document.getElementById('app')!).render(
   <ThemeProvider>
     <HashRouter>
       <Routes>
         <Route path="/" element={<Layout />}>
-          <Route index element={<Home />} />
+          <Route index element={<InBuild />} />
           <Route path="/campaigns" element={<CampaignsActive />} />
           <Route path="/campaigns/details/:id" element={<CampaignDetail />} />
           <Route path="campaigns-advanced" element={<CampaignsAdvanced />} />
