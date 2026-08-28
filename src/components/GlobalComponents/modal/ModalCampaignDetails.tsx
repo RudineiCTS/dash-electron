@@ -11,6 +11,7 @@ import { useParamsCampaign } from "../../../hook/useParamsCampaign";
 import { exportProductsToCsv } from "../../../utils/csvExport";
 import Input from "../InputComponent";
 import StatusBar from "../StatusBarComponent";
+import { getCampaignScript } from "../../../services/campaignScript";
 
 
 type CampaignConfigTab =
@@ -68,6 +69,8 @@ export function CampaignConfigModal({
 }: CampaignConfigModalProps) {
   const [activeTab, setActiveTab] = useState<CampaignConfigTab>("informacoes");
   const [form, setForm] = useState<CampaignSummary>(data);
+  const [scriptLoading, setScriptLoading] = useState(false);
+  const [scriptMessage, setScriptMessage] = useState<{ text: string; type: "success" | "error" } | null>(null);
   const {
     clientList,
     client,
@@ -148,7 +151,27 @@ export function CampaignConfigModal({
       );
     }
 
-    
+    async function handleGerarScript() {
+      if (scriptLoading) return;
+      setScriptLoading(true);
+      setScriptMessage(null);
+      try {
+        const result = await getCampaignScript(form.idCampaign);
+        if (!result.available || !result.script) {
+          setScriptMessage({ text: result.reason ?? "Script não disponível para esta campanha.", type: "error" });
+          return;
+        }
+        await navigator.clipboard.writeText(result.script);
+        setScriptMessage({ text: "Script copiado para a área de transferência!", type: "success" });
+      } catch {
+        setScriptMessage({ text: "Erro ao gerar o script da campanha.", type: "error" });
+      } finally {
+        setScriptLoading(false);
+        setTimeout(() => setScriptMessage(null), 4000);
+      }
+    }
+
+
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
@@ -177,7 +200,23 @@ export function CampaignConfigModal({
             </div>
           </div>
 
-          <div className="flex items-center gap-2">            
+          <div className="flex flex-col items-end gap-1">
+            <button
+              className="text-sm px-2 bg-other-secondaryBlue text-white rounded-md py-1 cursor-pointer
+                         disabled:opacity-50 disabled:cursor-not-allowed"
+              onClick={handleGerarScript}
+              disabled={scriptLoading || form.isDynamic === true}
+              title={form.isDynamic === true ? "Campanhas dinâmicas não geram script" : undefined}
+            >
+              {scriptLoading ? "Gerando..." : "Gerar script"}
+            </button>
+            {scriptMessage && (
+              <span className={`text-xs ${scriptMessage.type === "success" ? "text-emerald-600" : "text-red-500"}`}>
+                {scriptMessage.text}
+              </span>
+            )}
+          </div>
+          <div className="flex items-center gap-2">
             <button
               onClick={onCloseModal}
               aria-label="Fechar"
@@ -185,7 +224,7 @@ export function CampaignConfigModal({
             >
               <FiX size={16} />
             </button>
-          </div>
+          </div>          
         </div>
 
         {/* Tabs */}

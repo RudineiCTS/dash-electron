@@ -1,11 +1,30 @@
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, ipcMain } from 'electron';
 import path from 'node:path';
+import os from 'node:os';
+import Store from 'electron-store';
 import started from 'electron-squirrel-startup';
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (started) {
   app.quit();
 }
+
+interface CompassStoreSchema {
+  hasSeenWelcome: boolean;
+}
+
+const compassStore = new Store<CompassStoreSchema>({
+  defaults: {
+    hasSeenWelcome: false,
+  },
+});
+
+ipcMain.handle('compass:get-os-username', () => os.userInfo().username);
+ipcMain.handle('compass:get-has-seen-welcome', () => compassStore.get('hasSeenWelcome', false));
+ipcMain.handle('compass:set-has-seen-welcome', (_event, value: boolean) => {
+  compassStore.set('hasSeenWelcome', value);
+  return true;
+});
 
 const createWindow = () => {
   // Create the browser window.

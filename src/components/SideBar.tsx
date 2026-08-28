@@ -77,7 +77,7 @@ export function SideBar({options,className,isMenuDefault,children,switchCampaign
                                 </h1>
                                 <NavLink 
                                     className={({ isActive }) => `${styleButton} ${isActive ?  styleButtonActive : ''}`}    
-                                    to={"/"}                                
+                                    to={"/campaign-received"}                                
                                     >
                                     <FiArchive />
                                     Campanhas Recebidas
@@ -86,7 +86,10 @@ export function SideBar({options,className,isMenuDefault,children,switchCampaign
                                
                         </div>
                     </div>
-                    <LogoApp/>
+
+                     <LogoApp/> 
+                    
+                    
                         <div className="flex flex-col  items-center">
                             <ul className="flex flex-col gap-3 w-full items-center">
                                 {options.map((e)=> 

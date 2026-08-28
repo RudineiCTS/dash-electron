@@ -35,22 +35,29 @@ import Layout from './pages/Layout'
 import './index.css'
 import CampaignsAdvanced from './pages/CampaignAdvanced'
 import { ThemeProvider } from './context/ThemeContext'
+import { UserProvider } from './context/UserContext'
 import { CampaignHistory } from './pages/CampaignHistory'
-import InBuild from './pages/InBuild'
+import InitialScreen from './pages/InitialScreen'
+import AppGate from './components/AppGate'
 
 createRoot(document.getElementById('app')!).render(
   <ThemeProvider>
-    <HashRouter>
-      <Routes>
-        <Route path="/" element={<Layout />}>
-          <Route index element={<InBuild />} />
-          <Route path="/campaigns" element={<CampaignsActive />} />
-          <Route path="/campaigns/details/:id" element={<CampaignDetail />} />
-          <Route path="campaigns-advanced" element={<CampaignsAdvanced />} />
-          <Route path="campaigns-history" element={<CampaignHistory />} />
-        </Route>
-      </Routes>
-    </HashRouter>
+    <UserProvider>
+      <AppGate>
+        <HashRouter>
+          <Routes>
+            <Route path="/" element={<Layout />}>
+              <Route index element={<InitialScreen />} />
+              <Route path="/campaigns" element={<CampaignsActive />} />
+              <Route path="/campaigns/details/:id" element={<CampaignDetail />} />
+              <Route path="campaigns-advanced" element={<CampaignsAdvanced />} />
+              <Route path="campaigns-history" element={<CampaignHistory />} />
+              <Route path="campaign-received" element={<Home />} />
+            </Route>
+          </Routes>
+        </HashRouter>
+      </AppGate>
+    </UserProvider>
   </ThemeProvider>
 )
 

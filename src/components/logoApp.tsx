@@ -1,10 +1,13 @@
+import { NavLink } from "react-router-dom"
+
 interface LogoAppProps {
     className?: string
 }
 
 export function LogoApp({ className }: LogoAppProps) {
     return (
-        <div className={`flex flex-col items-center justify-center m-auto ${className}`}>
+        <NavLink className={`flex flex-col items-center justify-center m-auto ${className}`}
+                 to={"/"}>
             <div className="flex items-center justify-center gap-3">
                 <svg
                     width="40"
@@ -41,6 +44,6 @@ export function LogoApp({ className }: LogoAppProps) {
             <span className="text-xs text-github-text-muted tracking-[3px] uppercase mt-1">
                 Campanhas
             </span>
-        </div>
+        </NavLink>
     )
 }
