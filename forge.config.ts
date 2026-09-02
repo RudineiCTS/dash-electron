@@ -7,13 +7,22 @@ import { VitePlugin } from '@electron-forge/plugin-vite';
 import { FusesPlugin } from '@electron-forge/plugin-fuses';
 import { FuseV1Options, FuseVersion } from '@electron/fuses';
 
+// Em alguns ambientes (ex: EDR/antivírus corporativo travando arquivos recém-criados
+// dentro de out/), o build falha com EBUSY especificamente nessa pasta do projeto.
+// Defina FORGE_OUT_DIR (variável de ambiente local, não commitada) para redirecionar
+// a saída do build pra outra pasta como contorno - ex:
+//   $env:FORGE_OUT_DIR="C:\Users\<voce>\dash-electron-build"; npm run make
 const config: ForgeConfig = {
+  outDir: process.env.FORGE_OUT_DIR || undefined,
   packagerConfig: {
     asar: true,
+    icon: './src/public/compass-icon',
   },
   rebuildConfig: {},
   makers: [
-    new MakerSquirrel({}),
+    new MakerSquirrel({
+      setupIcon: './src/public/compass-icon.ico',
+    }),
     new MakerZIP({}, ['darwin']),
     new MakerRpm({}),
     new MakerDeb({}),

@@ -27,7 +27,7 @@
  */
 
 import { createRoot } from 'react-dom/client'
-import { HashRouter, Routes, Route } from 'react-router-dom'
+import { HashRouter, Routes, Route, Outlet } from 'react-router-dom'
 import Home from './pages/Home'
 import CampaignsActive from './pages/CampaingsActive'
 import CampaignDetail from './pages/CampaignDetail'
@@ -36,9 +36,18 @@ import './index.css'
 import CampaignsAdvanced from './pages/CampaignAdvanced'
 import { ThemeProvider } from './context/ThemeContext'
 import { UserProvider } from './context/UserContext'
+import { CampaignsFilterProvider } from './context/CampaignsFilterContext'
 import { CampaignHistory } from './pages/CampaignHistory'
 import InitialScreen from './pages/InitialScreen'
 import AppGate from './components/AppGate'
+
+function CampaignsFilterScope() {
+  return (
+    <CampaignsFilterProvider>
+      <Outlet />
+    </CampaignsFilterProvider>
+  )
+}
 
 createRoot(document.getElementById('app')!).render(
   <ThemeProvider>
@@ -48,8 +57,10 @@ createRoot(document.getElementById('app')!).render(
           <Routes>
             <Route path="/" element={<Layout />}>
               <Route index element={<InitialScreen />} />
-              <Route path="/campaigns" element={<CampaignsActive />} />
-              <Route path="/campaigns/details/:id" element={<CampaignDetail />} />
+              <Route element={<CampaignsFilterScope />}>
+                <Route path="/campaigns" element={<CampaignsActive />} />
+                <Route path="/campaigns/details/:id" element={<CampaignDetail />} />
+              </Route>
               <Route path="campaigns-advanced" element={<CampaignsAdvanced />} />
               <Route path="campaigns-history" element={<CampaignHistory />} />
               <Route path="campaign-received" element={<Home />} />

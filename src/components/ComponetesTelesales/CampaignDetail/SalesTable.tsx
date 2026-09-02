@@ -1,5 +1,8 @@
+import { useMemo, useState } from "react";
+import { FiChevronDown, FiChevronUp } from "react-icons/fi";
 import { CampaignSalesRow } from "../../../interfaces/CampaignSalesRow";
 import { formatCurrency } from "../../../utils/formateCurrency";
+import { compareValues, SortDirection } from "../../../utils/sortRows";
 
 export interface SalesTableFilters {
   search: string;
@@ -11,14 +14,14 @@ interface SalesTableProps {
   filters: SalesTableFilters;
 }
 
-const headers = [
-  "CNPJ",
-  "Razão Social",
-  "Produto",
-  "CodBarras",
-  "Quantidade",
-  "Total",
-  "Nome Vendedor",
+const headers: { label: string; key: keyof CampaignSalesRow }[] = [
+  { label: "CNPJ", key: "cpfcnpj" },
+  { label: "Razão Social", key: "legalName" },
+  { label: "Produto", key: "productName" },
+  { label: "CodBarras", key: "productEan" },
+  { label: "Quantidade", key: "quantitySold" },
+  { label: "Total", key: "valueSold" },
+  { label: "Nome Vendedor", key: "sellerName" },
 ];
 
 function matchesFilters(row: CampaignSalesRow, filters: SalesTableFilters): boolean {
@@ -40,6 +43,23 @@ export function SalesTable({ rows, filters }: SalesTableProps) {
   const filteredRows = rows.filter((row) => matchesFilters(row, filters));
   const filtersActive = filters.search.trim() !== "" || filters.vendedor !== "todos";
 
+  const [sortKey, setSortKey] = useState<keyof CampaignSalesRow | null>(null);
+  const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
+
+  function handleSort(key: keyof CampaignSalesRow) {
+    if (sortKey === key) {
+      setSortDirection((d) => (d === "asc" ? "desc" : "asc"));
+    } else {
+      setSortKey(key);
+      setSortDirection("asc");
+    }
+  }
+
+  const sortedRows = useMemo(() => {
+    if (!sortKey) return filteredRows;
+    return [...filteredRows].sort((a, b) => compareValues(a[sortKey], b[sortKey], sortDirection));
+  }, [filteredRows, sortKey, sortDirection]);
+
   return (
     <div className="flex flex-col flex-1 min-h-0">
       <div className="px-6 py-2 text-xs text-other-muted shrink-0">
@@ -53,17 +73,23 @@ export function SalesTable({ rows, filters }: SalesTableProps) {
             <tr>
               {headers.map((header) => (
                 <th
-                  key={header}
-                  className="px-4 py-2 text-left text-[10px] font-medium tracking-widest text-other-muted uppercase whitespace-nowrap"
+                  key={header.key}
+                  onClick={() => handleSort(header.key)}
+                  className="px-4 py-2 text-left text-[10px] font-medium tracking-widest text-other-muted uppercase whitespace-nowrap cursor-pointer select-none hover:text-other-text"
                 >
-                  {header}
+                  <span className="inline-flex items-center gap-1">
+                    {header.label}
+                    {sortKey === header.key && (
+                      sortDirection === "asc" ? <FiChevronUp size={12} /> : <FiChevronDown size={12} />
+                    )}
+                  </span>
                 </th>
               ))}
             </tr>
           </thead>
           <tbody>
-            {filteredRows.map((row) => (
-              <tr  className="border-t border-other-border hover:bg-other-surface">
+            {sortedRows.map((row, index) => (
+              <tr key={index} className="border-t border-other-border hover:bg-other-surface">
                 <td className="px-4 py-2 text-other-muted whitespace-nowrap">{row.cpfcnpj}</td>
                 <td className="px-4 py-2 text-other-muted font-medium whitespace-nowrap">
                   {row.legalName}

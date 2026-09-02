@@ -76,8 +76,9 @@ export function SideBar({options,className,isMenuDefault,children,switchCampaign
                                     </strong>  Fn Arquivos 
                                 </h1>
                                 <NavLink 
-                                    className={({ isActive }) => `${styleButton} ${isActive ?  styleButtonActive : ''}`}    
-                                    to={"/campaign-received"}                                
+                                    // className={({ isActive }) => `${styleButton} ${isActive ?  styleButtonActive : 'cursor-not-allowed'}`}    
+                                     to={"#"}                                
+                                    className={`cursor-not-allowed flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-[#5c5c74]  transition-colors hover:bg-[#f7f7fb]`}
                                     >
                                     <FiArchive />
                                     Campanhas Recebidas

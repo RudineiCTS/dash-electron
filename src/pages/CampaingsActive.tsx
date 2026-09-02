@@ -7,20 +7,19 @@ import { useCampaign } from "../hook/useCampaign";
 import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
 import CompetenceDatePicker from "../components/ComponetesTelesales/CompetenceDatePicker/CompetenceDatePicker";
-import { useState } from "react";
 import { campaignSummaryMock } from "../mock/campaignSummary";
 import { DarkSelect } from "../components/shared/SelectOptionComponent/SelectOption";
+import { useCampaignsFilter } from "../context/CampaignsFilterContext";
 
 const teste = 2  as number
-const dataReferencia = dayjs()
-//   .subtract(1, 'month')   // volta um mês
-  .endOf('month')         // vai pro último dia desse mês
-  .format('YYYY-MM-DD');
 export default function CampaignsActive() {
-    const [dateCompetency,setDateCompetency] = useState(dataReferencia);
-    const {summary,totalCard,loadingSummary }= useCampaign({dateSummary:dateCompetency});    
-    const [activeTab, setActiveTab] = useState<"pontos" | "valor">("valor");
-    const [filterActive, setFilterActive] = useState('')
+    const {
+        dateCompetency, setDateCompetency,
+        activeTab, setActiveTab,
+        filterActive, setFilterActive,
+        onlyAchieved, setOnlyAchieved,
+    } = useCampaignsFilter();
+    const {summary,totalCard,loadingSummary }= useCampaign({dateSummary:dateCompetency});
 
     const navigate = useNavigate();
 
@@ -82,16 +81,30 @@ export default function CampaignsActive() {
                                     placeholder="Tipo de campanha"
                                     />
                             </div>
-                            <div className="flex flex-col">                                
+                            <div className="flex flex-col">
                                 <div className="flex ">
                                     <CompetenceDatePicker
                                         initialDate={dayjs(dateCompetency).toDate()}
                                         key={"datacompetency"}
                                         onApply={HandleSetDateCompetency}
                                     />
-                                </div>                            
+                                </div>
                             </div>
-                            
+
+                            <div className="flex flex-col-reverse">
+                                <button
+                                    type="button"
+                                    onClick={() => setOnlyAchieved((v) => !v)}
+                                    className={`h-10 px-4 rounded-lg border text-sm font-medium transition-colors cursor-pointer whitespace-nowrap ${
+                                        onlyAchieved
+                                            ? "bg-github-btn-green border-github-btn-green text-white"
+                                            : "border-other-border text-github-text-muted hover:text-github-text"
+                                    }`}
+                                >
+                                    Somente bateram
+                                </button>
+                            </div>
+
                             <div>
                                <ToggleTab onChange={(tab) => setActiveTab(tab)} />
                             </div>
@@ -161,9 +174,10 @@ export default function CampaignsActive() {
                     ))
                 ):
                 (
-                    summary                    
+                    summary
                         .filter((e) => e.typeCampaign === activeTab)
                         .filter((e)=> !filterActive || e.campaignTypeDescription === filterActive)
+                        .filter((e) => !onlyAchieved || e.percentageAchieved >= 100)
                         .map((e) => (
                         <CampaignCard
                             key={e.idCampaign}

@@ -110,6 +110,18 @@ npm start
 - **CORS**: a API só libera as origens `http://localhost:5173` e `http://192.168.3.208:5173` (ver `Program.cs` do backend) - isso depende de onde o Compass é *servido* (o renderer), não do IP da API que ele consome, então normalmente não precisa mudar só por trocar o `VITE_API_HOST`. Mas atenção: isso vale pro app rodando em modo dev (`npm start`); o app **empacotado** (`npm run make`/`package`) carrega via `file://`, cuja origem pode não bater com essa lista - vale validar CORS antes de distribuir um build de produção apontando pra um servidor remoto.
 - **Dados armazenados localmente**: o `electron-store` guarda só um flag booleano (`hasSeenWelcome`) em disco, na pasta de dados do usuário do Electron - nenhuma credencial ou dado de campanha fica em cache local.
 
+## Atualizações (auto-update)
+
+O Compass instalado confere sozinho por versões novas (via Squirrel.Windows, mecanismo nativo do Electron) - ao abrir e a cada 4 horas. Se encontrar uma versão mais nova, baixa em segundo plano e pergunta ao usuário se quer reiniciar pra aplicar.
+
+Pra publicar uma versão nova:
+```bash
+npm run make
+```
+Depois copie o conteúdo de `out/make/squirrel.windows/x64/` (`RELEASES`, `*.nupkg`, `*.exe`) para `wwwroot/updates/win32/x64/` no servidor da API (ver o README dentro dessa pasta, no repositório do backend). Isso **substitui** os arquivos da versão anterior - não precisa reinstalar manualmente em cada máquina.
+
+A URL do feed de atualização está fixa em [`src/main.ts`](src/main.ts) (`UPDATE_FEED_URL`) - ajuste lá se o servidor mudar. Só funciona no app empacotado/instalado (`app.isPackaged`); em `npm start` o Squirrel não está presente, então o auto-update fica desativado.
+
 ## Status / limitações conhecidas
 
 - Sem testes automatizados (nenhum framework de teste configurado ainda).

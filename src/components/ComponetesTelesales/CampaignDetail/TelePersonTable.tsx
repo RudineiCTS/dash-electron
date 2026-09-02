@@ -1,6 +1,9 @@
+import { useMemo, useState } from "react";
+import { FiChevronDown, FiChevronUp } from "react-icons/fi";
 import { formatCurrency } from "../../../utils/formateCurrency";
 import { formatPercent } from "../../../utils/formatPercent";
 import { CampaignResult } from "../../../interfaces/CampaignResultTelesales";
+import { compareValues, SortDirection } from "../../../utils/sortRows";
 
 export interface PersonTableFilters {
   search: string;
@@ -15,13 +18,13 @@ interface PersonTableProps {
   filters: PersonTableFilters;
 }
 
-const headers = [
-  "Pessoa",  
-  "Objetivo",
-  "Valor Apurado",
-  "% Realizado",
-  "Colocação",
-  "Premiação"
+const headers: { label: string; key: keyof CampaignResult }[] = [
+  { label: "Pessoa", key: "operatorName" },
+  { label: "Objetivo", key: "individualTarget" },
+  { label: "Valor Apurado", key: "assessedValue" },
+  { label: "% Realizado", key: "percentageAchieved" },
+  { label: "Colocação", key: "ranking" },
+  { label: "Premiação", key: "award" },
 ];
 
 function matchesFilters(row: CampaignResult, filters: PersonTableFilters): boolean {
@@ -62,10 +65,25 @@ function hasActiveFilters(filters: PersonTableFilters): boolean {
 export function TelePersonTable({ rows, filters }: PersonTableProps) {
 
   const allRows = rows;
-  console.log(allRows);
   const filtersActive = hasActiveFilters(filters);
   const filteredFlat = rows.filter((row) => matchesFilters(row, filters));
-  console.log(filteredFlat)
+
+  const [sortKey, setSortKey] = useState<keyof CampaignResult | null>(null);
+  const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
+
+  function handleSort(key: keyof CampaignResult) {
+    if (sortKey === key) {
+      setSortDirection((d) => (d === "asc" ? "desc" : "asc"));
+    } else {
+      setSortKey(key);
+      setSortDirection("asc");
+    }
+  }
+
+  const sortedRows = useMemo(() => {
+    if (!sortKey) return filteredFlat;
+    return [...filteredFlat].sort((a, b) => compareValues(a[sortKey], b[sortKey], sortDirection));
+  }, [filteredFlat, sortKey, sortDirection]);
 
   function renderRowCells(row: CampaignResult, level: number) {
     return (
@@ -105,16 +123,22 @@ export function TelePersonTable({ rows, filters }: PersonTableProps) {
             <tr>
               {headers.map((header) => (
                 <th
-                  key={header}
-                  className="px-4 py-2 text-left text-[10px] font-medium tracking-widest text-other-muted uppercase whitespace-nowrap"
+                  key={header.key}
+                  onClick={() => handleSort(header.key)}
+                  className="px-4 py-2 text-left text-[10px] font-medium tracking-widest text-other-muted uppercase whitespace-nowrap cursor-pointer select-none hover:text-other-text"
                 >
-                  {header}
+                  <span className="inline-flex items-center gap-1">
+                    {header.label}
+                    {sortKey === header.key && (
+                      sortDirection === "asc" ? <FiChevronUp size={12} /> : <FiChevronDown size={12} />
+                    )}
+                  </span>
                 </th>
               ))}
             </tr>
           </thead>
           <tbody>
-            {filteredFlat.map((row) => (
+            {sortedRows.map((row) => (
                   <tr key={row.idPersonSales} className="border-t border-github-border hover:to-other-border">
                     {renderRowCells(row, 0)}
                   </tr>

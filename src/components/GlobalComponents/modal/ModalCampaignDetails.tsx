@@ -12,6 +12,7 @@ import { exportProductsToCsv } from "../../../utils/csvExport";
 import Input from "../InputComponent";
 import StatusBar from "../StatusBarComponent";
 import { getCampaignScript } from "../../../services/campaignScript";
+import { ScriptChoiceModal } from "./ScriptChoiceModal";
 
 
 type CampaignConfigTab =
@@ -71,6 +72,7 @@ export function CampaignConfigModal({
   const [form, setForm] = useState<CampaignSummary>(data);
   const [scriptLoading, setScriptLoading] = useState(false);
   const [scriptMessage, setScriptMessage] = useState<{ text: string; type: "success" | "error" } | null>(null);
+  const [scriptOptions, setScriptOptions] = useState<{ simpleScript: string; completeScript: string } | null>(null);
   const {
     clientList,
     client,
@@ -157,16 +159,30 @@ export function CampaignConfigModal({
       setScriptMessage(null);
       try {
         const result = await getCampaignScript(form.idCampaign);
-        if (!result.available || !result.script) {
+        if (!result.available || !result.simpleScript || !result.completeScript) {
           setScriptMessage({ text: result.reason ?? "Script não disponível para esta campanha.", type: "error" });
+          setTimeout(() => setScriptMessage(null), 4000);
           return;
         }
-        await navigator.clipboard.writeText(result.script);
-        setScriptMessage({ text: "Script copiado para a área de transferência!", type: "success" });
+        setScriptOptions({ simpleScript: result.simpleScript, completeScript: result.completeScript });
       } catch {
         setScriptMessage({ text: "Erro ao gerar o script da campanha.", type: "error" });
+        setTimeout(() => setScriptMessage(null), 4000);
       } finally {
         setScriptLoading(false);
+      }
+    }
+
+    async function handleChooseScript(type: "simple" | "complete") {
+      if (!scriptOptions) return;
+      const script = type === "simple" ? scriptOptions.simpleScript : scriptOptions.completeScript;
+      setScriptOptions(null);
+      try {
+        await navigator.clipboard.writeText(script);
+        setScriptMessage({ text: "Script copiado para a área de transferência!", type: "success" });
+      } catch {
+        setScriptMessage({ text: "Erro ao copiar o script.", type: "error" });
+      } finally {
         setTimeout(() => setScriptMessage(null), 4000);
       }
     }
@@ -373,6 +389,13 @@ export function CampaignConfigModal({
           </div>
         </div>
       </div>
+
+      {scriptOptions && (
+        <ScriptChoiceModal
+          onChoose={handleChooseScript}
+          onClose={() => setScriptOptions(null)}
+        />
+      )}
     </div>
   );
 }

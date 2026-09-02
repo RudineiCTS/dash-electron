@@ -1,6 +1,7 @@
 export interface CampaignScriptResponse {
     idCampaign: number;
     available: boolean;
-    script: string | null;
+    simpleScript: string | null;
+    completeScript: string | null;
     reason: string | null;
 }

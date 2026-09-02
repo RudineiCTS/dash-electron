@@ -1,8 +1,8 @@
 {
-  "name": "meu-app",
-  "productName": "meu-app",
-  "version": "1.0.0",
-  "description": "My Electron application description",
+  "name": "Compass",
+  "productName": "Compass",
+  "version": "1.0.1",
+  "description": "This application is designed to assist with the calculation and lookup of campaigns.",
   "main": ".vite/build/main.js",
   "private": true,
   "scripts": {
@@ -14,7 +14,7 @@
   },
   "keywords": [],
   "author": {
-    "name": "Rudinei Costa",
+    "name": "RudineiCts",
     "email": "costaaugusto177@outlook.com"
   },
   "license": "MIT",
