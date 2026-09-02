@@ -102,13 +102,17 @@ npm start
 
 ## Configuração
 
-- **URL da API**: hoje fixa em [`src/services/api.ts`](src/services/api.ts) (`http://localhost:5225/api`). Pra apontar pra outro ambiente, edite esse arquivo diretamente - não há variável de ambiente pra isso ainda.
-- **CORS**: a API só libera as origens `http://localhost:5173` e `http://192.168.3.208:5173` (ver `Program.cs` do backend) - rodando em outra porta/host, ajuste dos dois lados.
+- **URL da API**: configurável via variável de ambiente `VITE_API_HOST` (só `host:porta`, sem protocolo). Copie [`.env.example`](.env.example) para `.env` (ignorado pelo git) e ajuste pro seu ambiente:
+  ```
+  VITE_API_HOST=192.168.30.22:5225
+  ```
+  Sem `.env`, cai no padrão `localhost:5225` (ver [`src/services/api.ts`](src/services/api.ts)). Como é lido em tempo de build pelo Vite, uma mudança no `.env` exige reiniciar o `npm start` (ou rebuildar, se for um pacote já empacotado).
+- **CORS**: a API só libera as origens `http://localhost:5173` e `http://192.168.3.208:5173` (ver `Program.cs` do backend) - isso depende de onde o Compass é *servido* (o renderer), não do IP da API que ele consome, então normalmente não precisa mudar só por trocar o `VITE_API_HOST`. Mas atenção: isso vale pro app rodando em modo dev (`npm start`); o app **empacotado** (`npm run make`/`package`) carrega via `file://`, cuja origem pode não bater com essa lista - vale validar CORS antes de distribuir um build de produção apontando pra um servidor remoto.
 - **Dados armazenados localmente**: o `electron-store` guarda só um flag booleano (`hasSeenWelcome`) em disco, na pasta de dados do usuário do Electron - nenhuma credencial ou dado de campanha fica em cache local.
 
 ## Status / limitações conhecidas
 
 - Sem testes automatizados (nenhum framework de teste configurado ainda).
 - Não há autenticação tradicional (senha/token) - o acesso depende inteiramente do usuário do Windows estar cadastrado e ativo na base de perfis do Compass; qualquer pessoa com acesso à máquina e a esse usuário do Windows entra no app.
-- URL da API é fixa no código (ver [Configuração](#configuração)) - não há suporte a múltiplos ambientes (dev/homolog/prod) via configuração externa ainda.
+- CORS do backend ainda não foi validado para o app empacotado (`file://`) apontando pra um servidor remoto - só para o modo dev (ver [Configuração](#configuração)).
 - `package.json` mantém `name`/`productName` como `meu-app` (nunca renomeado para Compass).
