@@ -14,10 +14,12 @@ function computeTotalCard(data: CampaignSummary[]) {
     totalMeta: acc.totalMeta + item.goalValue,
     totalValor: acc.totalValor + item.assessedValue,
     premiacaoTotal: acc.premiacaoTotal + item.totalAward,
-    percentTotal: acc.percentTotal + item.percentageAchieved
+    totalValorBess: acc.totalValorBess + item.assessedValueBees!,
+    percentTotal: 0
   }), {
     totalMeta: 0,
     totalValor: 0,
+    totalValorBess:0,
     premiacaoTotal: 0,
     percentTotal: 0
   });
@@ -30,7 +32,7 @@ export function useCampaign({dateCompetency,dateSummary}:typeUseCampaign){
     const [summary, setSummary] = useState<CampaignSummary[]>([]);
     const [loadingSummary, setLoadingSummary] = useState(false);
     const [errorSummary, setErrorSummary] = useState("");
-    const [totalCard, setTotalCard] = useState({totalMeta:0,          totalValor:0,          premiacaoTotal:0,          percentTotal:0})
+    const [totalCard, setTotalCard] = useState({totalMeta:0,          totalValor:0,          premiacaoTotal:0,          percentTotal:0, totalValorBess:0})
 
     const fetchCampaign = useCallback(async (signal?: AbortSignal) => {
       try {

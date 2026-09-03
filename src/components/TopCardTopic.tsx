@@ -15,6 +15,7 @@ interface ITopCardTopic{
     accent?: Accent;
     /** quando true, o valor grande usa a cor do accent em vez da cor padrão */
     highlightValue?: boolean;
+    subValor?:number;
 }
 
 const ACCENT_BORDER_HEX: Record<Accent, string> = {
@@ -39,6 +40,7 @@ export function TopCardTopic({
     format = "moeda",
     displayValue,
     accent,
+    subValor,
     highlightValue = false,
 }:ITopCardTopic){
     const valorTexto = displayValue ?? (format === "numero" ? value.toLocaleString("pt-BR") : formatCurrency(value));
@@ -47,6 +49,8 @@ export function TopCardTopic({
         : highlightValue && accent
             ? ACCENT_TEXT_CLASS[accent]
             : "text-other-text";
+        
+    const valorBess =  formatCurrency(subValor)
 
     return(
     <div
@@ -62,6 +66,12 @@ export function TopCardTopic({
         <span className="text-sm text-other-text">
             {subtitles}
         </span>
+        {subValor &&  
+                <span className="text-sm text-other-green font-bold">
+                    <p className="text-other-text">Valores do Bees</p> {valorBess}
+                </span>
+        }
+
     </div>
     )
 }

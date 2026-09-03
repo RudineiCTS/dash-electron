@@ -132,12 +132,14 @@ export default function CampaignsActive() {
                                 title="Realizado Total"
                                 subtitles="Realizado total das campanhas"
                                 value={totalCard.totalValor}
+                                subValor={totalCard.totalValorBess}
                                 focus={false}
                                 />
                         <TopCardTopic
                                 title="Percentual total"
                                 subtitles="Percentual total referente ao objetivo total"
-                                value={totalCard.percentTotal}
+                                value={totalCard.totalValor == 0 ? 0 :((totalCard.totalValor/totalCard.totalMeta)*100)}
+                                format="numero"
                                 focus={false}
                                 />
                         <TopCardTopic
