@@ -329,7 +329,8 @@ export function CampaignConfigModal({
                   totalAtivos={paginationClients.totalCount}
                   totalItens={paginationClients.totalCount}            
                   pagination={paginationClients} 
-                  onChangePage={goToClientsPage}          
+                  onChangePage={goToClientsPage}   
+                  footerClientes="Grandes Contas não considerado"       
                 />
             </div>
 

@@ -4,7 +4,7 @@ export type ItensProps = {
   id: number;
   idItem:number;
   nomeItem: string;
-  isValido:boolean;
+  isValido:boolean | string;
   qtdItens?: number;
 };
 
@@ -45,13 +45,22 @@ export function ListCardItem({ NomeItens,itens, onAdicionar, onRemover,isEditabl
           {itens.map((f) => (
             <div
               key={f.idItem}
-              className="flex border border-other-border rounded-md px-4 py-3 justify-between items-center  text-xs"
+              className="flex group  border border-other-border rounded-md px-4 py-3 justify-between items-center  text-xs  relative"
             >
             <div className="flex gap-4 items-center">
               <div className="bg-other-border px-3 py-1 rounded-md">{f.idItem}</div>
-              <strong className="text-sm">{f.nomeItem}</strong>
+              <strong className="text-sm">{f.nomeItem}</strong> 
+              <div  className={`
+                      absolute top-[-20px] right-0 p-1 ${f.isValido === 'N' ?'bg-other-redflag' : 'bg-other-greenflag' } rounded-t-lg text-white
+                      opacity-0 translate-y-1 pointer-events-none
+                      transition-all duration-200 ease-out
+                      group-hover:opacity-100 group-hover:translate-y-0
+              `}>
+                  {f.isValido === 'S' ? "Contém" : "Não Contém"}
+              </div>             
             </div>
             <span className="flex gap-2 text-[--text-faint] items-center text-xs">
+            
               {f.qtdItens} 
               <button
                 onClick={isEditable ? () => onRemover!(f.id) : undefined}              

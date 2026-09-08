@@ -283,7 +283,7 @@ export default function CampaignDetail() {
        {isDetailsModalOpen && (
             <CampaignConfigModal              
               data={summary}
-               onCloseModal={() => setIsDetailsModalOpen(false)}
+              onCloseModal={() => setIsDetailsModalOpen(false)}
             />
           )}
     </div>

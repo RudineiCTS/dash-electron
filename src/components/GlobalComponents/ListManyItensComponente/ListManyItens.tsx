@@ -30,6 +30,10 @@ type ListManyItensProps = {
   onImportarCsv?: () => void;
   onAdicionarProduto?: () => void;
   onLimparTodos?: () => void;
+
+  //proximo
+  footerClientes?:string;
+  footerProdutos?:string;
 };
 
 export function ListManyItens({
@@ -42,6 +46,7 @@ export function ListManyItens({
   onBuscar,  
   onExportarLista,
   onLimparTodos,
+  footerClientes
 }: ListManyItensProps) {
   
   return (
@@ -130,6 +135,7 @@ export function ListManyItens({
 
       {/* Footer */}
       <div className="flex justify-between items-center">
+        {footerClientes && <div className="text-sm text-other-muted"> {footerClientes} </div> }
         <span className="text-sm text-[--text-faint]">
           {/* Mostrando {itens.length} de {totalItens.toLocaleString("pt-BR")} · rolagem virtualizada */}
         </span>

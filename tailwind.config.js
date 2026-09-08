@@ -62,6 +62,8 @@ module.exports = {
           bgAlternative: 'var(--bg-alternative)',
           secondaryBlue: 'var(--blue-seconday)',
           orange: 'var(--orange-seconday)',
+          redflag: '#A60321',
+          greenflag: '#16B84F'
          
         }
       },
