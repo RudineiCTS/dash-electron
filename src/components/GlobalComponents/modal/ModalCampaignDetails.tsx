@@ -407,7 +407,20 @@ export function CampaignConfigModal({
               </div>
             </div>
 
-          ) : (
+          ) : activeTab ==="faixas" ? (
+            <div className="flex">
+              <div className='border-other-orange border-solid border-2 rounded-t-md  rounded-b-sm bg-other-card flex flex-col items-center w-28'>
+                <h1 className="border-b-2 border-other-secondaryBlue w-full text-center mb-3">Premios</h1>
+                <ul className='w-full flex justify-center flex-col '>
+                  <li className="border-b-2 w-full text-center">1° 500</li>
+                  <li  className="border-b-2 w-full text-center">1° 500</li>
+                  <li  className="border-b-2 w-full text-center">1° 500</li>
+                  <li  className="border-b-2 w-full text-center">1° 500</li>
+                </ul>
+
+              </div>
+            </div>
+          ): (
             <div className="flex h-full items-center justify-center py-16 text-sm text-other-muted">
               Conteúdo da aba "{TABS.find((t) => t.key === activeTab)?.label}"
               ainda não implementado.
