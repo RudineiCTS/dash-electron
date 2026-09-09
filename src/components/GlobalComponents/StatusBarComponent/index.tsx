@@ -28,7 +28,7 @@ export default function StatusBar(props:StatusBarProps){
                 %
               </span>
               <span className="text-sm text-slate-500 ">
-                de {props.valuePercent.toLocaleString('pt-BR')}% exigidos ·{' '}
+                de {props.valueTargetPercent.toLocaleString('pt-BR')}% exigidos ·{' '}
                 { props.conditionCampaign}
               </span>
             </div>

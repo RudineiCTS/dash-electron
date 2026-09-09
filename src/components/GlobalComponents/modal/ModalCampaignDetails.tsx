@@ -8,6 +8,7 @@ import { ItemManyProp, ListManyItens } from "../ListManyItensComponente/ListMany
 import { CampaignSummary } from "../../../interfaces/CampaignSummary";
 import dayjs from "dayjs";
 import { useParamsCampaign } from "../../../hook/useParamsCampaign";
+import { useCampaignConditioning } from "../../../hook/useCampaignConditioning";
 import { exportProductsToCsv } from "../../../utils/csvExport";
 import Input from "../InputComponent";
 import StatusBar from "../StatusBarComponent";
@@ -88,7 +89,17 @@ export function CampaignConfigModal({
     paginationProducts,
     loading
   } = useParamsCampaign(form.idCampaign);
-  
+
+  const {
+    conditioning,
+    loading: conditioningLoading,
+    error: conditioningError,
+  } = useCampaignConditioning(form.idCampaign);
+  const conditioningItem = conditioning[0];
+  const conditioningTargetPercent = conditioningItem?.validationResult ?? 0;
+  const conditioningAchievedPercent = conditioningItem?.percentageAchieved ?? 0;
+  const conditioningBlocked = conditioningAchievedPercent < conditioningTargetPercent;
+
   function VerifyStatusCampaign(earlyEndDate: string | null, endDate: string): "ATIVA" | "ENCERRADA" | "INATIVA" {
     const hoje = dayjs();
 
@@ -336,37 +347,64 @@ export function CampaignConfigModal({
 
 
           ) :  activeTab === "calculo" ? (
-            <div className="flex ">   
+            <div className="flex ">
               <div className="flex flex-col bg-other-card p-4 rounded-lg w-full gap-6">
-                <div className="flex">
-                  <Input onChangeValue={()=>{}} value="#999- campanha teste" label="CAMPANHA CONDICIONANTE"/>
-                  <Input onChangeValue={()=>{}} value="Atingimento >=" label="CONDIÇÃO"/>
-                  <Input onChangeValue={()=>{}} value="100%" label="%MINIMO"/>
-                </div>
-                {/* STATUS BAR */}
-                <div className="grid grid-cols-2 gap-6">
-                  <StatusBar
-                    colorValue="ff"
-                    conditionCampaign="#1999"
-                    labelValue="SITUAÇÃO DA CONDICIONANTE HOJE"
-                    valuePercent={87}
-                    valueTargetPercent={100}
-                    />
-                  
-                  <div className="bg-red-100 p-4 rounded-e-md border-l-4 border-red-500">
-                    <h1 className="text-xs font-semibold tracking-wide">EFEITO NA APURAÇÃO ATUAL</h1>
-                    <p className='text-xs mt-3 tracking-wide'>
-                       Premiação bloqueada - Campanha condicionante esta abaixo do valor da condição.
-                       O valor Apurado continua sendo calculado e exibido, mas não gera pagamento
-                    </p>
-                  </div>
-                </div>
+                {conditioningLoading ? (
+                  <p className="text-sm text-other-muted py-6 text-center">Carregando campanha condicionante...</p>
+                ) : conditioningError ? (
+                  <p className="text-sm text-red-500 py-6 text-center">{conditioningError}</p>
+                ) : !conditioningItem ? (
+                  <p className="text-sm text-other-muted py-6 text-center">
+                    Esta campanha não possui campanha condicionante configurada.
+                  </p>
+                ) : (
+                  <>
+                    <div className="flex">
+                      <Input
+                        onChangeValue={()=>{}}
+                        value={`#${conditioningItem.idConditioningCampaign} - ${conditioningItem.conditioningCampaignDescription ?? ""}`}
+                        label="CAMPANHA CONDICIONANTE"
+                      />
+                      <Input onChangeValue={()=>{}} value="Atingimento >=" label="CONDIÇÃO"/>
+                      <Input
+                        onChangeValue={()=>{}}
+                        value={conditioningItem.validationResult != null ? `${conditioningItem.validationResult}%` : "-"}
+                        label="%MINIMO"
+                      />
+                    </div>
+                    {/* STATUS BAR */}
+                    <div className="grid grid-cols-2 gap-6">
+                      <StatusBar
+                        colorValue="ff"
+                        conditionCampaign={`#${conditioningItem.idConditioningCampaign}`}
+                        labelValue="SITUAÇÃO DA CONDICIONANTE HOJE"
+                        valuePercent={conditioningAchievedPercent}
+                        valueTargetPercent={conditioningTargetPercent}
+                        />
+
+                      {conditioningBlocked ? (
+                        <div className="bg-red-100 p-4 rounded-e-md border-l-4 border-red-500">
+                          <h1 className="text-xs font-semibold tracking-wide">EFEITO NA APURAÇÃO ATUAL</h1>
+                          <p className='text-xs mt-3 tracking-wide'>
+                            Premiação bloqueada - Campanha condicionante esta abaixo do valor da condição.
+                            O valor Apurado continua sendo calculado e exibido, mas não gera pagamento
+                          </p>
+                        </div>
+                      ) : (
+                        <div className="bg-emerald-50 p-4 rounded-e-md border-l-4 border-emerald-500">
+                          <h1 className="text-xs font-semibold tracking-wide">EFEITO NA APURAÇÃO ATUAL</h1>
+                          <p className='text-xs mt-3 tracking-wide'>
+                            Premiação liberada - Campanha condicionante atingiu o valor da condição.
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
                 <div>
                   <h1 className='text-xs font-semibold tracking-wide text-slate-500'>Tipo Apuração</h1>
                 </div>
-
-              </div>           
-              
+              </div>
             </div>
 
           ) : (
