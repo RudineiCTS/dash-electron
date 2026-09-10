@@ -1,7 +1,7 @@
 import { IconType } from 'react-icons'  // ← importa o tipo
 import { LogoApp } from './logoApp'
 import { ReactNode } from 'react'
-import {FiActivity, FiArchive, FiBarChart2, FiBook} from 'react-icons/fi'
+import {FiActivity, FiArchive, FiBarChart2, FiBook, FiSettings} from 'react-icons/fi'
 import { NavLink } from 'react-router-dom'
 import { ButtonSideBar } from './ButtonSideBar'
 import { ThemeToggle } from './ThemeToggle'
@@ -84,6 +84,18 @@ export function SideBar({options,className,isMenuDefault,children,switchCampaign
                                     Campanhas Recebidas
                                 </NavLink>
                             </div> 
+                            <div>
+                                <NavLink 
+                                    // className={({ isActive }) => `${styleButton} ${isActive ?  styleButtonActive : 'cursor-not-allowed'}`}    
+                                     to={"params-general"}                                
+                                    className={` flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-[#5c5c74]  transition-colors hover:bg-[#f7f7fb]`}
+                                    >
+                                    <FiSettings  />
+                                    <strong className="text-base">
+                                         Parametrização 
+                                    </strong>
+                                </NavLink>
+                            </div>
                                
                         </div>
                     </div>

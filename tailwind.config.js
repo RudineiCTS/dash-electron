@@ -7,7 +7,8 @@ module.exports = {
  theme: {
     extend: {
       fontFamily:{
-          poppins:['Poppins','sans-serif']
+          poppins:['Poppins','sans-serif'],
+          inter:['Inter','-apple-system','BlinkMacSystemFont','"Segoe UI"','sans-serif']
       },
       colors: {
         github: {
@@ -46,6 +47,25 @@ module.exports = {
             css:        "#f78166",
             html:       "#e34c26",
           },
+        },
+        general: {
+          orange:     '#fb923c', // grifo da aba ativa (General.tsx)
+          indigo:     '#312e81', // fundo do badge numerado quando a aba está ativa (General.tsx)
+          badgeBg:    '#f3f4f6', // fundo do badge numerado quando a aba está inativa (General.tsx)
+          border:     '#e5e7eb', // borda do nav de abas (General.tsx)
+          textMuted:  '#9ca3af', // texto de aba inativa (General.tsx)
+          textStrong: '#111827', // texto de aba ativa (General.tsx)
+          // FieldSelectComponent (MetaSelectionHeader)
+          labelText:      '#6b6b7a', // label dos selects (ex: "PERÍODO DE COMPETÊNCIA")
+          selectText:     '#1c1c28', // valor selecionado
+          chevron:        '#9a9aab', // seta do select
+          cardBorder:     '#e4e4ec', // borda do card
+          accent:         '#6e5ef2', // grifo superior do card
+          divider:        '#ececf2', // linha divisória entre os selects
+          buttonBorder:   '#dcdce6', // borda do botão "Copiar da competência anterior"
+          buttonActiveBg: '#f1effe', // fundo do botão após copiar
+          buttonText:     '#3d3d52', // texto do botão
+          footerText:     '#8b8b9c', // texto "Lote atual: ..."
         },
          other: {
           bg:          'var(--other-bg)',

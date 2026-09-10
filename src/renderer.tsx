@@ -40,6 +40,7 @@ import { CampaignsFilterProvider } from './context/CampaignsFilterContext'
 import { CampaignHistory } from './pages/CampaignHistory'
 import InitialScreen from './pages/InitialScreen'
 import AppGate from './components/AppGate'
+import { General } from './pages/General'
 
 function CampaignsFilterScope() {
   return (
@@ -64,6 +65,7 @@ createRoot(document.getElementById('app')!).render(
               <Route path="campaigns-advanced" element={<CampaignsAdvanced />} />
               <Route path="campaigns-history" element={<CampaignHistory />} />
               <Route path="campaign-received" element={<Home />} />
+              <Route path={"params-general"} element={<General/>}/>
             </Route>
           </Routes>
         </HashRouter>

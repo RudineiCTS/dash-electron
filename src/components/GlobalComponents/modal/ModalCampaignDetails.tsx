@@ -417,7 +417,6 @@ export function CampaignConfigModal({
                   <li  className="border-b-2 w-full text-center">1° 500</li>
                   <li  className="border-b-2 w-full text-center">1° 500</li>
                 </ul>
-
               </div>
             </div>
           ): (
