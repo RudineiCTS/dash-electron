@@ -1,7 +1,9 @@
 import { useState } from "react";
 import MetaSelectionHeader from "../components/FieldSelectComponent";
 import { HeaderComponent } from "../components/Header";
-import { CenarioCopyPanel } from "../components/ContentGeneral/CopiaCenarios";
+import { CenarioCopyPanel, Cenario, CopiaCenarioForm } from "../components/ContentGeneral/CopiaCenarios";
+import { CommissionScenarioProvider, useCommissionScenario } from "../context/CommissionScenarioContext";
+import { ImportarValores } from "../components/ContentGeneral/ImportarValores";
 
 interface TabItem {
   id: number;
@@ -17,7 +19,38 @@ export const META_TABS: TabItem[] = [
 ];
 
 export function General(){
+    return (
+        <CommissionScenarioProvider>
+            <GeneralContent />
+        </CommissionScenarioProvider>
+    )
+}
+
+function GeneralContent(){
     const [tabSelect, setTabSelect] = useState<TabItem>({ id: 1, label: "Copiar cenário"})
+    const { scenarios, loading, error, copying, copyError, copyScenario } = useCommissionScenario();
+
+    const cenarios: Cenario[] = scenarios.map((s) => ({
+        id: s.idScenario,
+        descricao: s.scenarioDescription ?? `Cenário #${s.idScenario}`,
+        dataInicio: s.startDate ?? "",
+        dataFim: s.endDate ?? "",
+        situacao: s.periodCompetenceStatusDescription ?? "-",
+        vendedores: s.sellerCount,
+        idPeridoCompetencia: s.idPeriodCompetence,
+    }));
+
+    async function handleCopiar(form: CopiaCenarioForm) {
+        await copyScenario({
+            sourceScenarioId: form.sourceScenarioId,
+            newScenarioId: form.newScenarioId,
+            newPeriodCompetenceId: form.newPeriodCompetenceId,
+            description: form.description,
+            startDate: form.startDate,
+            endDate: form.endDate,
+        });
+    }
+
     return (
         <>
             <HeaderComponent
@@ -28,7 +61,7 @@ export function General(){
             />
             <div className="mx-3 flex flex-col gap-4">
                 <div className="bg-white flex flex-col gap-6">
-                    <MetaSelectionHeader/>                
+                    <MetaSelectionHeader/>
                     <nav className="flex items-center gap-2 border-b border-general-border px-6 py-2.5 justify-between">
                         {META_TABS.map((tab) => {
                             const isActive = tab.id === tabSelect?.id;
@@ -63,11 +96,19 @@ export function General(){
                 </div>
                 {
                     tabSelect.id === 1 ? (
-                        <CenarioCopyPanel
-                            cenarios={[]}
-                            onCopiar={()=>{}}
-                        />
-                    ):(<></>)
+                        loading ? (
+                            <p className="text-sm text-general-textMuted py-6 text-center">Carregando cenários...</p>
+                        ) : error ? (
+                            <p className="text-sm text-red-500 py-6 text-center">{error}</p>
+                        ) : (
+                            <CenarioCopyPanel
+                                cenarios={cenarios}
+                                onCopiar={handleCopiar}
+                                copiando={copying}
+                                erroCopia={copyError}
+                            />
+                        ) 
+                    ):(<ImportarValores />)
                 }
 
             </div>

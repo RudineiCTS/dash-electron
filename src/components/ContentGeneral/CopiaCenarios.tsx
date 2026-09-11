@@ -1,13 +1,12 @@
-import { useMemo, useState } from "react";
-
-export type SituacaoCenario = "Vigente" | "Encerrado" | "Rascunho";
+import { useEffect, useMemo, useState } from "react";
+import dayjs from "dayjs";
 
 export interface Cenario {
   id: number;
   descricao: string;
-  dataInicio: string;
-  dataFim: string;
-  situacao: SituacaoCenario;
+  dataInicio: string; // ISO (yyyy-mm-dd ou datetime)
+  dataFim: string; // ISO (yyyy-mm-dd ou datetime)
+  situacao: string; // texto cru vindo do banco (DescricaoCompetenciaSituacao)
   vendedores: number;
   idPeridoCompetencia: number;
 }
@@ -18,35 +17,51 @@ export interface OpcoesCopia {
   parametrosEMinimoGarantido: boolean;
 }
 
+export interface CopiaCenarioForm {
+  sourceScenarioId: number;
+  newScenarioId: number;
+  newPeriodCompetenceId: number;
+  description: string;
+  startDate: string; // yyyy-mm-dd
+  endDate: string; // yyyy-mm-dd
+}
+
 interface CenarioCopyPanelProps {
   cenarios: Cenario[];
-  onCopiar: (cenarioId: number, opcoes: OpcoesCopia) => void;
+  onCopiar: (form: CopiaCenarioForm) => void;
+  copiando?: boolean;
+  erroCopia?: string;
 }
 
-const FILTROS = ["Todos", "Vigentes", "Encerrados", "Rascunhos"] as const;
+const FILTROS = ["TODOS", "LIBERADO", "FINALIZADO"] as const;
 type Filtro = (typeof FILTROS)[number];
 
-const FILTRO_PARA_SITUACAO: Record<Exclude<Filtro, "Todos">, SituacaoCenario> = {
-  Vigentes: "Vigente",
-  Encerrados: "Encerrado",
-  Rascunhos: "Rascunho",
+// Best-effort: a query hoje só traz o texto cru da situação (DescricaoCompetenciaSituacao),
+// não um catálogo fechado de valores. Esses filtros comparam por substring (case-insensitive).
+const FILTRO_PARA_TEXTO: Record<Exclude<Filtro, "TODOS">, string> = {
+  LIBERADO: "LIBERADO",
+  FINALIZADO: "FINALIZADO"  
 };
 
-const SITUACAO_STYLES: Record<SituacaoCenario, { dot: string; text: string }> = {
-  Vigente: { dot: "bg-emerald-500", text: "text-emerald-700" },
-  Encerrado: { dot: "bg-gray-400", text: "text-gray-500" },
-  Rascunho: { dot: "bg-amber-500", text: "text-amber-700" },
-};
-
-function formatarMoeda(valor: number): string {
-  return valor.toLocaleString("pt-BR", {
-    style: "currency",
-    currency: "BRL",
-  });
+function situacaoStyle(situacao: string): { dot: string; text: string } {
+  const s = situacao;
+  if (s.includes("LIBERADO") || s.includes("aberto")) return { dot: "bg-emerald-500", text: "text-emerald-700" };
+  if (s.includes("FINALIZADO") || s.includes("fechado")) return { dot: "bg-gray-400", text: "text-gray-500" };  
+  return { dot: "bg-gray-300", text: "text-gray-500" };
 }
 
-export function CenarioCopyPanel({ cenarios, onCopiar }: CenarioCopyPanelProps) {
-  const [filtro, setFiltro] = useState<Filtro>("Todos");
+function toDateInputValue(value: string): string {
+  const parsed = dayjs(value);
+  return parsed.isValid() ? parsed.format("YYYY-MM-DD") : "";
+}
+
+function formatarData(value: string): string {
+  const parsed = dayjs(value);
+  return parsed.isValid() ? parsed.format("DD/MM/YYYY") : "-";
+}
+
+export function CenarioCopyPanel({ cenarios, onCopiar, copiando = false, erroCopia = "" }: CenarioCopyPanelProps) {
+  const [filtro, setFiltro] = useState<Filtro>("TODOS");
   const [selecionadoId, setSelecionadoId] = useState<number | null>(
     cenarios[0]?.id ?? null
   );
@@ -56,9 +71,35 @@ export function CenarioCopyPanel({ cenarios, onCopiar }: CenarioCopyPanelProps) 
     parametrosEMinimoGarantido: true,
   });
 
+  const proximoIdCenario = useMemo(() => {
+    if (cenarios.length === 0) return 1;
+    return Math.max(...cenarios.map((c) => c.id)) + 1;
+  }, [cenarios]);
+
+  const proximoIdPeriodo = useMemo(() => {
+    if (cenarios.length === 0) return 1;
+    return Math.max(...cenarios.map((c) => c.idPeridoCompetencia)) + 1;
+  }, [cenarios]);
+
+  const [novoIdCenario, setNovoIdCenario] = useState(proximoIdCenario);
+  const [novoIdPeriodo, setNovoIdPeriodo] = useState(proximoIdPeriodo);
+  const [novaDescricao, setNovaDescricao] = useState("");
+  const [novaDataInicio, setNovaDataInicio] = useState("");
+  const [novaDataFim, setNovaDataFim] = useState("");
+
+  // Sugere os próximos IDs sempre que a lista mudar (ex: depois de copiar com sucesso).
+  useEffect(() => {
+    setNovoIdCenario(proximoIdCenario);
+    setNovoIdPeriodo(proximoIdPeriodo);
+  }, [proximoIdCenario, proximoIdPeriodo]);
+
   const cenariosFiltrados = useMemo(() => {
-    if (filtro === "Todos") return cenarios;
-    return cenarios.filter((c) => c.situacao === FILTRO_PARA_SITUACAO[filtro]);
+    if (filtro === "TODOS") return cenarios;
+    const texto = FILTRO_PARA_TEXTO[filtro];
+    // const cen = cenarios.filter((c) => c.situacao.includes(texto));
+    // console.log(cen)
+    // console.log(texto)
+    return cenarios.filter((c) => c.situacao.includes(texto));
   }, [cenarios, filtro]);
 
   const selecionado = useMemo(
@@ -66,9 +107,29 @@ export function CenarioCopyPanel({ cenarios, onCopiar }: CenarioCopyPanelProps) 
     [cenarios, selecionadoId]
   );
 
+  // Ao trocar o cenário de origem, sugere as mesmas datas de vigência como ponto de partida.
+  useEffect(() => {
+    if (!selecionado) return;
+    setNovaDataInicio(toDateInputValue(selecionado.dataInicio));
+    setNovaDataFim(toDateInputValue(selecionado.dataFim));
+    setNovaDescricao((prev) => prev || `Cópia de ${selecionado.descricao}`);
+  }, [selecionado]);
+
   const toggleOpcao = (chave: keyof OpcoesCopia) => {
     setOpcoes((prev) => ({ ...prev, [chave]: !prev[chave] }));
   };
+
+  function handleCopiar() {
+    if (!selecionado) return;
+    onCopiar({
+      sourceScenarioId: selecionado.id,
+      newScenarioId: novoIdCenario,
+      newPeriodCompetenceId: novoIdPeriodo,
+      description: novaDescricao,
+      startDate: novaDataInicio,
+      endDate: novaDataFim,
+    });
+  }
 
   return (
     <div className="rounded-xl border border-gray-200 bg-white">
@@ -77,9 +138,6 @@ export function CenarioCopyPanel({ cenarios, onCopiar }: CenarioCopyPanelProps) 
         <div className="flex items-baseline gap-2">
           <span className="text-sm font-bold text-indigo-950">
             Cenários gravados
-          </span>
-          <span className="text-sm text-gray-400">
-            
           </span>
         </div>
 
@@ -108,9 +166,10 @@ export function CenarioCopyPanel({ cenarios, onCopiar }: CenarioCopyPanelProps) 
               <th className="w-10 rounded-l-lg py-3 pl-4" />
               <th className="px-3 py-3 text-left">ID Cenário</th>
               <th className="px-3 py-3 text-left">ID Periodo Competencia</th>
+              <th className="px-3 py-3 text-left">Descrição</th>
               <th className="px-3 py-3 text-left">Data Início</th>
               <th className="px-3 py-3 text-left">Data Fim</th>
-              <th className="px-3 py-3 text-left">Situação</th>            
+              <th className="px-3 py-3 text-left">Situação</th>
               <th className="rounded-r-lg px-3 py-3 text-right">
                 Vendedores
               </th>
@@ -119,7 +178,7 @@ export function CenarioCopyPanel({ cenarios, onCopiar }: CenarioCopyPanelProps) 
           <tbody>
             {cenariosFiltrados.map((c) => {
               const isSelected = c.id === selecionadoId;
-              const situacaoStyle = SITUACAO_STYLES[c.situacao];
+              const style = situacaoStyle(c.situacao);
 
               return (
                 <tr
@@ -140,22 +199,23 @@ export function CenarioCopyPanel({ cenarios, onCopiar }: CenarioCopyPanelProps) 
                   <td className="px-3 py-3 font-semibold text-indigo-950">
                     {c.id}
                   </td>
-                    <td className="px-3 py-3 font-semibold text-indigo-950">
+                  <td className="px-3 py-3 font-semibold text-indigo-950">
                     {c.idPeridoCompetencia}
                   </td>
                   <td className="px-3 py-3 font-medium text-gray-700">
                     {c.descricao}
                   </td>
-                  <td className="px-3 py-3 text-gray-500">{c.dataInicio}</td>
-                  <td className="px-3 py-3 text-gray-500">{c.dataFim}</td>
+                  <td className="px-3 py-3 text-gray-500">{formatarData(c.dataInicio)}</td>
+                  <td className="px-3 py-3 text-gray-500">{formatarData(c.dataFim)}</td>
                   <td className="px-3 py-3">
                     <span
-                      className={`inline-flex items-center gap-1.5 font-semibold ${situacaoStyle.text}`}
+                      className={`inline-flex items-center gap-1.5 font-semibold ${style.text}`}
                     >
                       <span
-                        className={`h-1.5 w-1.5 rounded-full ${situacaoStyle.dot}`}
+                        className={`h-1.5 w-1.5 rounded-full ${style.dot}`}
                       />
-                      {c.situacao}
+                      {c.situacao }
+                      
                     </span>
                   </td>
                   <td className="px-3 py-3 text-right font-semibold text-gray-700">
@@ -189,13 +249,13 @@ export function CenarioCopyPanel({ cenarios, onCopiar }: CenarioCopyPanelProps) 
             {selecionado.descricao}
           </h3>
 
-          <div className="mt-4 grid grid-cols-3 gap-6">
+          <div className="mt-4 grid grid-cols-2 gap-6">
             <div>
               <div className="text-xs font-bold uppercase tracking-wide text-gray-400">
                 Vigência
               </div>
               <div className="mt-1 text-sm font-semibold text-gray-700">
-                {selecionado.dataInicio} → {selecionado.dataFim}
+                {formatarData(selecionado.dataInicio)} → {formatarData(selecionado.dataFim)}
               </div>
             </div>
             <div>
@@ -206,18 +266,59 @@ export function CenarioCopyPanel({ cenarios, onCopiar }: CenarioCopyPanelProps) 
                 {selecionado.vendedores} vendedores
               </div>
             </div>
-            <div>
-              <div className="text-xs font-bold uppercase tracking-wide text-gray-400">
-                Total de Metas
-              </div>
-              <div className="mt-1 text-sm font-bold text-orange-500">
-                
-              </div>
-            </div>
+          </div>
+
+          {/* Dados do novo cenário/período */}
+          <div className="mt-5 grid grid-cols-2 gap-4 border-t border-gray-100 pt-4 md:grid-cols-3">
+            <label className="flex flex-col gap-1 text-xs font-bold uppercase tracking-wide text-gray-400">
+              Novo ID do cenário
+              <input
+                type="number"
+                value={novoIdCenario}
+                onChange={(e) => setNovoIdCenario(Number(e.target.value))}
+                className="rounded-md border border-gray-200 px-2.5 py-1.5 text-sm font-semibold text-gray-700 normal-case tracking-normal"
+              />
+            </label>
+            <label className="flex flex-col gap-1 text-xs font-bold uppercase tracking-wide text-gray-400">
+              Novo ID do período
+              <input
+                type="number"
+                value={novoIdPeriodo}
+                onChange={(e) => setNovoIdPeriodo(Number(e.target.value))}
+                className="rounded-md border border-gray-200 px-2.5 py-1.5 text-sm font-semibold text-gray-700 normal-case tracking-normal"
+              />
+            </label>
+            <label className="flex flex-col gap-1 text-xs font-bold uppercase tracking-wide text-gray-400 md:col-span-1">
+              Descrição do novo cenário
+              <input
+                type="text"
+                value={novaDescricao}
+                onChange={(e) => setNovaDescricao(e.target.value)}
+                className="rounded-md border border-gray-200 px-2.5 py-1.5 text-sm font-semibold text-gray-700 normal-case tracking-normal"
+              />
+            </label>
+            <label className="flex flex-col gap-1 text-xs font-bold uppercase tracking-wide text-gray-400">
+              Data início
+              <input
+                type="date"
+                value={novaDataInicio}
+                onChange={(e) => setNovaDataInicio(e.target.value)}
+                className="rounded-md border border-gray-200 px-2.5 py-1.5 text-sm font-semibold text-gray-700 normal-case tracking-normal"
+              />
+            </label>
+            <label className="flex flex-col gap-1 text-xs font-bold uppercase tracking-wide text-gray-400">
+              Data fim
+              <input
+                type="date"
+                value={novaDataFim}
+                onChange={(e) => setNovaDataFim(e.target.value)}
+                className="rounded-md border border-gray-200 px-2.5 py-1.5 text-sm font-semibold text-gray-700 normal-case tracking-normal"
+              />
+            </label>
           </div>
 
           <div className="mt-5 flex flex-wrap items-center justify-between gap-4 border-t border-gray-100 pt-4">
-            <div className="flex flex-wrap gap-6">
+            <div className=" flex-wrap gap-6 hidden">
               <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
                 <input
                   type="checkbox"
@@ -248,12 +349,17 @@ export function CenarioCopyPanel({ cenarios, onCopiar }: CenarioCopyPanelProps) 
             </div>
 
             <button
-              onClick={() => onCopiar(selecionado.id, opcoes)}
-              className="rounded-lg bg-orange-500 px-5 py-2.5 text-sm font-bold text-white hover:bg-orange-600"
+              onClick={handleCopiar}
+              disabled={copiando}
+              className="rounded-lg bg-orange-500 px-5 py-2.5 text-sm font-bold text-white hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Copiar para o lote atual
+              {copiando ? "Copiando..." : "Criar e copiar cenário"}
             </button>
           </div>
+
+          {erroCopia && (
+            <p className="mt-3 text-sm font-medium text-red-600">{erroCopia}</p>
+          )}
         </div>
       )}
     </div>
