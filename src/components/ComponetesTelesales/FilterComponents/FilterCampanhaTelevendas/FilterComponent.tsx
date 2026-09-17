@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import dayjs from 'dayjs';
 import { isValidPeriod } from '../../../../utils/IsValidPeriod';
 import { ChevronDown } from 'lucide-react';
+import ParametroMultiSelect from './ParametroMultiSelect';
 
 export interface FiltrosValues {
   dataInicio: string;
@@ -37,10 +38,11 @@ const FiltroBar: React.FC<FiltroBarProps> = ({
     valoresIniciais?.incluirGrandesContas ?? false
   );
   const [linhaProduto, setLinhaProduto] = useState(
-    valoresIniciais?.linhaProduto ?? linhasProduto[0]
+    valoresIniciais?.linhaProduto ?? ''
   );
   const [fabricante, setFabricante] = useState('');
   const [erro, setErro] = useState('');
+  const [tipoData,setTipoData] = useState('dataFaturamento')
 
   const handleAplicar = () => {
     const periodoValido = isValidPeriod(dayjs(dataInicio).toDate(), dayjs(dataFim).toDate());
@@ -64,6 +66,7 @@ const FiltroBar: React.FC<FiltroBarProps> = ({
   };
 
   return (
+    <>
     <div className="flex flex-wrap items-center gap-7 bg-white rounded-2xl px-6 py-4 shadow-sm font-poppins">
       {/* Data Início */}
       <div className="flex flex-col gap-1.5 min-w-[150px]">
@@ -80,6 +83,7 @@ const FiltroBar: React.FC<FiltroBarProps> = ({
           onChange={(e) => setDataInicio(e.target.value)}
           className={inputClasses}
         />
+    
       </div>
 
       {/* Data Fim */}
@@ -132,54 +136,57 @@ const FiltroBar: React.FC<FiltroBarProps> = ({
       </div>
 
       {/* Fabricante */}
-      <div className="flex flex-col gap-1.5 min-w-[150px]">
-        <label
-          htmlFor="filtro-Fabricante"
-          className="text-[11px] font-bold uppercase tracking-wide text-gray-400"
-        >
-          Fabricante
-        </label>
-        <input
-          type="text"
-          id="filtro-Fabricante"
-          placeholder="Ex: 101;205"
-          className={`${inputClasses}`}
-          value={fabricante}
-          onChange={(e)=> setFabricante(e.target.value)}
-          />
-      </div>
+      <ParametroMultiSelect
+        tipoParametro="Fabricante"
+        label="Fabricante"
+        placeholder="Buscar por nome ou id..."
+        value={fabricante}
+        onChange={setFabricante}
+      />
       {/* Linha de Produto */}
-       
-      <div className="flex flex-col gap-1.5 min-w-[150px]">
-        <label
-          htmlFor="filtro-linhaProduto"
-          className="text-[11px] font-bold uppercase tracking-wide text-gray-400"
-        >
-          Linha Produto
-        </label>
-        <input
-          type="text"
-          id="filtro-linhaProduto"
-          placeholder="Ex: 10;20"
-          className={`${inputClasses}`}
-          value={linhaProduto}
-          onChange={(e)=> setLinhaProduto(e.target.value)}
-          />
-      </div>
+      <ParametroMultiSelect
+        tipoParametro="Linha"
+        label="Linha Produto"
+        placeholder="Buscar por nome ou id..."
+        value={linhaProduto}
+        onChange={setLinhaProduto}
+      />
+
 
       {erro && (
         <span className="w-full text-xs font-medium text-red-500">{erro}</span>
       )}
 
+        {/* DATA DE APURAÇÃO */}       
+      <div className="flex flex-col gap-1.5 min-w-[150px]">
+        <label
+          htmlFor="filtro-tipoData"
+          className="text-[11px] font-bold uppercase tracking-wide text-gray-400"
+        >
+          Tipo de data
+        </label>
+        <select           
+          id="filtro-tipoData"          
+          className={`${inputClasses}`}
+          value={tipoData}
+          onChange={(e)=> {setTipoData(e.target.value)}}          
+          >
+            <option value="dataFaturamento" className=''>Data Faturamento</option>
+            <option value="dataPedido" className=''>Data Pedido</option>
+          </select>
+      </div>
+
       {/* Botão aplicar */}
       <button
         type="button"
         onClick={handleAplicar}
-        className="ml-auto h-10 rounded-lg bg-other-orange px-5 text-sm font-semibold text-white transition-[filter] hover:brightness-105 active:brightness-95"
+        className=" ml-auto h-10 rounded-lg bg-other-orange px-5 text-sm font-semibold text-white transition-[filter] hover:brightness-105 active:brightness-95"
       >
         Aplicar filtros
       </button>
+
     </div>
+    </>
   );
 };
 
