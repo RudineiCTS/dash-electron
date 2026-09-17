@@ -11,7 +11,7 @@ export function useValorParametros(tipoParametro: string) {
 
     // debounce: só dispara a busca depois que o usuário parar de digitar
     useEffect(() => {
-        const timer = setTimeout(() => setDebouncedTermo(termo.trim()), 400);
+        const timer = setTimeout(() => setDebouncedTermo(termo.trim()), 600);
         return () => clearTimeout(timer);
     }, [termo]);
 

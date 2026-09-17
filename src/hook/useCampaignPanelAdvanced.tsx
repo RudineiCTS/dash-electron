@@ -11,6 +11,7 @@ export function useCampaignPanelAdvanced(props:SellOutSummaryInterface | null){
     const fetchCampaignPanelAdvanced = useCallback(async (signal?: AbortSignal)=>{
         if(!props) return 
         try{
+            
             setLoading(true);
             setError("");
             //recuperar dados no repositorio

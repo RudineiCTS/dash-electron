@@ -10,6 +10,7 @@ export interface FiltrosValues {
   incluirGrandesContas: boolean;
   linhaProduto?: string;
   fabricante:string
+  tipoData: string;
 }
 
 interface FiltroBarProps {
@@ -42,7 +43,7 @@ const FiltroBar: React.FC<FiltroBarProps> = ({
   );
   const [fabricante, setFabricante] = useState('');
   const [erro, setErro] = useState('');
-  const [tipoData,setTipoData] = useState('dataFaturamento')
+  const [tipoData,setTipoData] = useState(valoresIniciais?.tipoData ?? 'dataFaturamento')
 
   const handleAplicar = () => {
     const periodoValido = isValidPeriod(dayjs(dataInicio).toDate(), dayjs(dataFim).toDate());
@@ -62,125 +63,125 @@ const FiltroBar: React.FC<FiltroBarProps> = ({
     }
 
     setErro('');
-    onAplicarFiltros({ dataInicio, dataFim, incluirGrandesContas, linhaProduto, fabricante });
+    onAplicarFiltros({ dataInicio, dataFim, incluirGrandesContas, linhaProduto, fabricante, tipoData });
   };
 
   return (
     <>
-    <div className="flex flex-wrap items-center gap-7 bg-white rounded-2xl px-6 py-4 shadow-sm font-poppins">
-      {/* Data Início */}
-      <div className="flex flex-col gap-1.5 min-w-[150px]">
-        <label
-          htmlFor="filtro-data-inicio"
-          className="text-[11px] font-bold uppercase tracking-wide text-gray-400"
-        >
-          Data Início
-        </label>
-        <input
-          id="filtro-data-inicio"
-          type="date"
-          value={dataInicio}
-          onChange={(e) => setDataInicio(e.target.value)}
-          className={inputClasses}
-        />
-    
-      </div>
-
-      {/* Data Fim */}
-      <div className="flex flex-col gap-1.5 min-w-[150px]">
-        <label
-          htmlFor="filtro-data-fim"
-          className="text-[11px] font-bold uppercase tracking-wide text-gray-400"
-        >
-          Data Fim
-        </label>
-        <input
-          id="filtro-data-fim"
-          type="date"
-          value={dataFim}
-          onChange={(e) => setDataFim(e.target.value)}
-          className={inputClasses}
-        />
-      </div>
-
-      {/* Toggle Grandes Contas */}
-      <div className="flex flex-col gap-1.5 min-w-[150px]">
-        <label className="text-[11px] font-bold uppercase tracking-wide text-gray-400">
-          Grandes Contas
-        </label>
-        <button
-          type="button"
-          role="switch"
-          aria-checked={incluirGrandesContas}
-          onClick={() => setIncluirGrandesContas((v) => !v)}
-          className="flex h-10 items-center gap-2.5 rounded-lg border border-gray-200 bg-white px-3.5 cursor-pointer"
-        >
-          <span
-            className={`relative h-[18px] w-[34px] shrink-0 rounded-full transition-colors ${
-              incluirGrandesContas ? 'bg-[#dd8100]' : 'bg-gray-300'
-            }`}
+    <div className="flex  justify-between bg-white rounded-2xl px-8 py-4 shadow-sm font-poppins">
+      {/* DATA DE APURAÇÃO */}       
+      <div className="flex flex-col gap-1.5  ">
+          <label
+            htmlFor="filtro-tipoData"
+            className="text-[11px] font-bold uppercase tracking-wide text-gray-400"
           >
-            <span
-              className={`absolute left-0.5 top-0.5 h-3.5 w-3.5 rounded-full bg-white shadow transition-transform ${
-                incluirGrandesContas ? 'translate-x-4' : 'translate-x-0'
-              }`}
+            Tipo de data
+          </label>
+          <select           
+            id="filtro-tipoData"          
+            className={`${inputClasses}`}
+            value={tipoData}
+            onChange={(e)=> {setTipoData(e.target.value)}}          
+            >
+              <option value="dataFaturamento" className=''>Data Faturamento</option>
+              <option value="dataPedido" className=''>Data Pedido</option>
+          </select>
+
+          {/* Toggle Grandes Contas */}
+          <div className="flex flex-col gap-1.5 min-w-[150px]">
+            <label className="text-[11px] font-bold uppercase tracking-wide text-gray-400">
+              Grandes Contas
+            </label>
+            <button
+              type="button"
+              role="switch"
+              aria-checked={incluirGrandesContas}
+              onClick={() => setIncluirGrandesContas((v) => !v)}
+              className="flex h-10 items-center gap-2.5 rounded-lg border border-gray-200 bg-white px-3.5 cursor-pointer"
+            >
+              <span
+                className={`relative h-[18px] w-[34px] shrink-0 rounded-full transition-colors ${
+                  incluirGrandesContas ? 'bg-[#dd8100]' : 'bg-gray-300'
+                }`}
+              >
+                <span
+                  className={`absolute left-0.5 top-0.5 h-3.5 w-3.5 rounded-full bg-white shadow transition-transform ${
+                    incluirGrandesContas ? 'translate-x-4' : 'translate-x-0'
+                  }`}
+                />
+              </span>
+              <span className="whitespace-nowrap text-sm text-gray-800">
+                Incluir Grandes Contas{' '}
+                <strong className={incluirGrandesContas ? 'text-[#dd8100]' : 'text-gray-400'}>
+                  {incluirGrandesContas ? 'SIM' : 'NÃO'}
+                </strong>
+              </span>
+            </button>
+          </div>
+        </div>
+        {/* Data Início */}
+        <div className="flex flex-col gap-1.5 min-w-[150px]">
+          <label
+            htmlFor="filtro-data-inicio"
+            className="text-[11px] font-bold uppercase tracking-wide text-gray-400"
+          >
+            Data Início
+          </label>
+          <input
+            id="filtro-data-inicio"
+            type="date"
+            value={dataInicio}
+            onChange={(e) => setDataInicio(e.target.value)}
+            className={inputClasses}
+          />
+              {/* Data Fim */}
+          <div className="flex flex-col gap-1.5 min-w-[150px]">
+            <label
+              htmlFor="filtro-data-fim"
+              className="text-[11px] font-bold uppercase tracking-wide text-gray-400"
+            >
+              Data Fim
+            </label>
+            <input
+              id="filtro-data-fim"
+              type="date"
+              value={dataFim}
+              onChange={(e) => setDataFim(e.target.value)}
+              className={inputClasses}
             />
-          </span>
-          <span className="whitespace-nowrap text-sm text-gray-800">
-            Incluir Grandes Contas{' '}
-            <strong className={incluirGrandesContas ? 'text-[#dd8100]' : 'text-gray-400'}>
-              {incluirGrandesContas ? 'SIM' : 'NÃO'}
-            </strong>
-          </span>
-        </button>
+          </div>
+      </div> 
+
+      <div className="flex flex-col gap-1.5 min-w-[220px] max-w-[300px]">
+        {/* Fabricante */}
+        <ParametroMultiSelect
+          tipoParametro="Fabricante"
+          label="Fabricante"
+          placeholder="Buscar por nome ou id..."
+          value={fabricante}
+          onChange={setFabricante}
+        />
+        {/* Linha de Produto */}
+        <ParametroMultiSelect
+          tipoParametro="Linha"
+          label="Linha Produto"
+          placeholder="Buscar por nome ou id..."
+          value={linhaProduto}
+          onChange={setLinhaProduto}
+        />
       </div>
-
-      {/* Fabricante */}
-      <ParametroMultiSelect
-        tipoParametro="Fabricante"
-        label="Fabricante"
-        placeholder="Buscar por nome ou id..."
-        value={fabricante}
-        onChange={setFabricante}
-      />
-      {/* Linha de Produto */}
-      <ParametroMultiSelect
-        tipoParametro="Linha"
-        label="Linha Produto"
-        placeholder="Buscar por nome ou id..."
-        value={linhaProduto}
-        onChange={setLinhaProduto}
-      />
-
 
       {erro && (
         <span className="w-full text-xs font-medium text-red-500">{erro}</span>
       )}
 
-        {/* DATA DE APURAÇÃO */}       
-      <div className="flex flex-col gap-1.5 min-w-[150px]">
-        <label
-          htmlFor="filtro-tipoData"
-          className="text-[11px] font-bold uppercase tracking-wide text-gray-400"
-        >
-          Tipo de data
-        </label>
-        <select           
-          id="filtro-tipoData"          
-          className={`${inputClasses}`}
-          value={tipoData}
-          onChange={(e)=> {setTipoData(e.target.value)}}          
-          >
-            <option value="dataFaturamento" className=''>Data Faturamento</option>
-            <option value="dataPedido" className=''>Data Pedido</option>
-          </select>
-      </div>
+
 
       {/* Botão aplicar */}
       <button
         type="button"
         onClick={handleAplicar}
-        className=" ml-auto h-10 rounded-lg bg-other-orange px-5 text-sm font-semibold text-white transition-[filter] hover:brightness-105 active:brightness-95"
+        className="self-end h-10 rounded-lg bg-other-orange px-5 text-sm font-semibold text-white transition-[filter] hover:brightness-105 active:brightness-95"
       >
         Aplicar filtros
       </button>

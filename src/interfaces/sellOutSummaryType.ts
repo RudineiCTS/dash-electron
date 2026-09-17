@@ -1,12 +1,13 @@
 export interface SellOutSummaryInterface {
-    startDate: Date | null,
-    endDate: Date | null,
+    startDate: string | null,
+    endDate: string | null,
     idManufacturer: number[] | null,
     productLine: number[] | null,
     products:number[] | null,
     idComissionScenario: number | null,
     clients: number[] | null,
     consideraGrandesContas:boolean,
+    tipoData: string,
 }
 
 

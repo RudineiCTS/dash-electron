@@ -26,6 +26,7 @@ const ParametroMultiSelect: React.FC<ParametroMultiSelectProps> = ({
   const { termo, setTermo, opcoes, loading } = useValorParametros(tipoParametro);
   const [selecionados, setSelecionados] = useState<ValorParametro[]>([]);
   const [aberto, setAberto] = useState(false);
+  const [mostrarTodos, setMostrarTodos] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   // resolve os ids iniciais (valoresIniciais) para o nome correspondente, uma única vez
@@ -86,38 +87,75 @@ const ParametroMultiSelect: React.FC<ParametroMultiSelectProps> = ({
   };
 
   return (
-    <div ref={containerRef} className="relative flex flex-col gap-1.5 min-w-[220px]">
+    <div ref={containerRef} className="relative flex flex-col gap-1.5 min-w-[220px]  max-w-[300px] w-[300px]">
       <label className="text-[11px] font-bold uppercase tracking-wide text-gray-400">{label}</label>
 
-      <div className={`${inputClasses} flex min-h-10 flex-wrap items-center gap-1.5 px-2 py-1.5`}>
-        {selecionados.map((s) => (
-          <span
-            key={s.idValor}
-            className="flex items-center gap-1 rounded-md bg-[#dd8100]/10 px-2 py-1 text-xs font-medium text-[#dd8100]"
-          >
-            {s.descricaoValor}
+      <div className={`${inputClasses} flex min-h-10 items-center gap-1.5 overflow-hidden px-2 py-1.5`}>
+        {selecionados.length > 0 && (
+          <span className="flex min-w-0 max-w-[60%] shrink items-center gap-1 rounded-md bg-[#dd8100]/10 px-2 py-1 text-xs font-medium text-[#dd8100]">
+            <span className="truncate">{selecionados[0].descricaoValor}</span>
             <button
               type="button"
-              onClick={() => remover(s.idValor)}
-              className="font-bold leading-none cursor-pointer"
-              aria-label={`Remover ${s.descricaoValor}`}
+              onClick={() => remover(selecionados[0].idValor)}
+              className="shrink-0 font-bold leading-none cursor-pointer"
+              aria-label={`Remover ${selecionados[0].descricaoValor}`}
             >
               ×
             </button>
           </span>
-        ))}
+        )}
+
+        {selecionados.length > 1 && (
+          <span
+            className="shrink-0 cursor-default select-none whitespace-nowrap rounded-md bg-[#dd8100]/10 px-2 py-1 text-xs font-medium text-[#dd8100]"
+            onMouseEnter={() => setMostrarTodos(true)}
+            onMouseLeave={() => setMostrarTodos(false)}
+          >
+            +{selecionados.length - 1}...
+          </span>
+        )}
+
         <input
           type="text"
           placeholder={selecionados.length === 0 ? placeholder : ""}
-          className="min-w-[100px] flex-1 border-none bg-transparent text-sm outline-none"
+          className="min-w-[10px] flex-1 border-none bg-transparent text-sm outline-none"
           value={termo}
           onChange={(e) => {
-            setTermo(e.target.value);
-            setAberto(true);
-          }}
+
+              setTermo(e.target.value);
+              setAberto(true);
+
+            }}
           onFocus={() => setAberto(true)}
         />
       </div>
+
+      {mostrarTodos && selecionados.length > 1 && (
+        <div
+          className="absolute top-full right-0 z-20 mt-1 w-max min-w-[200px] max-w-xs rounded-lg border border-gray-200 bg-white p-2 shadow-lg"
+          onMouseEnter={() => setMostrarTodos(true)}
+          onMouseLeave={() => setMostrarTodos(false)}
+        >
+          <div className="flex max-h-56 flex-col gap-1 overflow-auto">
+            {selecionados.map((s) => (
+              <div
+                key={s.idValor}
+                className="flex items-center justify-between gap-2 rounded px-2 py-1 text-xs text-gray-700 hover:bg-gray-50"
+              >
+                <span className="truncate">{s.descricaoValor}</span>
+                <button
+                  type="button"
+                  onClick={() => remover(s.idValor)}
+                  className="shrink-0 cursor-pointer font-bold leading-none text-[#dd8100]"
+                  aria-label={`Remover ${s.descricaoValor}`}
+                >
+                  ×
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {aberto && termo && (
         <div className="absolute top-full left-0 z-10 mt-1 max-h-56 w-full overflow-auto rounded-lg border border-gray-200 bg-white shadow-lg">
@@ -131,7 +169,7 @@ const ParametroMultiSelect: React.FC<ParametroMultiSelectProps> = ({
                 key={opcao.idValor}
                 type="button"
                 onClick={() => adicionar(opcao)}
-                className="block w-full px-3 py-2 text-left text-sm hover:bg-gray-50 cursor-pointer"
+                className="block w-full px-3 py-2 text-left text-sm hover:bg-gray-50 cursor-pointer "
               >
                 {opcao.descricaoValor}
               </button>

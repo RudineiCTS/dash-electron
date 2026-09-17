@@ -56,14 +56,15 @@ export default function CampaignsAdvanced() {
     const filterData:SellOutSummaryInterface | null= useMemo(()=>{
       if(!filtros) return null
       return {
-        startDate: dayjs(filtros?.dataInicio).toDate(),
-        endDate: dayjs(filtros?.dataFim).toDate(),
+        startDate: dayjs(filtros?.dataInicio).format('YYYY-MM-DD'),
+        endDate: dayjs(filtros?.dataFim).format('YYYY-MM-DD'),
         idManufacturer: parseCodigosList(filtros?.fabricante),
         products: [],
         productLine: parseCodigosList(filtros?.linhaProduto),
         idComissionScenario: 102,
         clients: [],
         consideraGrandesContas: filtros?.incluirGrandesContas ?? false,
+        tipoData: filtros?.tipoData ?? 'dataFaturamento',
     }
   },[filtros])
 
