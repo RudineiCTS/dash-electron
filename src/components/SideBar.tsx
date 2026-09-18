@@ -1,7 +1,7 @@
 import { IconType } from 'react-icons'  // ← importa o tipo
 import { LogoApp } from './logoApp'
 import { ReactNode } from 'react'
-import {FiActivity, FiArchive, FiBarChart2, FiBook, FiSettings} from 'react-icons/fi'
+import {FiActivity, FiArchive, FiBarChart2, FiBook, FiGrid, FiSettings} from 'react-icons/fi'
 import { NavLink } from 'react-router-dom'
 import { ButtonSideBar } from './ButtonSideBar'
 import { ThemeToggle } from './ThemeToggle'
@@ -23,25 +23,35 @@ export interface SideBarProps{
     className?:string,
     children?: ReactNode
 }
-const styleButton = 'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-[#5c5c74] cursor-pointer transition-colors hover:bg-[#f7f7fb]';
-const styleButtonActive = 'relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-azul bg-azul-tint '
+const styleButton = 'flex items-center gap-3 px-3 py-2 rounded-xl  mx-1 text-sm font-medium text-[#5c5c74] cursor-pointer transition-colors hover:bg-[#EEF0FB]';
+const styleButtonActive = 'relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-azul bg-[#d9ddf6]'
 export function SideBar({options,className,isMenuDefault,children,switchCampaign,optionActive }:SideBarProps){
     function handleSelectOption(e:number){
         switchCampaign(e)
     }
     return(        
-         <div className={`${className}`}>                        
+         <div className={`${className}`}>
+
             {
                 isMenuDefault  == true ? (
                     <>
-                    <div className='mt-4 w-full '>                        
+                    <LogoApp/> 
+                    <div className='w-full h-px bg-github-border '></div>
+                    <div className='mt-4 w-full mb-10'>                        
                         <div className={'text-github-text-muted flex flex-col gap-2 pl-4'}>    
                            <h1 className='px-3 text-sm font-medium' >
-                                <strong className='text-base'>
-                                     Geral -
-                                </strong>  Fn Analise 
+                                <strong className='text-sm'>
+                                     Menu Princial
+                                </strong> 
                             </h1>
-                            <div className='border-b mb-3 pb-2'>
+                            <div className=''>
+                                 <NavLink 
+                                    className={({ isActive }) =>`${styleButton}${isActive ?  styleButtonActive : ''}`}                            
+                                    to={"menu"}
+                                >
+                                    <FiGrid className="w-[17px] h-[17px] shrink-0 opacity-70 group-[.active]:opacity-100 group-[.active]:text-azul"/>
+                                        Início
+                                </NavLink>
                                 <NavLink 
                                     className={({ isActive }) =>`${styleButton}${isActive ?  styleButtonActive : ''}`}                            
                                     to={"campaigns"}
@@ -68,42 +78,28 @@ export function SideBar({options,className,isMenuDefault,children,switchCampaign
                                     <FiBook />
                                     Histórico de campanhas                                                                                                            
                                 </NavLink>
-                            </div>                        
-                            <div>
-                                <h1 className='px-3 text-sm font-medium' >
-                                    <strong className="text-base">
-                                         Arquivos -
-                                    </strong>  Fn Arquivos 
-                                </h1>
                                 <NavLink 
-                                    // className={({ isActive }) => `${styleButton} ${isActive ?  styleButtonActive : 'cursor-not-allowed'}`}    
+                                    //  className={({ isActive }) => `${styleButton} ${isActive ?  styleButtonActive : 'cursor-not-allowed'}`}   
+                                     className={`flex items-center gap-3 px-3 py-2 rounded-xl  mx-1 text-sm font-medium text-slate-300 cursor-not-allowed bg-opacity-60`} 
                                      to={"#"}                                
-                                    className={`cursor-not-allowed flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-[#5c5c74]  transition-colors hover:bg-[#f7f7fb]`}
+                                    
                                     >
                                     <FiArchive />
                                     Campanhas Recebidas
                                 </NavLink>
-                            </div> 
-                            <div>
                                 <NavLink 
                                     // className={({ isActive }) => `${styleButton} ${isActive ?  styleButtonActive : 'cursor-not-allowed'}`}    
-                                     to={"params-general"}                                
-                                    className={` flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-[#5c5c74]  transition-colors hover:bg-[#f7f7fb]`}
+                                    className={`flex items-center gap-3 px-3 py-2 rounded-xl  mx-1 text-sm font-medium text-slate-300 cursor-not-allowed bg-opacity-60`} 
+                                     to={"#"}                                
+                                    // className={` flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-[#5c5c74]  transition-colors hover:bg-[#f7f7fb]`}
                                     >
-                                    <FiSettings  />
-                                    <strong className="text-base">
-                                         Parametrização 
-                                    </strong>
+                                    <FiSettings  />                                    
+                                         Parametrização                                     
                                 </NavLink>
-                            </div>
-                               
+                            </div>                        
                         </div>
-                    </div>
-
-                     <LogoApp/> 
-                    
-                    
-                        <div className="flex flex-col  items-center">
+                    </div>                                                             
+                        <div className="flex flex-col  items-center my-auto">
                             <ul className="flex flex-col gap-3 w-full items-center">
                                 {options.map((e)=> 
                                     (

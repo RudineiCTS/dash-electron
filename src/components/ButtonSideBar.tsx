@@ -10,7 +10,7 @@ interface ButtonSideBarProps {
 export function ButtonSideBar({ onClick, children, title, typeButton, active }: ButtonSideBarProps) {
     const buttonStyles = {
             active: `text-[#8A8A9A] flex gap-3 items-center text-sm w-full
-          bg-github-border py-3 rounded-xl px-4 mb-4 cursor-pointer
+          bg-github-border py-3 rounded-xl px-3 mb-4 cursor-pointer
           hover:text-github-text hover:bg-github-btn-green-hover transition-all duration-200
           ${active && 'bg-github-btn-green-hover text-github-text'}
           `,

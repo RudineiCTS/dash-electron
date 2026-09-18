@@ -6,12 +6,12 @@ interface LogoAppProps {
 
 export function LogoApp({ className }: LogoAppProps) {
     return (
-        <NavLink className={`flex flex-col items-center justify-center m-auto ${className}`}
+        <NavLink className={`flex flex-col items-start justify-center mx-8 mt-11 mb-6 ${className}`}
                  to={"/"}>
             <div className="flex items-center justify-center gap-3">
                 <svg
-                    width="40"
-                    height="40"
+                    width="30"
+                    height="30"
                     viewBox="0 0 100 100"
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"
@@ -36,8 +36,8 @@ export function LogoApp({ className }: LogoAppProps) {
                 </svg>
 
                 <div className="flex tracking-tight">
-                    <span className="text-4xl font-extrabold text-github-text">Com</span>
-                    <span className="text-4xl font-extrabold text-github-btn-green-hover">pass</span>
+                    <span className="text-3xl font-extrabold text-github-text">Com</span>
+                    <span className="text-3xl font-extrabold text-github-btn-green-hover">pass</span>
                 </div>
             </div>
 

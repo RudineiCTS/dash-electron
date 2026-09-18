@@ -45,6 +45,9 @@ function useContextoAtual(): string | undefined {
   if (matchPath('/', location.pathname)) {
     return 'Campanhas Recebidas';
   }
+  if(matchPath('/menu', location.pathname)){
+    return 'Menu';
+  }
 
   return undefined;
 }
@@ -80,7 +83,7 @@ export default function Layout() {
             <SideBar
               isMenuDefault={true}
               options={items}
-              className={`flex flex-col bg-other-card w-80 max-w-80 h-full
+              className={`flex flex-col bg-other-card lg:w-72 xl:w-80 max-w-80 h-full 
                           fixed lg:static z-50 transition-transform duration-200
 
                           ${mobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}`}
