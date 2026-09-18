@@ -1,11 +1,42 @@
 import { useMemo, useState } from "react";
 
+/**
+ * ID do vendedor cuja linha já traz o somatório total do supervisor (hoje: Michelli).
+ * Essa linha é destacada visualmente e excluída dos totais do rodapé, para não somar
+ * o total em cima do próprio total. Ajustar aqui se o supervisor/ID mudar.
+ */
+export const ID_VENDEDOR_TOTALIZADOR = 112321;
+
 export interface LinhaPreview {
   idVendedor: number;
   nome: string;
   cobertura: number;
   metaSetor: number;
   metaLojaVirtual: number;
+}
+
+export interface TotaisLote {
+  quantidadeAtiva: number;
+  coberturaMedia: number;
+  somaSetor: number;
+  somaLojaVirtual: number;
+  total: number;
+}
+
+export function calcularTotaisLote(linhas: LinhaPreview[]): TotaisLote {
+  const linhasSomaveis = linhas.filter((l) => l.idVendedor !== ID_VENDEDOR_TOTALIZADOR);
+  const qtd = linhasSomaveis.length || 1;
+  const somaCobertura = linhasSomaveis.reduce((acc, l) => acc + l.cobertura, 0);
+  const somaSetor = linhasSomaveis.reduce((acc, l) => acc + l.metaSetor, 0);
+  const somaLojaVirtual = linhasSomaveis.reduce((acc, l) => acc + l.metaLojaVirtual, 0);
+
+  return {
+    quantidadeAtiva: linhasSomaveis.length,
+    coberturaMedia: somaCobertura / qtd,
+    somaSetor,
+    somaLojaVirtual,
+    total: somaSetor + somaLojaVirtual,
+  };
 }
 
 interface PreviewImportacaoProps {
@@ -62,19 +93,7 @@ export function PreviewImportacao({
   onAlterarCelula,
   onDescartarImportacao,
 }: PreviewImportacaoProps) {
-  const totais = useMemo(() => {
-    const qtd = linhas.length || 1;
-    const somaCobertura = linhas.reduce((acc, l) => acc + l.cobertura, 0);
-    const somaSetor = linhas.reduce((acc, l) => acc + l.metaSetor, 0);
-    const somaLojaVirtual = linhas.reduce((acc, l) => acc + l.metaLojaVirtual, 0);
-
-    return {
-      coberturaMedia: somaCobertura / qtd,
-      somaSetor,
-      somaLojaVirtual,
-      total: somaSetor + somaLojaVirtual,
-    };
-  }, [linhas]);
+  const totais = useMemo(() => calcularTotaisLote(linhas), [linhas]);
 
   return (
     <div className="rounded-xl border border-gray-200 bg-white">
@@ -113,17 +132,26 @@ export function PreviewImportacao({
           <tbody>
             {linhas.map((linha) => {
               const total = linha.metaSetor + linha.metaLojaVirtual;
+              const ehTotalizador = linha.idVendedor === ID_VENDEDOR_TOTALIZADOR;
 
               return (
                 <tr
                   key={linha.idVendedor}
-                  className="border-b border-gray-100 last:border-none"
+                  className={`border-b border-gray-100 last:border-none ${
+                    ehTotalizador ? "bg-orange-50" : ""
+                  }`}
+                  title={ehTotalizador ? "Linha do total do supervisor — não entra na soma" : undefined}
                 >
                   <td className="px-4 py-2.5 font-medium text-gray-400">
                     {linha.idVendedor}
                   </td>
                   <td className="px-3 py-2.5 font-semibold text-gray-800">
                     {linha.nome}
+                    {ehTotalizador && (
+                      <span className="ml-2 rounded-md bg-orange-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-orange-600">
+                        Total supervisor
+                      </span>
+                    )}
                   </td>
                   <td className="px-3 py-2.5">
                     <CelulaEditavel

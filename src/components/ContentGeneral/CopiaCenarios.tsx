@@ -31,6 +31,8 @@ interface CenarioCopyPanelProps {
   onCopiar: (form: CopiaCenarioForm) => void;
   copiando?: boolean;
   erroCopia?: string;
+  /** Disparado sempre que a seleção na tabela de cenários mudar (usado para alimentar o rodapé de metas). */
+  onCenarioSelecionado?: (cenario: Cenario | null) => void;
 }
 
 const FILTROS = ["TODOS", "LIBERADO", "FINALIZADO"] as const;
@@ -60,7 +62,13 @@ function formatarData(value: string): string {
   return parsed.isValid() ? parsed.format("DD/MM/YYYY") : "-";
 }
 
-export function CenarioCopyPanel({ cenarios, onCopiar, copiando = false, erroCopia = "" }: CenarioCopyPanelProps) {
+export function CenarioCopyPanel({
+  cenarios,
+  onCopiar,
+  copiando = false,
+  erroCopia = "",
+  onCenarioSelecionado,
+}: CenarioCopyPanelProps) {
   const [filtro, setFiltro] = useState<Filtro>("TODOS");
   const [selecionadoId, setSelecionadoId] = useState<number | null>(
     cenarios[0]?.id ?? null
@@ -106,6 +114,10 @@ export function CenarioCopyPanel({ cenarios, onCopiar, copiando = false, erroCop
     () => cenarios.find((c) => c.id === selecionadoId) ?? null,
     [cenarios, selecionadoId]
   );
+
+  useEffect(() => {
+    onCenarioSelecionado?.(selecionado);
+  }, [selecionado, onCenarioSelecionado]);
 
   // Ao trocar o cenário de origem, sugere as mesmas datas de vigência como ponto de partida.
   useEffect(() => {

@@ -69,9 +69,19 @@ function FieldSelect({ label, value, onChange, options }: FieldSelectProps) {
   );
 }
 
-export default function MetaSelectionHeader() {
-  const [competencia, setCompetencia] = useState<string>("Setembro / 2026");
-  const [tipoPessoa, setTipoPessoa] = useState<string>("SAC");
+interface MetaSelectionHeaderProps {
+  competencia: string;
+  tipoPessoa: string;
+  onCompetenciaChange: (competencia: string) => void;
+  onTipoPessoaChange: (tipoPessoa: string) => void;
+}
+
+export default function MetaSelectionHeader({
+  competencia,
+  tipoPessoa,
+  onCompetenciaChange,
+  onTipoPessoaChange,
+}: MetaSelectionHeaderProps) {
   const [copied, setCopied] = useState<boolean>(false);
 
   const handleCopiar = () => {
@@ -87,7 +97,7 @@ export default function MetaSelectionHeader() {
       <FieldSelect
         label="PERÍODO DE COMPETÊNCIA"
         value={competencia}
-        onChange={setCompetencia}
+        onChange={onCompetenciaChange}
         options={COMPETENCIAS}
       />
 
@@ -96,7 +106,7 @@ export default function MetaSelectionHeader() {
       <FieldSelect
         label="TIPO DE PESSOA"
         value={tipoPessoa}
-        onChange={setTipoPessoa}
+        onChange={onTipoPessoaChange}
         options={TIPOS_PESSOA}
       />
 

@@ -1,9 +1,15 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import dayjs from "dayjs";
+import "dayjs/locale/pt-br";
 import MetaSelectionHeader from "../components/FieldSelectComponent";
 import { HeaderComponent } from "../components/Header";
 import { CenarioCopyPanel, Cenario, CopiaCenarioForm } from "../components/ContentGeneral/CopiaCenarios";
 import { CommissionScenarioProvider, useCommissionScenario } from "../context/CommissionScenarioContext";
 import { ImportarValores } from "../components/ContentGeneral/ImportarValores";
+import { calcularTotaisLote, LinhaPreview } from "../components/ContentGeneral/SharedGeneral/PreviewTableImportacao";
+import { RodapeMetas } from "../components/ContentGeneral/SharedGeneral/RodapeMetas";
+
+dayjs.locale("pt-br");
 
 interface TabItem {
   id: number;
@@ -28,17 +34,35 @@ export function General(){
 
 function GeneralContent(){
     const [tabSelect, setTabSelect] = useState<TabItem>({ id: 1, label: "Copiar cenário"})
+    const [competencia, setCompetencia] = useState<string>("Setembro / 2026");
+    const [tipoPessoa, setTipoPessoa] = useState<string>("SAC");
+    const [linhasImportadas, setLinhasImportadas] = useState<LinhaPreview[]>([]);
+    const [cenarioSelecionado, setCenarioSelecionado] = useState<Cenario | null>(null);
     const { scenarios, loading, error, copying, copyError, copyScenario } = useCommissionScenario();
 
-    const cenarios: Cenario[] = scenarios.map((s) => ({
-        id: s.idScenario,
-        descricao: s.scenarioDescription ?? `Cenário #${s.idScenario}`,
-        dataInicio: s.startDate ?? "",
-        dataFim: s.endDate ?? "",
-        situacao: s.periodCompetenceStatusDescription ?? "-",
-        vendedores: s.sellerCount,
-        idPeridoCompetencia: s.idPeriodCompetence,
-    }));
+    const totaisLote = useMemo(() => calcularTotaisLote(linhasImportadas), [linhasImportadas]);
+
+    const cenarios: Cenario[] = useMemo(
+        () =>
+            scenarios.map((s) => ({
+                id: s.idScenario,
+                descricao: s.scenarioDescription ?? `Cenário #${s.idScenario}`,
+                dataInicio: s.startDate ?? "",
+                dataFim: s.endDate ?? "",
+                situacao: s.periodCompetenceStatusDescription ?? "-",
+                vendedores: s.sellerCount,
+                idPeridoCompetencia: s.idPeriodCompetence,
+            })),
+        [scenarios]
+    );
+
+    const competenciaCenarioSelecionado = useMemo(() => {
+        if (!cenarioSelecionado) return "-";
+        const inicio = dayjs(cenarioSelecionado.dataInicio);
+        if (!inicio.isValid()) return cenarioSelecionado.descricao;
+        const label = inicio.format("MMMM / YYYY");
+        return label.charAt(0).toUpperCase() + label.slice(1);
+    }, [cenarioSelecionado]);
 
     async function handleCopiar(form: CopiaCenarioForm) {
         await copyScenario({
@@ -59,9 +83,14 @@ function GeneralContent(){
                 legends="Metas de Televendas"
                 observation="Configuração e gravação de metas de comissão por competência e tipo de pessoa · substitui o script manual"
             />
-            <div className="mx-3 flex flex-col gap-4">
+            <div className="mx-3 flex flex-col gap-4 h-full">
                 <div className="bg-white flex flex-col gap-6">
-                    <MetaSelectionHeader/>
+                    <MetaSelectionHeader
+                        competencia={competencia}
+                        tipoPessoa={tipoPessoa}
+                        onCompetenciaChange={setCompetencia}
+                        onTipoPessoaChange={setTipoPessoa}
+                    />
                     <nav className="flex items-center gap-2 border-b border-general-border px-6 py-2.5 justify-between">
                         {META_TABS.map((tab) => {
                             const isActive = tab.id === tabSelect?.id;
@@ -106,11 +135,23 @@ function GeneralContent(){
                                 onCopiar={handleCopiar}
                                 copiando={copying}
                                 erroCopia={copyError}
+                                onCenarioSelecionado={setCenarioSelecionado}
                             />
-                        ) 
-                    ):(<ImportarValores />)
+                        )
+                    ):(
+                        <ImportarValores
+                            linhas={linhasImportadas}
+                            onLinhasChange={setLinhasImportadas}
+                        />
+                    )
                 }
 
+                <RodapeMetas
+                    competencia={competenciaCenarioSelecionado}
+                    totalMetas={totaisLote.total}
+                    onReprocessarPeriodo={() => console.log("reprocessar período", cenarioSelecionado)}
+                    onGravarMetas={() => console.log("gravar metas", linhasImportadas)}
+                />
             </div>
         </>
     )
