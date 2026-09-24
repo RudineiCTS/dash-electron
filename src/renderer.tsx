@@ -42,6 +42,7 @@ import InitialScreen from './pages/InitialScreen'
 import AppGate from './components/AppGate'
 import { General } from './pages/General'
 import { MenuHub } from './pages/MenuHub'
+import { ParamTelesales } from './pages/ParamTelesales'
 
 function CampaignsFilterScope() {
   return (
@@ -67,6 +68,7 @@ createRoot(document.getElementById('app')!).render(
               <Route path="campaigns-history" element={<CampaignHistory />} />
               <Route path="campaign-received" element={<Home />} />
               <Route path={"params-general"} element={<General/>}/>
+              <Route path={"params-telesales"} element={<ParamTelesales/>}/>
               <Route path="menu" element={<MenuHub />} />
             </Route>
           </Routes>

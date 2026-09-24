@@ -23,14 +23,14 @@ const TIPOS_PESSOA: string[] = [
   "Digitadoras",
 ];
 
-interface FieldSelectProps {
+export interface FieldSelectProps {
   label: string;
   value: string;
   onChange: (value: string) => void;
   options: string[];
 }
 
-function FieldSelect({ label, value, onChange, options }: FieldSelectProps) {
+export function FieldSelect({ label, value, onChange, options }: FieldSelectProps) {
   return (
     <label className="flex flex-col gap-1.5">
       <span className="text-[11px] font-semibold tracking-[0.04em] text-general-labelText">
