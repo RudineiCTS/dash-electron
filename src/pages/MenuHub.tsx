@@ -31,7 +31,7 @@ export function MenuHub() {
                 </div>
                 <div className="grid grid-cols-4 gap-4">
                     <NavCard to="#" icon={FiSettings} titulo="Importação de metas/comissão" categoria="Comissão" descricao="Acesse o menu de importação de metas e comissão" rodape="Indisponível" />    
-                    <NavCard to="/params-telesales" icon={FiArchive} titulo="Campanhas Recebidas" categoria="Campanhas" descricao="Acesse o menu de campanhas recebidas" rodape="Indisponível" />                
+                    <NavCard to="/params-telesales" icon={FiArchive} titulo="Outros Parâmetros" categoria="Parâmetros" descricao="Acesse o menu de campanhas recebidas" rodape="Indisponível" />                
                 </div>
 
             </div>
