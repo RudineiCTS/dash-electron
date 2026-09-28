@@ -8,6 +8,7 @@ import { CommissionScenarioProvider, useCommissionScenario } from "../context/Co
 import { ImportarValores } from "../components/ContentGeneral/ImportarValores";
 import { calcularTotaisLote, LinhaPreview } from "../components/ContentGeneral/SharedGeneral/PreviewTableImportacao";
 import { RodapeMetas } from "../components/ContentGeneral/SharedGeneral/RodapeMetas";
+import { ConsultaMetasKpi } from "../components/ContentGeneral/ConsultaMetasKpi";
 
 dayjs.locale("pt-br");
 
@@ -18,7 +19,7 @@ interface TabItem {
 export const META_TABS: TabItem[] = [
   { id: 1, label: "Copiar cenário" },
   { id: 2, label: "Importar valores" },
-  { id: 3, label: "Vendedores" },
+  { id: 3, label: "Visualizar metas" },
   { id: 4, label: "Parâmetros da meta" },
   { id: 5, label: "Supervisor / Gerente" },
   { id: 6, label: "Histórico" },
@@ -138,12 +139,14 @@ function GeneralContent(){
                                 onCenarioSelecionado={setCenarioSelecionado}
                             />
                         )
-                    ):(
+                    ): tabSelect.id === 2 ?(
                         <ImportarValores
                             linhas={linhasImportadas}
                             onLinhasChange={setLinhasImportadas}
                         />
-                    )
+                    ): tabSelect.id === 3?(
+                        <ConsultaMetasKpi/>
+                    ):(<></>)
                 }
 
                 <RodapeMetas

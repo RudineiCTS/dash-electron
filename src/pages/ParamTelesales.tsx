@@ -4,7 +4,7 @@ import { TableComponent, TableRow } from "../components/ContentGeneral/SharedGen
 import { FieldSelect } from "../components/FieldSelectComponent";
 import { useTelevendasDigitador } from "../hook/useTelevendasDigitador";
 
-const list = [{ id: 0, name: "Grupo Televendas" }];
+const list = [{ id: 0, name: "Grupo Televendas" }, { id: 1, name: "Metas KPI Comissão" }];
 const listHeaders = [
     { id: 0, name: "ID Digitador" },
     { id: 1, name: "Nome" },
@@ -101,7 +101,7 @@ export function ParamTelesales() {
                  border-t-[3px] border-t-general-accent bg-white px-6 py-[18px] mx-2">
                 <div className="flex w-full">
 
-                    <ul>
+                    <ul className="flex gap-4">
                         {list.map((item) => (
                             <li
                             key={item.id}
@@ -122,7 +122,7 @@ export function ParamTelesales() {
                     </ul>
                 </div>
                 <div>
-                    {tabActive === 0 && (
+                    {tabActive === 0 ? (
                         <div className="flex flex-col gap-4 w-full">
                             <p className="text-sm text-general-textMuted">Configuração de grupo de operadores e etc.</p>
                                 <div className="flex gap-10">
@@ -167,7 +167,9 @@ export function ParamTelesales() {
                                 mensagemVazio="Nenhum digitador de televendas encontrado."
                             />
                         </div>
-                    )}
+                    ):
+                    <div className="flex flex-col gap-4 w-full"></div>
+                    }
                 </div>
             </div>
         </div>
