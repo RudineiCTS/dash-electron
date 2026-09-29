@@ -1,27 +1,8 @@
 import { useState } from "react";
-import { Copy } from "lucide-react";
+import { Copy, RefreshCw } from "lucide-react";
+import { gerarCompetencias } from "../../utils/gerarMeses";
 
-const COMPETENCIAS: string[] = [
-  "Setembro / 2026",
-  "Agosto / 2026",
-  "Julho / 2026",
-  "Junho / 2026",
-];
-
-const TIPOS_PESSOA: string[] = [
-  "SAC",
-  "GC",
-  "Johnson & Johnson",
-  "Nestlé",
-  "P&G",
-  "Haleon",
-  "Prospecção",
-  "Flora",
-  "Reckitt",
-  "Ontex",
-  "Boticário",
-  "Digitadoras",
-];
+const COMPETENCIAS = gerarCompetencias(12);
 
 export interface FieldSelectProps {
   label: string;
@@ -73,14 +54,20 @@ interface MetaSelectionHeaderProps {
   competencia: string;
   tipoPessoa: string;
   onCompetenciaChange: (competencia: string) => void;
-  onTipoPessoaChange: (tipoPessoa: string) => void;
+  buscaKpi: string;
+  onBuscaKpiChange: (busca: string) => void;
+  buscaHabilitada: boolean;
+  onRecarregar: () => void;
 }
 
 export default function MetaSelectionHeader({
   competencia,
   tipoPessoa,
   onCompetenciaChange,
-  onTipoPessoaChange,
+  buscaKpi,
+  onBuscaKpiChange,
+  buscaHabilitada,
+  onRecarregar,
 }: MetaSelectionHeaderProps) {
   const [copied, setCopied] = useState<boolean>(false);
 
@@ -103,12 +90,33 @@ export default function MetaSelectionHeader({
 
       <div className="w-px self-stretch bg-general-divider" />
 
-      <FieldSelect
-        label="TIPO DE PESSOA"
-        value={tipoPessoa}
-        onChange={onTipoPessoaChange}
-        options={TIPOS_PESSOA}
-      />
+      <label className="flex flex-col gap-1.5">
+        <span className="text-[11px] font-semibold tracking-[0.04em] text-general-labelText">
+          BUSCAR KPI
+        </span>
+        <div className="flex items-center gap-2">
+          <input
+            type="text"
+            value={buscaKpi}
+            onChange={(e) => onBuscaKpiChange(e.target.value)}
+            disabled={!buscaHabilitada}
+            placeholder={buscaHabilitada ? "Código ou descrição..." : "Disponível na aba Comissão KPI"}
+            className="min-w-[180px] border-none bg-transparent py-0.5 text-[15px] font-semibold text-general-selectText
+                       outline-none disabled:cursor-not-allowed disabled:opacity-50 placeholder:text-[13px]
+                       placeholder:font-normal placeholder:text-general-chevron"
+          />
+          <button
+            type="button"
+            onClick={onRecarregar}
+            disabled={!buscaHabilitada}
+            title="Recarregar"
+            className="flex h-7 w-7 items-center justify-center rounded-md text-general-buttonText
+                       hover:bg-general-buttonActiveBg disabled:cursor-not-allowed disabled:opacity-40 cursor-pointer"
+          >
+            <RefreshCw size={15} strokeWidth={2} />
+          </button>
+        </div>
+      </label>
 
       <button
         onClick={handleCopiar}

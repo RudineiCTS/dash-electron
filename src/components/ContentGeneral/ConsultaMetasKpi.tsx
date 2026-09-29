@@ -47,10 +47,11 @@ function DetalheDigitador({ digitador }: { digitador: ComissaoTelevendasMetasDig
 }
 
 export function ConsultaMetasKpi() {
-    const [idDigitado, setIdDigitado] = useState("");
+    const [idDigitado, setIdDigitado] = useState("103");
     const [idPeriodoCompetencia, setIdPeriodoCompetencia] = useState<number | null>(103);
     const [idPessoaExpandido, setIdPessoaExpandido] = useState<number | null>(null);
-    const { comissaoTelevendasMetas, loading, error} = useComissaoTelevendasMetas(idPeriodoCompetencia);
+    const { comissaoTelevendasMetas, loading, error} = useComissaoTelevendasMetas(idPeriodoCompetencia);    
+    const [termoAplicado, setTermoAplicado] = useState("");
 
     const agrupadoValor = useMemo<ComissaoTelevendasMetasDigitador[]>(() => {
         const mapa = new Map<number, ComissaoTelevendasMetasDigitador>();
@@ -109,15 +110,23 @@ export function ConsultaMetasKpi() {
         return [...mapa.values()];
     }, [comissaoTelevendasMetas, detalhesPorPessoa]);
 
+    const linhasFiltradas = useMemo(()=>{
+        if(!termoAplicado) return linhas;
+
+        return linhas.filter((row)=>
+        row.cells.some((cell)=>
+        String(cell ?? "").toLowerCase().includes(termoAplicado)))
+    },[termoAplicado, linhas])
+    
+
     const handleClickLinha = (key: string | number) => {
         const idPessoa = Number(key);
         setIdPessoaExpandido((prev) => (prev === idPessoa ? null : idPessoa));
     };
+    const handleBuscar =(e:any)=>{
+         setTermoAplicado(e);
+    }
 
-    // const handleBuscar = () => {
-    //     const id = Number(idDigitado);
-    //     if (!Number.isNaN(id) && id > 0) buscarPorPeriodo(id);
-    // };
 
     return (
         <div className="flex flex-col gap-4 mx-4">
@@ -149,6 +158,17 @@ export function ConsultaMetasKpi() {
                         Recarregar
                     </button>
                 )}
+                <div className="flex gap-4">
+                    <input 
+                        type="text"
+                        className="h-10 w-48 rounded-lg border border-gray-200 px-3 text-sm outline-none focus:border-[#dd8100]"
+                        onChange={(e)=> handleBuscar(e.target.value)}
+                        value={termoAplicado}
+                        />
+                    <button className='h-10 rounded-lg bg-indigo-950 px-5 text-sm font-bold text-white hover:bg-indigo-900 cursor-pointer'>
+                        Filtrar
+                    </button>
+                </div>
             </div>
 
             {error && (
@@ -156,10 +176,11 @@ export function ConsultaMetasKpi() {
                     {error}
                 </div>
             )}
+            
 
             <TableComponent
                 listHeaders={listHeaders}
-                rows={linhas}
+                rows={linhasFiltradas ?? linhas}
                 loading={loading}
                 linhaExpandidaKey={idPessoaExpandido}
                 onClickLinha={handleClickLinha}

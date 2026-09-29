@@ -5,10 +5,17 @@ import MetaSelectionHeader from "../components/FieldSelectComponent";
 import { HeaderComponent } from "../components/Header";
 import { CenarioCopyPanel, Cenario, CopiaCenarioForm } from "../components/ContentGeneral/CopiaCenarios";
 import { CommissionScenarioProvider, useCommissionScenario } from "../context/CommissionScenarioContext";
+import { useResumoMetaTotalizador } from "../hook/useResumoMetaTotalizador";
 import { ImportarValores } from "../components/ContentGeneral/ImportarValores";
 import { calcularTotaisLote, LinhaPreview } from "../components/ContentGeneral/SharedGeneral/PreviewTableImportacao";
 import { RodapeMetas } from "../components/ContentGeneral/SharedGeneral/RodapeMetas";
 import { ConsultaMetasKpi } from "../components/ContentGeneral/ConsultaMetasKpi";
+import { capturaMesEscolhido } from "../utils/gerarMeses";
+import { ResumoMetasTelevendas } from "../interfaces/ResumoMetaTotalizador";
+import { SideBar } from "../components/SideBar";
+import { KpiItem, KpiSideBarPanel } from "../components/ContentGeneral/SharedGeneral/KpiSideBarPanel";
+import { ParametrosMetaKpi } from "../components/ContentGeneral/ParametrosMetaKpi";
+import { ModalDetalheKpi, SIDEBAR_PARA_SECAO_KPI } from "../components/ContentGeneral/SharedGeneral/ModalDetalheKpi";
 
 dayjs.locale("pt-br");
 
@@ -20,7 +27,7 @@ export const META_TABS: TabItem[] = [
   { id: 1, label: "Copiar cenário" },
   { id: 2, label: "Importar valores" },
   { id: 3, label: "Visualizar metas" },
-  { id: 4, label: "Parâmetros da meta" },
+  { id: 4, label: "Comissão KPI" },
   { id: 5, label: "Supervisor / Gerente" },
   { id: 6, label: "Histórico" },
 ];
@@ -36,10 +43,19 @@ export function General(){
 function GeneralContent(){
     const [tabSelect, setTabSelect] = useState<TabItem>({ id: 1, label: "Copiar cenário"})
     const [competencia, setCompetencia] = useState<string>("Setembro / 2026");
+    const [dataCometencia, setDataCompetencia] = useState<string | null>(null);
     const [tipoPessoa, setTipoPessoa] = useState<string>("SAC");
     const [linhasImportadas, setLinhasImportadas] = useState<LinhaPreview[]>([]);
     const [cenarioSelecionado, setCenarioSelecionado] = useState<Cenario | null>(null);
+    const [kpiSelecionadoId, setKpiSelecionadoId] = useState<number | null>(null);
+    const [buscaKpi, setBuscaKpi] = useState<string>("");
+    const [reloadTokenKpi, setReloadTokenKpi] = useState(0);
+    const [modalKpiAberto, setModalKpiAberto] = useState(false);
+    const [secaoModalKpi, setSecaoModalKpi] = useState<string | null>(null);
     const { scenarios, loading, error, copying, copyError, copyScenario } = useCommissionScenario();
+    const { resumo: resumoTotalizador } = useResumoMetaTotalizador(dataCometencia);
+
+
 
     const totaisLote = useMemo(() => calcularTotaisLote(linhasImportadas), [linhasImportadas]);
 
@@ -75,9 +91,36 @@ function GeneralContent(){
             endDate: form.endDate,
         });
     }
+    const handleAlteraCompetencia =(e:string)=>{
+        setCompetencia(e);
+        const data = capturaMesEscolhido(e);
+        setDataCompetencia(data?.dataFim ?? null);
+    }
+    const handleRecarregarKpi = () => {
+        console.log(cenarioSelecionado)
+        setDataCompetencia(cenarioSelecionado?.dataFim ?? null)
+    };
+    const handleSelecionarKpiSidebar = (item: KpiItem) => {
+        if (kpiSelecionadoId == null) return;
+        setSecaoModalKpi(SIDEBAR_PARA_SECAO_KPI[item.label] ?? null);
+        setModalKpiAberto(true);
+    };
 
     return (
         <>
+        <div className="flex w-full h-full">
+        <SideBar
+         isMenuDefault={false}
+         switchCampaign={()=>{}}
+         className="flex flex-col bg-other-card lg:w-72 xl:w-80 max-w-80 max-h-max fixed lg:static z-50 transition-transform duration-200"
+        >
+            <KpiSideBarPanel
+                subtitulo={`Campanha ${tipoPessoa} · ${competencia}`}
+                buscaHabilitada={tabSelect.id === 4}
+                onSelecionarKpi={handleSelecionarKpiSidebar}
+            />
+        </SideBar>
+        <div className="flex flex-col w-full">        
             <HeaderComponent
                 title="Parametrização "
                 subTitle="Cadastro de metas Televendas"
@@ -89,8 +132,11 @@ function GeneralContent(){
                     <MetaSelectionHeader
                         competencia={competencia}
                         tipoPessoa={tipoPessoa}
-                        onCompetenciaChange={setCompetencia}
-                        onTipoPessoaChange={setTipoPessoa}
+                        onCompetenciaChange={(e)=>handleAlteraCompetencia(e)}
+                        buscaKpi={buscaKpi}
+                        onBuscaKpiChange={setBuscaKpi}
+                        buscaHabilitada={tabSelect.id === 4}
+                        onRecarregar={handleRecarregarKpi}
                     />
                     <nav className="flex items-center gap-2 border-b border-general-border px-6 py-2.5 justify-between">
                         {META_TABS.map((tab) => {
@@ -146,6 +192,13 @@ function GeneralContent(){
                         />
                     ): tabSelect.id === 3?(
                         <ConsultaMetasKpi/>
+                    ): tabSelect.id === 4 ?(
+                        <ParametrosMetaKpi
+                            dataFim={dataCometencia}
+                            busca={buscaKpi}
+                            reloadToken={reloadTokenKpi}
+                            onSelecionarKpi={setKpiSelecionadoId}
+                        />
                     ):(<></>)
                 }
 
@@ -154,8 +207,18 @@ function GeneralContent(){
                     totalMetas={totaisLote.total}
                     onReprocessarPeriodo={() => console.log("reprocessar período", cenarioSelecionado)}
                     onGravarMetas={() => console.log("gravar metas", linhasImportadas)}
+                    resumo={resumoTotalizador}
                 />
             </div>
+            </div>
+        </div>
+        <ModalDetalheKpi
+        // modalKpiAberto, kpiSelecionadoId
+            aberto={modalKpiAberto}
+            idComissaoVendasKpi={kpiSelecionadoId}
+            secaoInicial={secaoModalKpi}
+            onFechar={() => setModalKpiAberto(false)}
+        />
         </>
     )
 }

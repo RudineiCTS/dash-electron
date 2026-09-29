@@ -7,7 +7,7 @@ import { Menu } from 'lucide-react';
 import { TitleBar } from '../components/TitleBarWindow';
 import { CampaignSummary } from '../interfaces/CampaignSummary';
 
-const routesWithoutSideBar = ['/campaigns/details/:id', 'campaigns-advanced']
+const routesWithoutSideBar = ['/campaigns/details/:id', 'campaigns-advanced', 'params-general']
 
 interface CampaignDetailLocationState {
   summary?: CampaignSummary;

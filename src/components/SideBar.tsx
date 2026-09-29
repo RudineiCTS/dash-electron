@@ -16,9 +16,9 @@ export interface OptionSide{
 }
 
 export interface SideBarProps{
-    options: OptionSide[],
-    optionActive:number,
-    switchCampaign:(type:number)=>void,
+    options?: OptionSide[],
+    optionActive?:number,
+    switchCampaign?:(type:number)=>void,
     isMenuDefault:boolean,
     className?:string,
     children?: ReactNode
@@ -27,7 +27,7 @@ const styleButton = 'flex items-center gap-3 px-3 py-2 rounded-xl  mx-1 text-sm 
 const styleButtonActive = 'relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-azul bg-[#d9ddf6]'
 export function SideBar({options,className,isMenuDefault,children,switchCampaign,optionActive }:SideBarProps){
     function handleSelectOption(e:number){
-        switchCampaign(e)
+        switchCampaign!(e)
     }
     return(        
          <div className={`${className}`}>
@@ -101,7 +101,7 @@ export function SideBar({options,className,isMenuDefault,children,switchCampaign
                     </div>                                                             
                         <div className="flex flex-col  items-center my-auto">
                             <ul className="flex flex-col gap-3 w-full items-center">
-                                {options.map((e)=> 
+                                {options!.map((e)=> 
                                     (
                                     <li>
                                         <ButtonSideBar title={e.value} typeButton={e.status} active={optionActive === e.key} onClick={()=> handleSelectOption(e.key as number)}>
