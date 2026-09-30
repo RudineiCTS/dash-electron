@@ -79,7 +79,7 @@ export default function MetaSelectionHeader({
   return (
     <div
       className="font-inter flex flex-wrap items-center gap-8 rounded-[10px] border border-general-cardBorder
-                 border-t-[3px] border-t-general-accent bg-white px-6 py-[18px]"
+                 border-t-[3px] border-t-general-accent bg-white px-6 py-[18px] "
     >
       <FieldSelect
         label="PERÍODO DE COMPETÊNCIA"

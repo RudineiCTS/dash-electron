@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { Menu } from "lucide-react";
 import dayjs from "dayjs";
 import "dayjs/locale/pt-br";
 import MetaSelectionHeader from "../components/FieldSelectComponent";
@@ -28,8 +29,9 @@ export const META_TABS: TabItem[] = [
   { id: 2, label: "Importar valores" },
   { id: 3, label: "Visualizar metas" },
   { id: 4, label: "Comissão KPI" },
-  { id: 5, label: "Supervisor / Gerente" },
-  { id: 6, label: "Histórico" },
+  { id: 5, label: "Prospecção" },
+  { id: 6, label: "Supervisor / Gerente" },
+  { id: 7, label: "Histórico" },
 ];
 
 export function General(){
@@ -52,6 +54,7 @@ function GeneralContent(){
     const [reloadTokenKpi, setReloadTokenKpi] = useState(0);
     const [modalKpiAberto, setModalKpiAberto] = useState(false);
     const [secaoModalKpi, setSecaoModalKpi] = useState<string | null>(null);
+    const [mobileOpen, setMobileOpen] = useState(false);
     const { scenarios, loading, error, copying, copyError, copyScenario } = useCommissionScenario();
     const { resumo: resumoTotalizador } = useResumoMetaTotalizador(dataCometencia);
 
@@ -108,11 +111,19 @@ function GeneralContent(){
 
     return (
         <>
-        <div className="flex w-full h-full">
+        <div className="flex w-full h-full ">
+        {mobileOpen && (
+            <div
+                className="fixed inset-0 bg-black/60 z-40 lg:hidden"
+                onClick={() => setMobileOpen(false)}
+            />
+        )}
         <SideBar
          isMenuDefault={false}
          switchCampaign={()=>{}}
-         className="flex flex-col bg-other-card lg:w-72 xl:w-80 max-w-80 max-h-max fixed lg:static z-50 transition-transform duration-200"
+         className={`flex flex-col bg-other-card w-72 h-screen lg:h-auto fixed lg:static z-50 transition-transform duration-200 ${
+            mobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
+         }`}
         >
             <KpiSideBarPanel
                 subtitulo={`Campanha ${tipoPessoa} · ${competencia}`}
@@ -120,15 +131,23 @@ function GeneralContent(){
                 onSelecionarKpi={handleSelecionarKpiSidebar}
             />
         </SideBar>
-        <div className="flex flex-col w-full">        
+        <div className="flex flex-col w-full min-w-0">
+            <button
+                type="button"
+                onClick={() => setMobileOpen(true)}
+                className="lg:hidden p-3 text-general-textStrong"
+                aria-label="Abrir menu"
+            >
+                <Menu size={22} />
+            </button>
             <HeaderComponent
                 title="Parametrização "
                 subTitle="Cadastro de metas Televendas"
                 legends="Metas de Televendas"
                 observation="Configuração e gravação de metas de comissão por competência e tipo de pessoa · substitui o script manual"
             />
-            <div className="mx-3 flex flex-col gap-4 h-full">
-                <div className="bg-white flex flex-col gap-6">
+            <div className="mx-3 flex flex-col gap-4 h-full min-w-0">
+                <div className="bg-white flex flex-col gap-6 min-w-0">
                     <MetaSelectionHeader
                         competencia={competencia}
                         tipoPessoa={tipoPessoa}
@@ -138,7 +157,7 @@ function GeneralContent(){
                         buscaHabilitada={tabSelect.id === 4}
                         onRecarregar={handleRecarregarKpi}
                     />
-                    <nav className="flex items-center gap-2 border-b border-general-border px-6 py-2.5 justify-between">
+                    <nav className="flex flex-nowrap items-center gap-2 border-b border-general-border px-6 py-2.5 justify-between min-w-0 overflow-x-auto [&>*]:shrink-0 [&::-webkit-scrollbar]:h-1">
                         {META_TABS.map((tab) => {
                             const isActive = tab.id === tabSelect?.id;
                             return (

@@ -152,7 +152,7 @@ export default function CampaignsActive() {
                 )}
             </section>
         </header>
-        <main className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 p-4 overflow-y-auto flex-1 min-h-0 ">
+        <main className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 p-4 overflow-y-auto flex-1 min-h-0 auto-rows-min">
             {loadingSummary ? (
                 Array.from({ length: 6 }).map((_, i) => (
                     <CampaignCardSkeleton key={i} />

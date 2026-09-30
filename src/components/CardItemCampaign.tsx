@@ -26,7 +26,7 @@ export function CampaignCard(props:ICampaignCard) {
   return (
     <div
       onClick={props.onClick}
-      className={`bg-other-card border border-white/[0.07] rounded-[9px] p-4 flex flex-col gap-4 cursor-pointer hover:border-white/[0.15] transition-colors `}
+      className={`bg-other-card border border-white/[0.07] rounded-[9px] p-4 flex flex-col gap-4 cursor-pointer hover:border-white/[0.15] transition-colors my-auto`}
     >
 
       {/* Header */}
