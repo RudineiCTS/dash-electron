@@ -7,9 +7,10 @@ import { useTelevendasDigitador } from "../hook/useTelevendasDigitador";
 const list = [{ id: 0, name: "Grupo Televendas" }, { id: 1, name: "Metas KPI Comissão" }];
 const listHeaders = [
     { id: 0, name: "ID Digitador" },
-    { id: 1, name: "Nome" },
-    { id: 2, name: "Grupo" },
-    { id: 3, name: "SubGrupo" },
+    { id: 1, name: "Usuário" },
+    { id: 2, name: "Nome" },
+    { id: 3, name: "Grupo" },
+    { id: 4, name: "SubGrupo" },
 ];
 const TODOS = "Todos";
 
@@ -50,20 +51,23 @@ export function ParamTelesales() {
     const [tabActive, setTabActive] = useState(0);
     const [grupoTelevendas, setGrupoTelevendas] = useState<string>(TODOS);
     const [subGrupoTelevendas, setSubGrupoTelevendas] = useState<string>(TODOS);
+    const [buscaDigitador, setBuscaDigitador] = useState("");
     const { digitadores, loading, error, retry, salvarGrupo, salvandoId, salvarErro } = useTelevendasDigitador();
 
     const opcoesGrupo = useMemo(() => opcoesDistintas(digitadores.map((d) => d.grupo)), [digitadores]);
     const opcoesSubGrupo = useMemo(() => opcoesDistintas(digitadores.map((d) => d.subGrupo)), [digitadores]);
 
-    const digitadoresFiltrados = useMemo(
-        () =>
-            digitadores.filter(
-                (d) =>
-                    (grupoTelevendas === TODOS || d.grupo === grupoTelevendas) &&
-                    (subGrupoTelevendas === TODOS || d.subGrupo === subGrupoTelevendas)
-            ),
-        [digitadores, grupoTelevendas, subGrupoTelevendas]
-    );
+    const digitadoresFiltrados = useMemo(() => {
+        const termo = buscaDigitador.trim().toLowerCase();
+        return digitadores.filter(
+            (d) =>
+                (grupoTelevendas === TODOS || d.grupo === grupoTelevendas) &&
+                (subGrupoTelevendas === TODOS || d.subGrupo === subGrupoTelevendas) &&
+                (!termo ||
+                    d.nomeUsuario?.toLowerCase().includes(termo) ||
+                    String(d.idPessoa).includes(termo))
+        );
+    }, [digitadores, grupoTelevendas, subGrupoTelevendas, buscaDigitador]);
 
     const linhas: TableRow[] = useMemo(
         () =>
@@ -71,6 +75,7 @@ export function ParamTelesales() {
                 key: digitador.idPessoa,
                 cells: [
                     digitador.idPessoa ?? "-",
+                    digitador.idUsuario ?? "-",
                     digitador.nomeUsuario ?? "-",
                     <CelulaTextoEditavel
                         valor={digitador.grupo ?? ""}
@@ -125,7 +130,7 @@ export function ParamTelesales() {
                     {tabActive === 0 ? (
                         <div className="flex flex-col gap-4 w-full">
                             <p className="text-sm text-general-textMuted">Configuração de grupo de operadores e etc.</p>
-                                <div className="flex gap-10">
+                                <div className="flex items-end gap-10">
                                     <FieldSelect
                                         label="Grupo"
                                         value={grupoTelevendas}
@@ -138,6 +143,18 @@ export function ParamTelesales() {
                                         onChange={setSubGrupoTelevendas}
                                         options={opcoesSubGrupo}
                                     />
+                                    <label className="flex flex-col gap-1.5">
+                                        <span className="text-[11px] font-semibold tracking-[0.04em] text-general-labelText">
+                                            Buscar digitador
+                                        </span>
+                                        <input
+                                            type="text"
+                                            value={buscaDigitador}
+                                            onChange={(e) => setBuscaDigitador(e.target.value)}
+                                            placeholder="Nome ou ID..."
+                                            className="h-10 w-48 rounded-lg border border-gray-200 px-3 text-sm outline-none focus:border-[#dd8100]"
+                                        />
+                                    </label>
                                 </div>
 
 

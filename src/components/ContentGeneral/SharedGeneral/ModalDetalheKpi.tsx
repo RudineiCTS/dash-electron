@@ -1,5 +1,5 @@
 import { ReactNode, useEffect, useMemo, useState } from "react";
-import { X } from "lucide-react";
+import { Search, X } from "lucide-react";
 import { useKpiVinculosDetalhe } from "../../../hook/useKpiVinculosDetalhe";
 import { KpiVinculosDetalhe } from "../../../interfaces/KpiVinculo";
 
@@ -209,10 +209,15 @@ interface ModalDetalheKpiProps {
 export function ModalDetalheKpi({ aberto, idComissaoVendasKpi, secaoInicial, onFechar }: ModalDetalheKpiProps) {
     const { detalhe, loading, error } = useKpiVinculosDetalhe(aberto ? idComissaoVendasKpi : null);
     const [filtro, setFiltro] = useState<string>(secaoInicial ?? "todas");
+    const [buscaCliente, setBuscaCliente] = useState("");
 
     useEffect(() => {
         if (aberto) setFiltro(secaoInicial ?? "todas");
     }, [aberto, secaoInicial]);
+
+    useEffect(() => {
+        if (aberto) setBuscaCliente("");
+    }, [aberto]);
 
     const secoes = useMemo(() => (detalhe ? montarSecoes(detalhe) : []), [detalhe]);
     const configuradas = secoes.filter((s) => s.itens.length > 0).length;
@@ -280,7 +285,19 @@ export function ModalDetalheKpi({ aberto, idComissaoVendasKpi, secaoInicial, onF
                     ) : error ? (
                         <p className="py-8 text-center text-sm text-red-500">{error}</p>
                     ) : (
-                        secoesExibidas.map((secao) => (
+                        secoesExibidas.map((secao) => {
+                            const ehCliente = secao.chave === "cliente";
+                            const termoCliente = buscaCliente.trim().toLowerCase();
+                            const itensExibidos =
+                                ehCliente && filtro === "cliente" && termoCliente
+                                    ? secao.itens.filter(
+                                          (item) =>
+                                              String(item.valores[0] ?? "").toLowerCase().includes(termoCliente) ||
+                                              String(item.valores[1] ?? "").toLowerCase().includes(termoCliente)
+                                      )
+                                    : secao.itens;
+
+                            return (
                             <div key={secao.chave} className=" rounded-xl border border-gray-200 shadow-sm">
                                 <div className="flex items-center justify-between gap-3 bg-gray-50 px-5 py-3.5">
                                     <div className="flex items-center gap-2">
@@ -292,14 +309,32 @@ export function ModalDetalheKpi({ aberto, idComissaoVendasKpi, secaoInicial, onF
                                                     : "bg-gray-200 text-gray-500"
                                             }`}
                                         >
-                                            {secao.itens.length > 0 ? `${secao.itens.length} registro(s)` : "vazio"}
+                                            {secao.itens.length > 0 ? `${itensExibidos.length} registro(s)` : "vazio"}
                                         </span>
                                     </div>
                                     <span className="text-xs text-gray-400">{secao.tabela}</span>
                                 </div>
+                                {ehCliente && filtro === "cliente" && secao.itens.length > 0 && (
+                                    <div className="border-b border-gray-100 bg-white px-5 py-3">
+                                        <label className="flex items-center gap-2 rounded-lg border border-gray-200 px-3 py-2">
+                                            <Search size={15} className="shrink-0 text-gray-400" />
+                                            <input
+                                                type="text"
+                                                value={buscaCliente}
+                                                onChange={(e) => setBuscaCliente(e.target.value)}
+                                                placeholder="Filtrar por ID ou nome do cliente..."
+                                                className="w-full bg-transparent text-sm text-gray-700 outline-none placeholder:text-gray-400"
+                                            />
+                                        </label>
+                                    </div>
+                                )}
                                 {secao.itens.length === 0 ? (
                                     <p className="px-5 py-5 text-sm italic text-gray-400">
                                         Nenhum registro para o KPI #{idComissaoVendasKpi} — sem restrição neste campo.
+                                    </p>
+                                ) : itensExibidos.length === 0 ? (
+                                    <p className="px-5 py-5 text-sm italic text-gray-400">
+                                        Nenhum cliente encontrado para essa busca.
                                     </p>
                                 ) : (
                                     <table className="w-full border-collapse text-sm">
@@ -314,7 +349,7 @@ export function ModalDetalheKpi({ aberto, idComissaoVendasKpi, secaoInicial, onF
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {secao.itens.map((item, index) => (
+                                            {itensExibidos.map((item, index) => (
                                                 <tr key={index} className="border-t border-gray-100">
                                                     <td className="px-4 py-2.5 text-gray-500">{index + 1}</td>
                                                     {item.valores.map((valor, i) => (
@@ -333,7 +368,8 @@ export function ModalDetalheKpi({ aberto, idComissaoVendasKpi, secaoInicial, onF
                                     </table>
                                 )}
                             </div>
-                        ))
+                            );
+                        })
                     )}
                 </div>
 
