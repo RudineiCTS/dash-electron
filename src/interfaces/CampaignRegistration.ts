@@ -1,9 +1,13 @@
 export interface CampaignRegistrationFilter {
-  inclusionDateFrom: string;
-  inclusionDateTo: string;
+  periodFrom: string;
+  periodTo: string;
 }
 
+export type CampaignRegistrationFileType = "clients" | "products";
+
 export interface CampaignRegistration {
+  /** Chave da conferência; idCampaign fica nulo até a campanha ser processada. */
+  idConference: number;
   idCampaign: number | null;
   campaignDescription: string | null;
   startDate: string | null;
@@ -22,4 +26,8 @@ export interface CampaignRegistration {
   notes: string | null;
   status: string | null;
   processingDate: string | null;
+  hasClientsFile: boolean;
+  clientsFileName: string | null;
+  hasProductsFile: boolean;
+  productsFileName: string | null;
 }

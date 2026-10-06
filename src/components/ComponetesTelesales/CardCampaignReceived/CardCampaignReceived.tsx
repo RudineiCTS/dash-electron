@@ -1,8 +1,11 @@
-import { useState } from "react";
-import { FiChevronDown, FiChevronUp, FiDownload } from "react-icons/fi";
+import { ReactNode, useState } from "react";
+import { FiChevronDown, FiChevronUp, FiDownload, FiMessageSquare } from "react-icons/fi";
 import dayjs from "dayjs";
 import "dayjs/locale/pt-br";
 import { CampaignRegistration } from "../../../interfaces/CampaignRegistration";
+import { useCampaignRegistrationFile } from "../../../hook/useCampaignRegistrationFile";
+import { useGerarPromptCampanha } from "../../../hook/useGerarPromptCampanha";
+import { ModalPromptCampanha } from "./ModalPromptCampanha";
 import { formatCurrency } from "../../../utils/formateCurrency";
 
 dayjs.locale("pt-br");
@@ -32,8 +35,33 @@ function DetalheItem({ label, valor }: DetalheItemProps) {
   );
 }
 
+interface BotaoAcaoProps {
+  label: string;
+  rotuloOcupado: string;
+  icone: ReactNode;
+  carregando: boolean;
+  desabilitado: boolean;
+  onClick: () => void;
+}
+
+function BotaoAcao({ label, rotuloOcupado, icone, carregando, desabilitado, onClick }: BotaoAcaoProps) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={desabilitado}
+      className="border-other-green border rounded-lg flex gap-3 h-10 items-center px-3 text-sm font-medium shadow-2xl hover:bg-other-hoverbg active:scale-[0.98] transition-colors cursor-pointer disabled:cursor-not-allowed disabled:opacity-60"
+    >
+      {icone}
+      <p className="text-other-secondaryBlue">{carregando ? rotuloOcupado : label}</p>
+    </button>
+  );
+}
+
 export function CardCampaignReceived({ campaign, icone }: CardCampaignReceivedProps) {
   const [expandido, setExpandido] = useState(false);
+  const { downloading, error: erroDownload, download } = useCampaignRegistrationFile(campaign.idConference);
+  const { gerando, erro: erroPrompt, resultado, gerar, fechar } = useGerarPromptCampanha(campaign);
 
   return (
     <div className="flex w-full flex-col bg-other-card rounded-lg shadow-md">
@@ -92,20 +120,49 @@ export function CardCampaignReceived({ campaign, icone }: CardCampaignReceivedPr
           <DetalheItem label="Premiação Supervisora" valor={formatCurrency(campaign.supervisorAward)} />
           <DetalheItem label="Observação de Cadastro" valor={campaign.registrationNotes} />
           <DetalheItem label="Observação" valor={campaign.notes} />
-          {/* botões de extrair arquivos */}
-          <div className="flex gap-5">
-            <div className="border-other-green border rounded-lg flex gap-3 h-10 items-center px-3 text-sm font-medium shadow-2xl hover:bg-other-hoverbg active:scale-[0.98] transition-colors">
-              <FiDownload color='000'/>
-              <p className="text-other-secondaryBlue">Clientes</p>
+          {/* ações: baixar anexos (só quando existem) e gerar o prompt para a skill */}
+          <div className="flex flex-col gap-2">
+            <div className="flex flex-wrap gap-3">
+              {campaign.hasClientsFile && (
+                <BotaoAcao
+                  label="Clientes"
+                  rotuloOcupado="Baixando..."
+                  icone={<FiDownload color="000" />}
+                  carregando={downloading === "clients"}
+                  desabilitado={downloading !== null}
+                  onClick={() => download("clients", campaign.clientsFileName || `clientes_${campaign.idConference}.xlsx`)}
+                />
+              )}
+              {campaign.hasProductsFile && (
+                <BotaoAcao
+                  label="Produtos"
+                  rotuloOcupado="Baixando..."
+                  icone={<FiDownload color="000" />}
+                  carregando={downloading === "products"}
+                  desabilitado={downloading !== null}
+                  onClick={() => download("products", campaign.productsFileName || `produtos_${campaign.idConference}.xlsx`)}
+                />
+              )}
+              <BotaoAcao
+                label="Gerar prompt"
+                rotuloOcupado="Gerando..."
+                icone={<FiMessageSquare color="000" />}
+                carregando={gerando}
+                desabilitado={gerando}
+                onClick={gerar}
+              />
             </div>
-            <div>
-              <div className="border-other-green border rounded-lg flex gap-3 h-10 items-center px-3 text-sm font-medium shadow-2xl hover:bg-other-hoverbg active:scale-[0.98] transition-colors">
-                <FiDownload  color='000'/>
-                <p className="text-other-secondaryBlue">Produtos</p>
-              </div>
-            </div>
+            {(erroDownload || erroPrompt) && <span className="text-xs text-red-500">{erroDownload || erroPrompt}</span>}
           </div>
         </div>
+      )}
+
+      {resultado && (
+        <ModalPromptCampanha
+          titulo={campaign.campaignDescription || `Conferência #${campaign.idConference}`}
+          resultado={resultado}
+          onClose={fechar}
+        />
       )}
     </div>
   );

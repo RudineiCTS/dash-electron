@@ -1,4 +1,8 @@
-import { CampaignRegistration, CampaignRegistrationFilter } from "../interfaces/CampaignRegistration";
+import {
+  CampaignRegistration,
+  CampaignRegistrationFileType,
+  CampaignRegistrationFilter,
+} from "../interfaces/CampaignRegistration";
 import { api } from "./api";
 
 export async function getCampaignRegistrations(
@@ -7,9 +11,21 @@ export async function getCampaignRegistrations(
 ): Promise<CampaignRegistration[]> {
   const response = await api.get<CampaignRegistration[]>(`campaign-registration`, {
     params: {
-      inclusionDateFrom: filter.inclusionDateFrom,
-      inclusionDateTo: filter.inclusionDateTo,
+      periodFrom: filter.periodFrom,
+      periodTo: filter.periodTo,
     },
+    signal,
+  });
+  return response.data;
+}
+
+export async function getCampaignRegistrationFile(
+  idConference: number,
+  type: CampaignRegistrationFileType,
+  signal?: AbortSignal
+): Promise<Blob> {
+  const response = await api.get<Blob>(`campaign-registration/${idConference}/files/${type}`, {
+    responseType: "blob",
     signal,
   });
   return response.data;

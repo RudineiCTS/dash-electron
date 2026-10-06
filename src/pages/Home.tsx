@@ -34,8 +34,8 @@ export default function Home() {
   });
 
   const filtroRegistro = useMemo(() => ({
-    inclusionDateFrom: periodo.inicio,
-    inclusionDateTo: periodo.fim,
+    periodFrom: periodo.inicio,
+    periodTo: periodo.fim,
   }), [periodo]);
 
 
@@ -89,7 +89,7 @@ export default function Home() {
             <p className='text-center text-sm text-other-muted'>Nenhuma campanha recebida nesse período.</p>
           ) : (
             campaignRegistrations.map((campaign) => (
-              <CardCampaignReceived key={campaign.idCampaign} campaign={campaign} icone={sortearIcone()} />
+              <CardCampaignReceived key={campaign.idConference} campaign={campaign} icone={sortearIcone()} />
             ))
           )}
 
