@@ -17,6 +17,7 @@ import { SideBar } from "../components/SideBar";
 import { KpiItem, KpiSideBarPanel } from "../components/ContentGeneral/SharedGeneral/KpiSideBarPanel";
 import { ParametrosMetaKpi } from "../components/ContentGeneral/ParametrosMetaKpi";
 import { ModalDetalheKpi, SIDEBAR_PARA_SECAO_KPI } from "../components/ContentGeneral/SharedGeneral/ModalDetalheKpi";
+import { usePermissoes } from "../hook/usePermissoes";
 
 dayjs.locale("pt-br");
 
@@ -43,7 +44,11 @@ export function General(){
 }
 
 function GeneralContent(){
-    const [tabSelect, setTabSelect] = useState<TabItem>({ id: 1, label: "Copiar cenário"})
+    const { podeUsarAba } = usePermissoes();
+    // abre na primeira aba liberada para o perfil (perfil 2 só enxerga Importar valores e Visualizar metas)
+    const [tabSelect, setTabSelect] = useState<TabItem>(
+        () => META_TABS.find((tab) => podeUsarAba(tab.id)) ?? META_TABS[0]
+    )
     const [competencia, setCompetencia] = useState<string>("Setembro / 2026");
     const [dataCometencia, setDataCompetencia] = useState<string | null>(null);
     const [tipoPessoa, setTipoPessoa] = useState<string>("SAC");
@@ -160,13 +165,16 @@ function GeneralContent(){
                     <nav className="flex flex-nowrap items-center gap-2 border-b border-general-border px-6 py-2.5 justify-between min-w-0 overflow-x-auto [&>*]:shrink-0 [&::-webkit-scrollbar]:h-1">
                         {META_TABS.map((tab) => {
                             const isActive = tab.id === tabSelect?.id;
+                            const liberada = podeUsarAba(tab.id);
                             return (
                             <button
                                 key={tab.id}
-                                onClick={() => setTabSelect(tab)}
+                                onClick={() => liberada && setTabSelect(tab)}
+                                disabled={!liberada}
+                                title={liberada ? undefined : "Sem permissão para esta aba"}
                                 className={`flex items-center gap-2 border-b-2 px-2.5 py-2 ${
                                 isActive ? "border-general-orange" : "border-transparent"
-                                }`}
+                                } ${liberada ? "" : "opacity-40 cursor-not-allowed"}`}
                             >
                                 <span
                                 className={`flex h-5 w-5 items-center justify-center rounded-full text-xs font-bold ${

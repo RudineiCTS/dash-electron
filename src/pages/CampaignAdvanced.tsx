@@ -11,7 +11,7 @@ import PeriodoSeletor from "../components/ComponetesTelesales/PeriodSelector/Per
 import CardIndicador from "../components/ComponetesTelesales/CardIndicador/CardIndicador";
 import { SubTopicos } from "../components/ComponetesTelesales/SubTopicos/SubTopicos";
 import EvolucaoMensalSequencial, {LinhaEvolucaoMensal} from "../components/ComponetesTelesales/SequentialMonthlyTrend/SequentialMonthlyTrend";
-import EvolucaoGraficoMesAMes, {PontoEvolucaoMensal} from "../components/ComponetesTelesales/GraphicTrend/GraphicTrends";
+import GraficoMediaMensal, {PontoMediaMensal} from "../components/ComponetesTelesales/GraphicMediaMensal/GraphicMediaMensal";
 import { SellOutSummaryInterface } from "../interfaces/sellOutSummaryType";
 import { useCampaignPanelAdvanced } from "../hook/useCampaignPanelAdvanced";
 import { MonthlyTrendSkeleton } from "../components/Skeleton/CampaignPanelAdvancedSkeleton/MonthlyTrendSkeleton";
@@ -98,20 +98,27 @@ export default function CampaignsAdvanced() {
 
         const items = sellOutSummary ?? []
 
-        return items.map((item, index) => {
+        return items.map((item) => {
           const dataMes = dayjs(item.yearMonth, 'YYYY-MM');
-          const anterior = items[index - 1];
 
           return {
             mes: dataMes.format('MMMM'),
             anoMes: dataMes.format('YYYY · MM'),
             valorVendido: formatarMoeda(item.soldValue),
             positivacao: item.clientCount,
-            crescValor: calcularCrescimento(item.soldValue, anterior?.soldValue),
-            crescPosit: calcularCrescimento(item.clientCount, anterior?.clientCount),
           };
         });
       }, [sellOutSummary]);
+
+    // Média simples dos meses do filtro
+    const mediasMensais = useMemo(() => {
+      const items = sellOutSummary ?? [];
+      if (items.length === 0) return { valor: 0, positivacao: 0 };
+      return {
+        valor: items.reduce((soma, item) => soma + item.soldValue, 0) / items.length,
+        positivacao: items.reduce((soma, item) => soma + item.clientCount, 0) / items.length,
+      };
+    }, [sellOutSummary]);
 
     const dadosPeriodoA = useMemo(() => {
       const chave = getYearMonthKey(periodoA.ano, periodoA.mes);
@@ -147,22 +154,21 @@ export default function CampaignsAdvanced() {
       };
     }, [dadosPeriodoA, dadosPeriodoB]);
 
-    const dadosGraficoEvolucao: PontoEvolucaoMensal[] = useMemo(() => {
-      if (!sellOutSummary || sellOutSummary.length === 0) {
-        return [];
-      }
+    const dadosGraficoValorVendido: PontoMediaMensal[] = useMemo(
+      () => (sellOutSummary ?? []).map((item) => ({
+        mes: dayjs(item.yearMonth, 'YYYY-MM').format('YYYY MM'),
+        valor: item.soldValue,
+      })),
+      [sellOutSummary]
+    );
 
-      const items = sellOutSummary ?? [];
-
-      return items.map((item) => {
-        const dataMes = dayjs(item.yearMonth, 'YYYY-MM');
-        return {
-          mes: dataMes.format('YYYY MM'),
-          valorVendido: item.soldValue,
-          positivacao: item.clientCount,
-        };
-      });
-    }, [sellOutSummary]);
+    const dadosGraficoPositivacao: PontoMediaMensal[] = useMemo(
+      () => (sellOutSummary ?? []).map((item) => ({
+        mes: dayjs(item.yearMonth, 'YYYY-MM').format('YYYY MM'),
+        valor: item.clientCount,
+      })),
+      [sellOutSummary]
+    );
 
     function handleExportExcel() {
       if (!sellOutSummary || sellOutSummary.length === 0) return;
@@ -197,19 +203,11 @@ export default function CampaignsAdvanced() {
 
       const items = sellOutSummary;
       const linhasEvolucao: (string | number | null)[][] = [
-        ['Ano-Mês', 'Valor Vendido (R$)', 'Positivação (clientes)', 'Cresc. Valor (%)', 'Cresc. Positivação (%)'],
-        ...items.map((item, index) => {
-          const anterior = items[index - 1];
-          const crescValor = calcularCrescimento(item.soldValue, anterior?.soldValue);
-          const crescPosit = calcularCrescimento(item.clientCount, anterior?.clientCount);
-          return [
-            item.yearMonth,
-            item.soldValue,
-            item.clientCount,
-            crescValor === null ? null : Number(crescValor.toFixed(2)),
-            crescPosit === null ? null : Number(crescPosit.toFixed(2)),
-          ];
-        }),
+        ['Ano-Mês', 'Vendas (R$)', 'Positivação (clientes)'],
+        ...items.map((item) => [item.yearMonth, item.soldValue, item.clientCount]),
+        [],
+        ['Média de vendas (R$)', Number(mediasMensais.valor.toFixed(2)), null],
+        ['Média de positivação (clientes)', null, Number(mediasMensais.positivacao.toFixed(1))],
       ];
 
       downloadExcelMultiSheet(
@@ -356,7 +354,7 @@ export default function CampaignsAdvanced() {
 
                 <section className="flex flex-col gap-6">
                   <SubTopicos
-                    title="Evolução mensal sequencial"
+                    title="Vendas e positivação mês a mês"
                     valueTopic={2}
                   />
                   <div className='flex gap-6'>
@@ -369,14 +367,34 @@ export default function CampaignsAdvanced() {
                       <>
                         <EvolucaoMensalSequencial
                           dados={dadosSequenciaTrend}
+                          mediaValor={formatarMoeda(mediasMensais.valor)}
+                          mediaPositivacao={mediasMensais.positivacao.toLocaleString('pt-BR', { maximumFractionDigits: 1 })}
                           rodapeDireita=""
                           rodapeEsquerda=""
                           className="w-full"
                         />
-                        <EvolucaoGraficoMesAMes
-                          dados={dadosGraficoEvolucao}
-                          className="w-full h-fit"
-                        />
+                        <div className="flex w-full flex-col gap-6">
+                          <GraficoMediaMensal
+                            titulo="Vendas mês a mês"
+                            nomeSerie="Vendas"
+                            dados={dadosGraficoValorVendido}
+                            formatValor={(v) => `R$ ${Math.round(v / 1000).toLocaleString('pt-BR')}k`}
+                            formatValorCompleto={formatarMoeda}
+                            cor="#1e2a78"
+                            corDestaque="#4c6fff"
+                            className="w-full h-fit"
+                          />
+                          <GraficoMediaMensal
+                            titulo="Positivação mês a mês"
+                            nomeSerie="Positivação (clientes)"
+                            dados={dadosGraficoPositivacao}
+                            formatValor={(v) => Math.round(v).toLocaleString('pt-BR')}
+                            formatValorCompleto={(v) => `${v.toLocaleString('pt-BR', { maximumFractionDigits: 1 })} clientes`}
+                            cor="#ea580c"
+                            corDestaque="#ffb020"
+                            className="w-full h-fit"
+                          />
+                        </div>
                     </>
                     )
                   }

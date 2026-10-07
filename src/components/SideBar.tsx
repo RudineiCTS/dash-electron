@@ -6,6 +6,7 @@ import { NavLink } from 'react-router-dom'
 import { ButtonSideBar } from './ButtonSideBar'
 import { ThemeToggle } from './ThemeToggle'
 import {Lock} from "lucide-react";
+import { usePermissoes } from '../hook/usePermissoes'
 
 export interface OptionSide{
     key:string | number,
@@ -26,6 +27,7 @@ export interface SideBarProps{
 const styleButton = 'flex items-center gap-3 px-3 py-2 rounded-xl  mx-1 text-sm font-medium text-[#5c5c74] cursor-pointer transition-colors hover:bg-[#EEF0FB]';
 const styleButtonActive = 'relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-azul bg-[#d9ddf6]'
 export function SideBar({options,className,isMenuDefault,children,switchCampaign,optionActive }:SideBarProps){
+    const { podeAcessar } = usePermissoes();
     function handleSelectOption(e:number){
         switchCampaign!(e)
     }
@@ -52,6 +54,7 @@ export function SideBar({options,className,isMenuDefault,children,switchCampaign
                                     <FiGrid className="w-[17px] h-[17px] shrink-0 opacity-70 group-[.active]:opacity-100 group-[.active]:text-azul"/>
                                         Início
                                 </NavLink>
+                                {podeAcessar("campaigns") && (
                                 <NavLink 
                                     className={({ isActive }) =>`${styleButton}${isActive ?  styleButtonActive : ''}`}                            
                                     to={"campaigns"}
@@ -59,6 +62,8 @@ export function SideBar({options,className,isMenuDefault,children,switchCampaign
                                     <FiActivity className="w-[17px] h-[17px] shrink-0 opacity-70 group-[.active]:opacity-100 group-[.active]:text-azul"/>
                                         Campanhas Rodando                                                                
                                 </NavLink>
+                                )}
+                                {podeAcessar("campaigns-advanced") && (
                                 <NavLink 
                                className={({ isActive }) =>
                                     `${styleButton}
@@ -69,6 +74,8 @@ export function SideBar({options,className,isMenuDefault,children,switchCampaign
                                     <FiBarChart2/>
                                     Relatório avançado                                                                                                            
                                 </NavLink>
+                                )}
+                                {podeAcessar("campaigns-history") && (
                                 <NavLink 
                                     className={({ isActive }) =>
                                         `${styleButton}
@@ -78,24 +85,29 @@ export function SideBar({options,className,isMenuDefault,children,switchCampaign
                                     <FiBook />
                                     Histórico de campanhas                                                                                                            
                                 </NavLink>
+                                )}
+                                {podeAcessar("campaign-received") && (
                                 <NavLink 
-                                    //  className={({ isActive }) => `${styleButton} ${isActive ?  styleButtonActive : 'cursor-not-allowed'}`}   
-                                     className={`flex items-center gap-3 px-3 py-2 rounded-xl  mx-1 text-sm font-medium text-slate-300 cursor-not-allowed bg-opacity-60`} 
+                                     className={({ isActive }) => `${styleButton} ${isActive ?  styleButtonActive : 'cursor-not-allowed'}`}   
+                                    //  className={`flex items-center gap-3 px-3 py-2 rounded-xl  mx-1 text-sm font-medium text-slate-300 cursor-not-allowed bg-opacity-60`} 
                                      to={"campaign-received"}                                
                                     
                                     >
                                     <FiArchive />
                                     Campanhas Recebidas
                                 </NavLink>
+                                )}
+                                {podeAcessar("params-general") && (
                                 <NavLink 
-                                    // className={({ isActive }) => `${styleButton} ${isActive ?  styleButtonActive : 'cursor-not-allowed'}`}    
-                                    className={`flex items-center gap-3 px-3 py-2 rounded-xl  mx-1 text-sm font-medium text-slate-300 cursor-not-allowed bg-opacity-60`} 
+                                    className={({ isActive }) => `${styleButton} ${isActive ?  styleButtonActive : 'cursor-not-allowed'}`}    
+                                    // className={`flex items-center gap-3 px-3 py-2 rounded-xl  mx-1 text-sm font-medium text-slate-300 cursor-not-allowed bg-opacity-60`} 
                                      to={"params-general"}                                
                                     // className={` flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-[#5c5c74]  transition-colors hover:bg-[#f7f7fb]`}
                                     >
                                     <FiSettings  />                                    
                                          Parametros Comissão                                     
                                 </NavLink>
+                                )}
                             </div>                        
                         </div>
                     </div>                                                             

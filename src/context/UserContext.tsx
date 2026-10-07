@@ -60,6 +60,12 @@ export function UserProvider({ children }: { children: ReactNode }) {
                     return
                 }
 
+                if (data.idCampaignSystemProfile == null) {
+                    setBlocked(true)
+                    setBlockReason('Seu perfil de acesso às campanhas ainda não foi configurado no Compass. Fale com o time responsável para liberar o acesso.')
+                    return
+                }
+
                 setProfile(data)
             } catch (err) {
                 if (cancelled || isAbortError(err)) return

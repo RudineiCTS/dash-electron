@@ -43,6 +43,7 @@ import AppGate from './components/AppGate'
 import { General } from './pages/General'
 import { MenuHub } from './pages/MenuHub'
 import { ParamTelesales } from './pages/ParamTelesales'
+import { RotaProtegida } from './components/RotaProtegida'
 
 function CampaignsFilterScope() {
   return (
@@ -61,14 +62,14 @@ createRoot(document.getElementById('app')!).render(
             <Route path="/" element={<Layout />}>
               <Route index element={<InitialScreen />} />
               <Route element={<CampaignsFilterScope />}>
-                <Route path="/campaigns" element={<CampaignsActive />} />
-                <Route path="/campaigns/details/:id" element={<CampaignDetail />} />
+                <Route path="/campaigns" element={<RotaProtegida rota="campaigns"><CampaignsActive /></RotaProtegida>} />
+                <Route path="/campaigns/details/:id" element={<RotaProtegida rota="campaigns"><CampaignDetail /></RotaProtegida>} />
               </Route>
-              <Route path="campaigns-advanced" element={<CampaignsAdvanced />} />
-              <Route path="campaigns-history" element={<CampaignHistory />} />
-              <Route path="campaign-received" element={<Home />} />
-              <Route path={"params-general"} element={<General/>}/>
-              <Route path={"params-telesales"} element={<ParamTelesales/>}/>
+              <Route path="campaigns-advanced" element={<RotaProtegida rota="campaigns-advanced"><CampaignsAdvanced /></RotaProtegida>} />
+              <Route path="campaigns-history" element={<RotaProtegida rota="campaigns-history"><CampaignHistory /></RotaProtegida>} />
+              <Route path="campaign-received" element={<RotaProtegida rota="campaign-received"><Home /></RotaProtegida>} />
+              <Route path={"params-general"} element={<RotaProtegida rota="params-general"><General/></RotaProtegida>}/>
+              <Route path={"params-telesales"} element={<RotaProtegida rota="params-telesales"><ParamTelesales/></RotaProtegida>}/>
               <Route path="menu" element={<MenuHub />} />
             </Route>
           </Routes>
