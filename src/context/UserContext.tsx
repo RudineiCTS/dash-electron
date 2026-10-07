@@ -60,7 +60,14 @@ export function UserProvider({ children }: { children: ReactNode }) {
                     return
                 }
 
-                if (data.idCampaignSystemProfile == null) {
+                if (data.idCampaignSystemProfile === undefined) {
+                    // a API não devolveu o campo: servidor rodando uma versão anterior à do perfil de campanhas
+                    setBlocked(true)
+                    setBlockReason('A API do Compass está desatualizada (não retornou o perfil de acesso). Atualize a API e tente novamente.')
+                    return
+                }
+
+                if (data.idCampaignSystemProfile === null) {
                     setBlocked(true)
                     setBlockReason('Seu perfil de acesso às campanhas ainda não foi configurado no Compass. Fale com o time responsável para liberar o acesso.')
                     return
