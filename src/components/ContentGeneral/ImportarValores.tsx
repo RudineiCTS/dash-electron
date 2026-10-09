@@ -2,6 +2,7 @@ import { Dispatch, SetStateAction, useState } from "react";
 import * as XLSX from "xlsx";
 import { ColarPlanilhaImport, LinhaImportada } from "./SharedGeneral/CopiaPorPipe";
 import { LinhaPreview, PreviewImportacao } from "./SharedGeneral/PreviewTableImportacao";
+import { ModalScriptNovaMeta } from "./SharedGeneral/ModalScriptNovaMeta";
 
 type CelulaPlanilha = string | number | null;
 
@@ -22,6 +23,7 @@ interface ImportarValoresProps {
 
 export function ImportarValores({ linhas, onLinhasChange }: ImportarValoresProps) {
     const [erro, setErro] = useState<string | null>(null);
+    const [scriptAberto, setScriptAberto] = useState(false);
 
     const handleProcessarColagem = (linhasColadas: LinhaImportada[]) => {
         setErro(null);
@@ -117,7 +119,12 @@ export function ImportarValores({ linhas, onLinhasChange }: ImportarValoresProps
                     linhas={linhas}
                     onAlterarCelula={handleAlterarCelula}
                     onDescartarImportacao={() => onLinhasChange([])}
+                    onGerarScript={() => setScriptAberto(true)}
                 />
+            )}
+
+            {scriptAberto && linhas.length > 0 && (
+                <ModalScriptNovaMeta linhas={linhas} onClose={() => setScriptAberto(false)} />
             )}
         </div>
     );

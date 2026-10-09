@@ -47,6 +47,7 @@ interface PreviewImportacaoProps {
     valor: number
   ) => void;
   onDescartarImportacao: () => void;
+  onGerarScript: () => void;
 }
 
 function formatarMoeda(valor: number): string {
@@ -92,6 +93,7 @@ export function PreviewImportacao({
   linhas,
   onAlterarCelula,
   onDescartarImportacao,
+  onGerarScript,
 }: PreviewImportacaoProps) {
   const totais = useMemo(() => calcularTotaisLote(linhas), [linhas]);
 
@@ -108,12 +110,20 @@ export function PreviewImportacao({
           </span>
         </div>
 
-        <button
-          onClick={onDescartarImportacao}
-          className="rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50"
-        >
-          Descartar importação
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={onGerarScript}
+            className="rounded-lg bg-indigo-950 px-4 py-2 text-sm font-bold text-white hover:bg-indigo-900"
+          >
+            Gerar script
+          </button>
+          <button
+            onClick={onDescartarImportacao}
+            className="rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50"
+          >
+            Descartar importação
+          </button>
+        </div>
       </div>
 
       {/* Tabela */}
