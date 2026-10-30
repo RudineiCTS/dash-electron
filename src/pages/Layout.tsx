@@ -1,5 +1,5 @@
 // src/components/Layout.tsx
-import { matchPath, Outlet, useLocation } from 'react-router-dom'
+import { matchPath, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { items } from '../pages/Home'
 import { SideBar } from '../components/SideBar'
 import { useState } from 'react';
@@ -7,7 +7,7 @@ import { Menu } from 'lucide-react';
 import { TitleBar } from '../components/TitleBarWindow';
 import { CampaignSummary } from '../interfaces/CampaignSummary';
 
-const routesWithoutSideBar = ['/campaigns/details/:id', 'campaigns-advanced', 'params-general']
+const routesWithoutSideBar = ['/campaigns/details/:id', 'campaigns-advanced', 'params-general', 'farma/inserir-campanha-dinamica']
 
 interface CampaignDetailLocationState {
   summary?: CampaignSummary;
@@ -49,17 +49,29 @@ function useContextoAtual(): string | undefined {
     return 'Menu';
   }
 
+  if (matchPath('/farma/inserir-campanha-dinamica', location.pathname)) {
+    return 'Campanha Farma · Inserir campanha dinâmica';
+  }
+
+  if (matchPath('/farma/*', location.pathname)) {
+    return 'Campanha Farma · Início';
+  }
+
+
   return undefined;
 }
 
 export default function Layout() {
-  const [campaignType, setCamapignType] = useState(1);
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
   const contextoAtual = useContextoAtual();
 
+  // 1 = Campanha Televendas, 2 = Campanha Farma (definido pela rota, então sobrevive a recarregar)
+  const campaignType = matchPath('/farma/*', location.pathname) ? 2 : 1;
+
   function handleSwitchCampaign(e: number) {
-    setCamapignType(e);
+    if (e !== campaignType) navigate(e === 2 ? '/farma' : '/menu');
     setMobileOpen(false); // fecha o drawer ao navegar
   }
 
@@ -84,6 +96,7 @@ export default function Layout() {
               isMenuDefault={true}
               options={items}
               className={`flex flex-col bg-other-card lg:w-72 xl:w-80 max-w-80 h-full 
+                
                           fixed lg:static z-50 transition-transform duration-200
 
                           ${mobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}`}

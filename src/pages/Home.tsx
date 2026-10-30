@@ -8,7 +8,7 @@ import { CardCampaignReceived } from '../components/ComponetesTelesales/CardCamp
 
 export const items: OptionSide[] = [
   { key: 1, value: 'Campanha Televendas', icon: MdCampaign,status:'active'  },
-  { key: 2, value: 'Campanha Comercial', icon: MdCampaign,status:'locked'  },
+  { key: 2, value: 'Campanha Farma', icon: MdCampaign,status:'active'  },
 ]
 
 function capitalizar(texto: string): string {

@@ -1,7 +1,7 @@
 import { IconType } from 'react-icons'  // ← importa o tipo
 import { LogoApp } from './logoApp'
 import { ReactNode } from 'react'
-import {FiActivity, FiArchive, FiBarChart2, FiBook, FiGrid, FiSettings} from 'react-icons/fi'
+import {FiActivity, FiArchive, FiBarChart2, FiBook, FiGrid, FiPlusSquare, FiSettings} from 'react-icons/fi'
 import { NavLink } from 'react-router-dom'
 import { ButtonSideBar } from './ButtonSideBar'
 import { ThemeToggle } from './ThemeToggle'
@@ -46,6 +46,24 @@ export function SideBar({options,className,isMenuDefault,children,switchCampaign
                                      Menu Princial
                                 </strong> 
                             </h1>
+                            {optionActive === 2 ? (
+                            <div className='flex flex-col gap-2'>
+                                <NavLink
+                                    className={({ isActive }) =>`${styleButton}${isActive ?  styleButtonActive : ''}`}
+                                    to={"farma"}
+                                >
+                                    <FiGrid className="w-[17px] h-[17px] shrink-0 opacity-70 group-[.active]:opacity-100 group-[.active]:text-azul"/>
+                                        Início
+                                </NavLink>
+                                <NavLink
+                                    className={({ isActive }) =>`${styleButton}${isActive ?  styleButtonActive : ''}`}
+                                    to={"farma/inserir-campanha-dinamica"}
+                                >
+                                    <FiPlusSquare className="w-[17px] h-[17px] shrink-0"/>
+                                        Inserir campanha dinâmica
+                                </NavLink>
+                            </div>
+                            ) : (
                             <div className=''>
                                  <NavLink 
                                     className={({ isActive }) =>`${styleButton}${isActive ?  styleButtonActive : ''}`}                            
@@ -108,14 +126,15 @@ export function SideBar({options,className,isMenuDefault,children,switchCampaign
                                          Parametros Comissão                                     
                                 </NavLink>
                                 )}
-                            </div>                        
+                            </div>
+                            )}
                         </div>
                     </div>                                                             
-                        <div className="flex flex-col  items-center my-auto">
+                        <div className="flex flex-col  items-center my-auto mx-5">
                             <ul className="flex flex-col gap-3 w-full items-center">
                                 {options!.map((e)=> 
                                     (
-                                    <li>
+                                    <li key={e.key} className="w-full px-4">
                                         <ButtonSideBar title={e.value} typeButton={e.status} active={optionActive === e.key} onClick={()=> handleSelectOption(e.key as number)}>
                                             {
                                                 e.status === 'locked' ?( <Lock size={20} color="#21262d"/>) :
