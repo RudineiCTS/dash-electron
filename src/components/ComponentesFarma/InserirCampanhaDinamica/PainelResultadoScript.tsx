@@ -9,6 +9,8 @@ import {
 import { AbaResultado } from "../../../hook/useInserirCampanhaDinamica";
 import { calcularTotaisRetorno } from "../../../utils/gerarInsertResultadoCampanha";
 import { downloadBlob } from "../../../utils/downloadFile";
+import { useConferenciaCampanha } from "../../../hook/useConferenciaCampanha";
+import { PainelConferencia } from "./PainelConferencia";
 import Button from "../../shared/Button/ButtonComponent";
 
 const moeda = (valor: number) => valor.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -20,6 +22,8 @@ interface PainelResultadoScriptProps {
   scriptInsert: string;
   nomeArquivo: string;
   inserido: boolean;
+  /** O script foi editado depois da execução: o retorno na tela não é mais o deste texto. */
+  retornoDesatualizado: boolean;
   /** A rota de inserção da API ainda não existe: o botão fica desabilitado. */
   insercaoDisponivel: boolean;
   inserindo: boolean;
@@ -176,16 +180,20 @@ export function PainelResultadoScript({
   scriptInsert,
   nomeArquivo,
   inserido,
+  retornoDesatualizado,
   insercaoDisponivel,
   inserindo,
   onGerarInsert,
   onInserir,
 }: PainelResultadoScriptProps) {
   const totais = useMemo(() => (retorno ? calcularTotaisRetorno(retorno.linhas) : null), [retorno]);
+  // fica aqui (e não dentro da aba) para a planilha enviada sobreviver à troca de aba
+  const conferencia = useConferenciaCampanha(retorno);
 
   const abas: { id: AbaResultado; rotulo: string }[] = [
     { id: "retorno", rotulo: "Retorno guardado" },
     { id: "insert", rotulo: "Script INSERT" },
+    { id: "conferencia", rotulo: "Conferir com planilha" },
   ];
 
   return (
@@ -228,7 +236,13 @@ export function PainelResultadoScript({
       </div>
 
       <div className="flex flex-col gap-4 p-5">
-        {!retorno ? (
+        {aba === "conferencia" ? (
+          <PainelConferencia
+            conferencia={conferencia}
+            temRetorno={!!retorno}
+            retornoDesatualizado={retornoDesatualizado}
+          />
+        ) : !retorno ? (
           <p className="py-6 text-sm text-other-muted">
             Execute o script para ver o retorno da apuração aqui.
           </p>

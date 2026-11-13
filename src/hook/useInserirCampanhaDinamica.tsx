@@ -10,7 +10,7 @@ import {
 } from "../services/campanhaFarmaResultado";
 import { gerarInsertResultadoCampanha } from "../utils/gerarInsertResultadoCampanha";
 
-export type AbaResultado = "retorno" | "insert";
+export type AbaResultado = "retorno" | "insert" | "conferencia";
 
 export interface FormularioScript {
   nome: string;
@@ -183,6 +183,9 @@ export function useInserirCampanhaDinamica() {
 
     setErro("");
     setAviso("");
+    // some o retorno anterior já ao começar: se a execução falhar, a tela não pode continuar
+    // mostrando o resultado de outro script como se fosse deste
+    limparRetorno();
     setExecutando(true);
     try {
       const novoRetorno = await executarScript(formulario.script);
@@ -195,7 +198,7 @@ export function useInserirCampanhaDinamica() {
     } finally {
       setExecutando(false);
     }
-  }, [formulario.script]);
+  }, [formulario.script, limparRetorno]);
 
   const gerarInsert = useCallback((): string | null => {
     if (!retorno || retorno.linhas.length === 0) {

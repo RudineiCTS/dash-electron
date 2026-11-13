@@ -1,4 +1,6 @@
 import { ReactNode, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { FiArrowLeft } from "react-icons/fi";
 import dayjs from "dayjs";
 import { useInserirCampanhaDinamica } from "../hook/useInserirCampanhaDinamica";
 import { INSERCAO_DISPONIVEL } from "../services/campanhaFarmaResultado";
@@ -22,6 +24,7 @@ function Campo({ rotulo, children, className = "" }: { rotulo: string; children:
 
 export function FarmaInserirCampanhaDinamica() {
   const h = useInserirCampanhaDinamica();
+  const navigate = useNavigate();
   const [confirmando, setConfirmando] = useState(false);
 
   const ocupado = h.salvando || h.executando || h.inserindo || h.abrindo;
@@ -40,6 +43,15 @@ export function FarmaInserirCampanhaDinamica() {
 
   return (
     <div className="flex flex-col gap-6 p-10">
+      <button
+        type="button"
+        onClick={() => navigate("/farma")}
+        aria-label="Voltar para o início do Campanha Farma"
+        className="-mb-2 flex w-fit items-center gap-2 text-sm text-other-muted transition-colors hover:text-other-text cursor-pointer"
+      >
+        <FiArrowLeft size={18} /> Voltar
+      </button>
+
       <header className="flex flex-wrap items-start justify-between gap-4">
         <div className="flex flex-col gap-1">
           <h1 className="text-2xl font-bold text-other-text">Inserir campanha dinâmica</h1>
@@ -148,6 +160,7 @@ export function FarmaInserirCampanhaDinamica() {
             scriptInsert={h.scriptInsert}
             nomeArquivo={`insert_resultado_campanha_${h.formulario.idCampanha || "sem-id"}_${h.dataCompetencia}.sql`}
             inserido={h.travado}
+            retornoDesatualizado={h.retornoDesatualizado}
             insercaoDisponivel={INSERCAO_DISPONIVEL}
             inserindo={h.inserindo}
             onGerarInsert={h.gerarInsert}
