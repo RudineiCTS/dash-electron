@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import dayjs from "dayjs";
+import { ModalConfirmarCopiaCenario } from "./SharedGeneral/ModalConfirmarCopiaCenario";
 
 export interface Cenario {
   id: number;
@@ -28,7 +29,8 @@ export interface CopiaCenarioForm {
 
 interface CenarioCopyPanelProps {
   cenarios: Cenario[];
-  onCopiar: (form: CopiaCenarioForm) => void;
+  /** Devolve true quando o cenário foi criado (a tela mostra o aviso de sucesso). */
+  onCopiar: (form: CopiaCenarioForm) => Promise<boolean | void> | void;
   copiando?: boolean;
   erroCopia?: string;
   /** Disparado sempre que a seleção na tabela de cenários mudar (usado para alimentar o rodapé de metas). */
@@ -94,6 +96,9 @@ export function CenarioCopyPanel({
   const [novaDescricao, setNovaDescricao] = useState("");
   const [novaDataInicio, setNovaDataInicio] = useState("");
   const [novaDataFim, setNovaDataFim] = useState("");
+  const [confirmando, setConfirmando] = useState(false);
+  const [erroLocal, setErroLocal] = useState("");
+  const [sucesso, setSucesso] = useState("");
 
   // Sugere os próximos IDs sempre que a lista mudar (ex: depois de copiar com sucesso).
   useEffect(() => {
@@ -131,16 +136,45 @@ export function CenarioCopyPanel({
     setOpcoes((prev) => ({ ...prev, [chave]: !prev[chave] }));
   };
 
+  /** Valida o que dá para validar na tela; a API valida de novo (IDs já existentes, datas, cenário de origem). */
+  function validarCopia(): string {
+    if (!selecionado) return "Selecione o cenário de origem.";
+    if (!novaDescricao.trim()) return "Informe a descrição do novo cenário.";
+    if (!Number.isInteger(novoIdCenario) || novoIdCenario <= 0) return "Informe o novo ID do cenário.";
+    if (!Number.isInteger(novoIdPeriodo) || novoIdPeriodo <= 0) return "Informe o novo ID do período.";
+    if (novoIdCenario === selecionado.id) return "O novo ID do cenário precisa ser diferente do cenário de origem.";
+    if (cenarios.some((c) => c.id === novoIdCenario)) return `Já existe o cenário #${novoIdCenario}.`;
+    if (cenarios.some((c) => c.idPeridoCompetencia === novoIdPeriodo)) {
+      return `Já existe o período de competência #${novoIdPeriodo}.`;
+    }
+    if (!novaDataInicio || !novaDataFim) return "Informe a data de início e a data de fim.";
+    if (novaDataInicio > novaDataFim) return "A data de início não pode ser depois da data de fim.";
+    return "";
+  }
+
+  /** O botão só abre a confirmação: nada é gravado até o usuário confirmar. */
   function handleCopiar() {
+    setSucesso("");
+    const erro = validarCopia();
+    setErroLocal(erro);
+    if (!erro) setConfirmando(true);
+  }
+
+  async function handleConfirmar() {
     if (!selecionado) return;
-    onCopiar({
+    const criado = await onCopiar({
       sourceScenarioId: selecionado.id,
       newScenarioId: novoIdCenario,
       newPeriodCompetenceId: novoIdPeriodo,
-      description: novaDescricao,
+      description: novaDescricao.trim(),
       startDate: novaDataInicio,
       endDate: novaDataFim,
     });
+    setConfirmando(false);
+    if (criado) {
+      setSucesso(`Cenário #${novoIdCenario} criado e copiado a partir do #${selecionado.id}.`);
+      setNovaDescricao("");
+    }
   }
 
   return (
@@ -369,10 +403,29 @@ export function CenarioCopyPanel({
             </button>
           </div>
 
-          {erroCopia && (
-            <p className="mt-3 text-sm font-medium text-red-600">{erroCopia}</p>
+          {(erroLocal || erroCopia) && (
+            <p className="mt-3 text-sm font-medium text-red-600">{erroLocal || erroCopia}</p>
+          )}
+          {sucesso && !erroLocal && !erroCopia && (
+            <p className="mt-3 text-sm font-medium text-emerald-700">{sucesso}</p>
           )}
         </div>
+      )}
+
+      {confirmando && selecionado && (
+        <ModalConfirmarCopiaCenario
+          origemId={selecionado.id}
+          origemDescricao={selecionado.descricao}
+          origemVendedores={selecionado.vendedores}
+          novoIdCenario={novoIdCenario}
+          novoIdPeriodo={novoIdPeriodo}
+          descricao={novaDescricao.trim()}
+          dataInicio={formatarData(novaDataInicio)}
+          dataFim={formatarData(novaDataFim)}
+          confirmando={copiando}
+          onConfirmar={handleConfirmar}
+          onCancelar={() => setConfirmando(false)}
+        />
       )}
     </div>
   );

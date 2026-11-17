@@ -6,9 +6,8 @@ import MetaSelectionHeader from "../components/FieldSelectComponent";
 import { HeaderComponent } from "../components/Header";
 import { CenarioCopyPanel, Cenario, CopiaCenarioForm } from "../components/ContentGeneral/CopiaCenarios";
 import { CommissionScenarioProvider, useCommissionScenario } from "../context/CommissionScenarioContext";
-import { useResumoMetaTotalizador } from "../hook/useResumoMetaTotalizador";
 import { ImportarValores } from "../components/ContentGeneral/ImportarValores";
-import { calcularTotaisLote, LinhaPreview } from "../components/ContentGeneral/SharedGeneral/PreviewTableImportacao";
+import { LinhaPreview } from "../components/ContentGeneral/SharedGeneral/PreviewTableImportacao";
 import { RodapeMetas } from "../components/ContentGeneral/SharedGeneral/RodapeMetas";
 import { ConsultaMetasKpi } from "../components/ContentGeneral/ConsultaMetasKpi";
 import { capturaMesEscolhido } from "../utils/gerarMeses";
@@ -60,12 +59,7 @@ function GeneralContent(){
     const [modalKpiAberto, setModalKpiAberto] = useState(false);
     const [secaoModalKpi, setSecaoModalKpi] = useState<string | null>(null);
     const [mobileOpen, setMobileOpen] = useState(false);
-    const { scenarios, loading, error, copying, copyError, copyScenario } = useCommissionScenario();
-    const { resumo: resumoTotalizador } = useResumoMetaTotalizador(dataCometencia);
-
-
-
-    const totaisLote = useMemo(() => calcularTotaisLote(linhasImportadas), [linhasImportadas]);
+    const { scenarios, loading, error, copying, copyError, copyScenario, refetch } = useCommissionScenario();
 
     const cenarios: Cenario[] = useMemo(
         () =>
@@ -81,16 +75,8 @@ function GeneralContent(){
         [scenarios]
     );
 
-    const competenciaCenarioSelecionado = useMemo(() => {
-        if (!cenarioSelecionado) return "-";
-        const inicio = dayjs(cenarioSelecionado.dataInicio);
-        if (!inicio.isValid()) return cenarioSelecionado.descricao;
-        const label = inicio.format("MMMM / YYYY");
-        return label.charAt(0).toUpperCase() + label.slice(1);
-    }, [cenarioSelecionado]);
-
     async function handleCopiar(form: CopiaCenarioForm) {
-        await copyScenario({
+        return await copyScenario({
             sourceScenarioId: form.sourceScenarioId,
             newScenarioId: form.newScenarioId,
             newPeriodCompetenceId: form.newPeriodCompetenceId,
@@ -216,6 +202,9 @@ function GeneralContent(){
                         <ImportarValores
                             linhas={linhasImportadas}
                             onLinhasChange={setLinhasImportadas}
+                            cenarios={scenarios}
+                            periodoSugeridoId={cenarioSelecionado?.idPeridoCompetencia ?? null}
+                            onMetasImportadas={refetch}
                         />
                     ): tabSelect.id === 3?(
                         <ConsultaMetasKpi/>
@@ -230,11 +219,10 @@ function GeneralContent(){
                 }
 
                 <RodapeMetas
-                    competencia={competenciaCenarioSelecionado}
-                    totalMetas={totaisLote.total}
-                    onReprocessarPeriodo={() => console.log("reprocessar período", cenarioSelecionado)}
-                    onGravarMetas={() => console.log("gravar metas", linhasImportadas)}
-                    resumo={resumoTotalizador}
+                    cenarios={scenarios}
+                    periodoSugeridoId={cenarioSelecionado?.idPeridoCompetencia ?? null}
+                    cenarioSugeridoId={cenarioSelecionado?.id ?? null}
+                    onMetasImportadas={refetch}
                 />
             </div>
             </div>

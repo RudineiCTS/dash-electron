@@ -5,9 +5,10 @@ export interface ComissaoTelevendasMeta {
     /** GUID (não numérico) do usuário digitador. */
     usuarioDigitador: string | null;
     nomeDigitador: string | null;
-    idComissaoVendasMetaTipo: number;
+    /** null quando a meta ainda não tem valor gravado. */
+    idComissaoVendasMetaTipo: number | null;
     descricaoMetaTipo: string | null;
-    valor: number;
+    valor: number | null;
     idPessoaSupervisor: number | null;
     idPessoaGerente: number | null;
     calcular: boolean | null;
@@ -23,6 +24,6 @@ export interface ComissaoTelevendasMetasDigitador {
   nomeDigitador: string | null;
   idComissaoVendasMetaTipo: (number | null)[];
   descricaoMetaTipo: (string | null)[];
-  valor: number[];
+  valor: (number | null)[];
   calcular: (boolean | null)[];
 }

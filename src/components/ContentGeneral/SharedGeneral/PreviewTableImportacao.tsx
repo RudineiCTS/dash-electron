@@ -48,6 +48,8 @@ interface PreviewImportacaoProps {
   ) => void;
   onDescartarImportacao: () => void;
   onGerarScript: () => void;
+  onVerScriptProcesso: () => void;
+  onImportarMetas: () => void;
 }
 
 function formatarMoeda(valor: number): string {
@@ -94,6 +96,8 @@ export function PreviewImportacao({
   onAlterarCelula,
   onDescartarImportacao,
   onGerarScript,
+  onVerScriptProcesso,
+  onImportarMetas,
 }: PreviewImportacaoProps) {
   const totais = useMemo(() => calcularTotaisLote(linhas), [linhas]);
 
@@ -116,6 +120,18 @@ export function PreviewImportacao({
             className="rounded-lg bg-indigo-950 px-4 py-2 text-sm font-bold text-white hover:bg-indigo-900"
           >
             Gerar script
+          </button>
+          <button
+            onClick={onVerScriptProcesso}
+            className="rounded-lg border border-indigo-950 bg-white px-4 py-2 text-sm font-bold text-indigo-950 hover:bg-indigo-50"
+          >
+            Ver script de processo
+          </button>
+          <button
+            onClick={onImportarMetas}
+            className="rounded-lg bg-orange-500 px-4 py-2 text-sm font-bold text-white hover:bg-orange-600"
+          >
+            Importar Metas
           </button>
           <button
             onClick={onDescartarImportacao}

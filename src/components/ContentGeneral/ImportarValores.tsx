@@ -3,6 +3,8 @@ import * as XLSX from "xlsx";
 import { ColarPlanilhaImport, LinhaImportada } from "./SharedGeneral/CopiaPorPipe";
 import { LinhaPreview, PreviewImportacao } from "./SharedGeneral/PreviewTableImportacao";
 import { ModalScriptNovaMeta } from "./SharedGeneral/ModalScriptNovaMeta";
+import { ModalProcessoImportacaoMetas, ModoProcessoMetas } from "./SharedGeneral/ModalProcessoImportacaoMetas";
+import { CommissionScenario } from "../../interfaces/CommissionScenario";
 
 type CelulaPlanilha = string | number | null;
 
@@ -19,11 +21,18 @@ interface ImportarValoresProps {
     /** Estado do lote importado é mantido no General para alimentar o rodapé de metas em todas as abas. */
     linhas: LinhaPreview[];
     onLinhasChange: Dispatch<SetStateAction<LinhaPreview[]>>;
+    /** Cenários/períodos já carregados (para escolher onde importar). */
+    cenarios: CommissionScenario[];
+    /** Período do cenário selecionado na aba "Copiar cenário". */
+    periodoSugeridoId: number | null;
+    /** Chamado depois que as metas foram gravadas (recarrega a lista de cenários). */
+    onMetasImportadas: () => void;
 }
 
-export function ImportarValores({ linhas, onLinhasChange }: ImportarValoresProps) {
+export function ImportarValores({ linhas, onLinhasChange, cenarios, periodoSugeridoId, onMetasImportadas }: ImportarValoresProps) {
     const [erro, setErro] = useState<string | null>(null);
     const [scriptAberto, setScriptAberto] = useState(false);
+    const [modalProcesso, setModalProcesso] = useState<ModoProcessoMetas | null>(null);
 
     const handleProcessarColagem = (linhasColadas: LinhaImportada[]) => {
         setErro(null);
@@ -120,6 +129,19 @@ export function ImportarValores({ linhas, onLinhasChange }: ImportarValoresProps
                     onAlterarCelula={handleAlterarCelula}
                     onDescartarImportacao={() => onLinhasChange([])}
                     onGerarScript={() => setScriptAberto(true)}
+                    onVerScriptProcesso={() => setModalProcesso("ver")}
+                    onImportarMetas={() => setModalProcesso("importar")}
+                />
+            )}
+
+            {modalProcesso && linhas.length > 0 && (
+                <ModalProcessoImportacaoMetas
+                    modo={modalProcesso}
+                    linhas={linhas}
+                    cenarios={cenarios}
+                    periodoSugeridoId={periodoSugeridoId}
+                    onImportado={onMetasImportadas}
+                    onClose={() => setModalProcesso(null)}
                 />
             )}
 
