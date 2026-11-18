@@ -4,6 +4,7 @@ import { CommissionScenario } from "../../../interfaces/CommissionScenario";
 import { ImportacaoMetasTotais } from "../../../interfaces/ImportacaoMetas";
 import { TIPOS_EXCLUSIVAS, useImportacaoExclusivas } from "../../../hook/useImportacaoExclusivas";
 import { ModalConfirmarImportacaoExclusivas } from "./ModalConfirmarImportacaoExclusivas";
+import { SecaoCalculoComissao } from "./SecaoCalculoComissao";
 
 const SITUACAO_ABERTO = 1;
 
@@ -282,6 +283,14 @@ export function PainelMetasExclusivas({
           </button>
         </div>
       </section>
+
+      {/* Calcular comissões do período escolhido */}
+      <SecaoCalculoComissao
+        periodoId={periodoId}
+        situacaoId={periodo?.idPeriodCompetenceStatus ?? null}
+        situacaoDescricao={periodo?.periodCompetenceStatusDescription ?? null}
+        onCalculado={onImportado}
+      />
 
       {confirmando && (
         <ModalConfirmarImportacaoExclusivas
