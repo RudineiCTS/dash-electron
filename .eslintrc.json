@@ -12,5 +12,24 @@
     "plugin:import/electron",
     "plugin:import/typescript"
   ],
-  "parser": "@typescript-eslint/parser"
+  "parser": "@typescript-eslint/parser",
+  "overrides": [
+    {
+      "files": ["web/**/*.ts", "web/**/*.tsx"],
+      "rules": {
+        "import/no-unresolved": "off",
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": ["**/utils/csvExport", "**/utils/excelExport", "**/utils/downloadFile", "xlsx"],
+                "message": "Exportação para CSV/Excel não é permitida no app web."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
 }

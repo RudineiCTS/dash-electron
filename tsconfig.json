@@ -9,9 +9,10 @@
     "strict": true,
     "sourceMap": true,
     "baseUrl": ".",
+    "paths": { "@shared/*": ["src/*"] },
     "outDir": "dist",
     "moduleResolution": "bundler",
     "resolveJsonModule": true
   },
-  "exclude": ["node_modules", "dist", ".vite"]
+  "exclude": ["node_modules", "dist", "dist-web", ".vite"]
 }

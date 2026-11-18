@@ -1,0 +1,21 @@
+/* Reaproveita Tailwind + tokens de tema (--gh-*, --other-*) do app Electron. */
+@import '../src/index.css';
+
+/*
+ * O CSS do Electron trava html/body em 100% com overflow:hidden (janela fixa).
+ * Na web mobile o documento precisa rolar naturalmente (barra de endereço do
+ * navegador, pull-to-refresh, scroll restoration).
+ */
+html,
+body,
+#root {
+  height: auto;
+  min-height: 100%;
+  overflow: visible;
+}
+
+body {
+  margin: 0;
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}

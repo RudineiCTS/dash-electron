@@ -90,3 +90,8 @@ typings/
 
 # Electron-Forge
 out/
+
+# Build do app web
+dist-web/
+.env.local
+.env.*.local

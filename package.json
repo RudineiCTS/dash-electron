@@ -10,7 +10,11 @@
     "package": "electron-forge package",
     "make": "electron-forge make",
     "publish": "electron-forge publish",
-    "lint": "eslint --ext .ts,.tsx ."
+    "lint": "eslint --ext .ts,.tsx .",
+    "web:dev": "vite --config vite.web.config.ts",
+    "web:typecheck": "tsc -p web",
+    "web:build": "tsc -p web && vite build --config vite.web.config.ts",
+    "web:preview": "vite preview --config vite.web.config.ts"
   },
   "keywords": [],
   "author": {

@@ -128,3 +128,21 @@ A URL do feed de atualização está fixa em [`src/main.ts`](src/main.ts) (`UPDA
 - Não há autenticação tradicional (senha/token) - o acesso depende inteiramente do usuário do Windows estar cadastrado e ativo na base de perfis do Compass; qualquer pessoa com acesso à máquina e a esse usuário do Windows entra no app.
 - CORS do backend ainda não foi validado para o app empacotado (`file://`) apontando pra um servidor remoto - só para o modo dev (ver [Configuração](#configuração)).
 - `package.json` mantém `name`/`productName` como `meu-app` (nunca renomeado para Compass).
+
+## App web (somente leitura, mobile first)
+
+Versão web enxuta, na pasta [`web/`](web), com o mesmo React + TypeScript. Hoje só tem as telas de **Campanhas Rodando** (`/campaigns`) e do **detalhe da campanha** (`/campaigns/details/:id`). Reaproveita `src/services`, `src/interfaces`, `src/utils` e `src/context` do app Electron pelo alias `@shared/*` (→ `src/*`), mas tem build, HTML, router e layout próprios. O Electron não é afetado.
+
+```bash
+npm run web:dev        # http://localhost:5174 (proxy /api e /Campaign -> localhost:5225)
+npm run web:typecheck  # tsc só da pasta web/
+npm run web:build      # gera dist-web/ (arquivos estáticos)
+npm run web:preview    # serve dist-web/ em http://localhost:4174
+```
+
+- **Config**: copie [`web/.env.example`](web/.env.example) para `web/.env`. `VITE_API_BASE_URL` vazio = mesma origem (`/api/...`), que é o esperado atrás de um proxy reverso. Para `web:dev` o Vite encaminha `/api` e `/Campaign` para `VITE_API_PROXY_TARGET` (evita CORS em dev).
+- **Servidor**: o build usa `BrowserRouter`, então o servidor precisa de *SPA fallback* (qualquer caminho -> `index.html`). Em subcaminho, defina `VITE_BASE_PATH`.
+- **Sem exportação**: Excel/CSV **não** existem no app web. Uma regra do ESLint (`no-restricted-imports` em `web/**`) bloqueia importar `utils/excelExport`, `utils/csvExport`, `utils/downloadFile` e `xlsx`.
+- **Sem dados de exemplo**: diferente do Electron, se a API falhar a tela mostra erro com "Tentar de novo" (não cai em mock).
+- **Autenticação**: ainda não definida. O ponto de extensão é [`web/auth/authAdapter.ts`](web/auth/authAdapter.ts), plugado em `web/main.tsx` via `configureHttp()`; hoje usa `anonymousAuth` (sem token). **Não publique este build na internet antes de definir autenticação e expor só endpoints de leitura**: a API atual não autentica de verdade e libera CORS só para origens locais.
+- **Mobile first**: classes Tailwind sem prefixo valem para celular; `sm:`/`lg:` expandem o layout. Alvos de toque de 44px, `100dvh`, safe-area do notch.
