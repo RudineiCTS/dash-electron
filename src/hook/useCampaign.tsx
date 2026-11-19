@@ -3,6 +3,7 @@ import { getCamapignTelesalerPerPeriod, getCampaignSummaryPerPeriod } from '../s
 import { CampaignCompetencePeriod } from '../interfaces/CampaignResume';
 import { CampaignSummary } from '../interfaces/CampaignSummary';
 import { campaignSummaryMock } from '../mock/campaignSummary';
+import { calcularTotaisCampanhas } from '../utils/totaisCampanhas';
 
 interface typeUseCampaign {
   dateCompetency?:string,
@@ -10,19 +11,18 @@ interface typeUseCampaign {
 }
 
 function computeTotalCard(data: CampaignSummary[]) {
-  return data.reduce((acc, item) => ({
-    totalMeta: acc.totalMeta + item.goalValue,
-    totalValor: acc.totalValor + item.assessedValue,
-    premiacaoTotal: acc.premiacaoTotal + item.totalAward,
-    totalValorBess: acc.totalValorBess + item.assessedValueBees!,
-    percentTotal: 0
-  }), {
-    totalMeta: 0,
-    totalValor: 0,
-    totalValorBess:0,
-    premiacaoTotal: 0,
-    percentTotal: 0
-  });
+  // Meta/realizado/percentual só de campanhas de vendas (R$) COM meta; ver utils/totaisCampanhas.
+  const t = calcularTotaisCampanhas(data);
+  return {
+    totalMeta: t.meta,
+    totalValor: t.realizado,
+    totalValorBess: t.bees,
+    premiacaoTotal: t.premiacao,
+    percentTotal: t.percentual ?? 0,
+    vendasComMeta: t.vendasComMeta,
+    semMeta: t.semMeta,
+    outrasUnidades: t.outrasUnidades,
+  };
 }
 export function useCampaign({dateCompetency,dateSummary}:typeUseCampaign){    
     const [campaigns, setCampaigns] = useState<CampaignCompetencePeriod[]>([]);
@@ -32,7 +32,7 @@ export function useCampaign({dateCompetency,dateSummary}:typeUseCampaign){
     const [summary, setSummary] = useState<CampaignSummary[]>([]);
     const [loadingSummary, setLoadingSummary] = useState(false);
     const [errorSummary, setErrorSummary] = useState("");
-    const [totalCard, setTotalCard] = useState({totalMeta:0,          totalValor:0,          premiacaoTotal:0,          percentTotal:0, totalValorBess:0})
+    const [totalCard, setTotalCard] = useState({totalMeta:0, totalValor:0, premiacaoTotal:0, percentTotal:0, totalValorBess:0, vendasComMeta:0, semMeta:0, outrasUnidades:0})
 
     const fetchCampaign = useCallback(async (signal?: AbortSignal) => {
       try {

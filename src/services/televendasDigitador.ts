@@ -1,8 +1,13 @@
-import { TelevendasDigitador, TelevendasDigitadorGrupoUpdate } from "../interfaces/TelevendasDigitador";
+import { TelevendasDigitador, TelevendasDigitadorGrupoUpdate, TelevendasGrupoOpcao } from "../interfaces/TelevendasDigitador";
 import { api } from "./api";
 
 export async function getTelevendasDigitadores(signal?: AbortSignal): Promise<TelevendasDigitador[]> {
     const response = await api.get<TelevendasDigitador[]>("televendas-digitador", { signal });
+    return response.data;
+}
+
+export async function getTelevendasGrupoOpcoes(signal?: AbortSignal): Promise<TelevendasGrupoOpcao[]> {
+    const response = await api.get<TelevendasGrupoOpcao[]>("televendas-digitador/opcoes", { signal });
     return response.data;
 }
 

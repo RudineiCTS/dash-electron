@@ -8,6 +8,13 @@ export interface TelevendasDigitador {
     subGrupo: string | null;
 }
 
+/** Cadastro de grupo com seus subgrupos (tblTelevendasGrupo / tblTelevendasSubGrupo). */
+export interface TelevendasGrupoOpcao {
+    idGrupo: number;
+    grupo: string;
+    subGrupos: { idSubGrupo: number; subGrupo: string }[];
+}
+
 export interface TelevendasDigitadorGrupoUpdate {
     idPessoaTelevendas: number;
     grupo: string | null;

@@ -3,6 +3,8 @@ import { WebLayout } from './layout/WebLayout'
 import CampaignsPage from './pages/CampaignsPage'
 import CampaignDetailPage from './pages/CampaignDetailPage'
 import NotFoundPage from './pages/NotFoundPage'
+import SecaoPage from './pages/SecaoPage'
+import ParametrosPage from './pages/ParametrosPage'
 
 /**
  * Rotas do app web (somente leitura). As URLs seguem as do app desktop:
@@ -23,6 +25,11 @@ export default function App() {
           <Route index element={<Navigate to="/campaigns" replace />} />
           <Route path="campaigns" element={<CampaignsPage />} />
           <Route path="campaigns/details/:id" element={<CampaignDetailPage />} />
+          <Route path="prospeccao" element={<SecaoPage titulo="Prospecção" />} />
+          <Route path="fidelizacao" element={<SecaoPage titulo="Fidelização" />} />
+          <Route path="sac" element={<SecaoPage titulo="SAC" />} />
+          <Route path="exclusivas" element={<SecaoPage titulo="Exclusivas" />} />
+          <Route path="parametros" element={<ParametrosPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>
       </Routes>
