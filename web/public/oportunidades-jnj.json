@@ -1,0 +1,1995 @@
+{
+ "geradoEm": "2026-11-19",
+ "referencia": "2026-11",
+ "observacao": "Demonstracao com dados reais de out/nov 2026 (ate 18/11). Clientes aparecem so por codigo.",
+ "resumo": {
+  "margemLiquidaPct": 21.2,
+  "ticketRecompra": 622.41,
+  "ticketNovo": 942.28,
+  "clientesOutubro": 69,
+  "clientesRecompraNov": 11,
+  "semRecompra": 58,
+  "gatilhoValor": 100
+ },
+ "produtos": {
+  "95746": {
+   "nome": "NEUTROGENA BODY HIDRATA E REPARA 200ML",
+   "preco": 15.22,
+   "margemPct": 18.4
+  },
+  "100615": {
+   "nome": "NEUTROGENA CREME BOOST WATER GEL 50G",
+   "preco": 44.8,
+   "margemPct": 23.3
+  },
+  "15880": {
+   "nome": "TALCO JOHNSON'S BABY HORA DO SONO 100G",
+   "preco": 18.06,
+   "margemPct": 31.5
+  },
+  "102670": {
+   "nome": "AGUA MICELAR DEMAQUILANTE NEUTROGENA 200ML",
+   "preco": 27.53,
+   "margemPct": 25.8
+  },
+  "8207": {
+   "nome": "ABS SEMPRE LIVRE ULTRA SUAVEABAS C/32",
+   "preco": 11.57,
+   "margemPct": 25.0
+  },
+  "7184": {
+   "nome": "NEUTROGENA FACE CARE MATE HIDRATANTE 3 EM 1",
+   "preco": 21.36,
+   "margemPct": 18.3
+  },
+  "100626": {
+   "nome": "NEUTROGENA BODY CARE HIDRATA E SUAVIZA 400ML",
+   "preco": 20.83,
+   "margemPct": 19.2
+  },
+  "94491": {
+   "nome": "ABS INT OB ORIGINAL SUPER L10P8",
+   "preco": 7.88,
+   "margemPct": 23.9
+  },
+  "100124": {
+   "nome": "ABS INT OB ORIGINAL MÉDIO L10P8",
+   "preco": 7.77,
+   "margemPct": 23.9
+  },
+  "99611": {
+   "nome": "ABS SEMPRE LIVRE ADAPT NOITE/DIA SECA ABAS C/8",
+   "preco": 7.42,
+   "margemPct": 25.2
+  },
+  "100129": {
+   "nome": "NEUTROGENA BODY HIDRATA E REPARA 400ML",
+   "preco": 21.0,
+   "margemPct": 19.8
+  },
+  "100131": {
+   "nome": "LENÇO UMEDECIDO JOHNSON'S BABY RNASCIDO C/96",
+   "preco": 21.97,
+   "margemPct": 20.4
+  },
+  "21797": {
+   "nome": "SABONETE LÍQ JOHNSON'S BABY GLICE. BAUNILHA 200ML",
+   "preco": 16.25,
+   "margemPct": 22.8
+  },
+  "94501": {
+   "nome": "SHAMPOO JOHNSON'S BABY CABELOS CLAROS 200ML",
+   "preco": 12.43,
+   "margemPct": 25.3
+  },
+  "100136": {
+   "nome": "LISTERINE COOL MINT L 1,5L PAGUE 750ML",
+   "preco": 36.38,
+   "margemPct": 34.8
+  },
+  "16682": {
+   "nome": "SABONETE LIQ JOHNSON BABY CAMOMILA 200ML",
+   "preco": 14.51,
+   "margemPct": 26.8
+  },
+  "18733": {
+   "nome": "JOHNSON'S 2 EM 1 SHAMPOO E CONDICIONADOR 200ML",
+   "preco": 13.04,
+   "margemPct": 23.6
+  },
+  "21039": {
+   "nome": "SUNDOWN  TRIPLA PROTEÇÃO FPS50 100ML",
+   "preco": 22.86,
+   "margemPct": 17.6
+  },
+  "97327": {
+   "nome": "LENÇO UMEDECIDO JOHNSON'S BABY RNASCIDO C/48",
+   "preco": 13.78,
+   "margemPct": 23.0
+  },
+  "3632": {
+   "nome": "LISTERINE TARTAR-CONTROL 250ML",
+   "preco": 13.04,
+   "margemPct": 28.8
+  },
+  "2618": {
+   "nome": "LISTERINE COOL MINT 250ML",
+   "preco": 9.61,
+   "margemPct": 28.0
+  },
+  "101440": {
+   "nome": "BAND-AID TRANSPARENTE C/10 UNIDADES",
+   "preco": 4.77,
+   "margemPct": 22.8
+  },
+  "101442": {
+   "nome": "BAND-AID TRANSPARENTE C/40 UNIDADES",
+   "preco": 10.27,
+   "margemPct": 24.0
+  },
+  "97612": {
+   "nome": "PROT SOLAR NEUTROGENA SUN FRESH FPS 30 200ML",
+   "preco": 41.61,
+   "margemPct": 30.5
+  },
+  "97615": {
+   "nome": "PROT SOLAR NEUTROGENA SUN FRESH FPS 70 200ML",
+   "preco": 63.28,
+   "margemPct": 17.4
+  },
+  "94546": {
+   "nome": "TYLENOL 500MG CPR C/20",
+   "preco": 26.07,
+   "margemPct": 19.1
+  },
+  "16475": {
+   "nome": "COTONETE JOHNSON & JOHNSON C/300 UNIDADES",
+   "preco": 14.91,
+   "margemPct": 21.7
+  },
+  "2652": {
+   "nome": "LISTERINE COOL MINT 500ML",
+   "preco": 13.14,
+   "margemPct": 32.7
+  },
+  "15709": {
+   "nome": "LOCAO HID JOHNSON'S BABY DERMA DEFENSE 200ML",
+   "preco": 47.56,
+   "margemPct": 20.4
+  },
+  "15710": {
+   "nome": "LISTERINE MELANCIA 250ML",
+   "preco": 9.53,
+   "margemPct": 26.8
+  },
+  "15711": {
+   "nome": "LISTERINE MELANCIA 500ML",
+   "preco": 13.87,
+   "margemPct": 27.4
+  },
+  "2651": {
+   "nome": "LISTERINE TARTAR-CONTROL 500ML",
+   "preco": 20.72,
+   "margemPct": 26.0
+  },
+  "16478": {
+   "nome": "O.B SEMPRE LIVRE SUPER C/8",
+   "preco": 7.75,
+   "margemPct": 20.3
+  },
+  "99679": {
+   "nome": "BAND-AID ULTRA PROTECTION C/15",
+   "preco": 11.77,
+   "margemPct": 20.9
+  },
+  "7010": {
+   "nome": "NEUTROGENA BODY HIDRATA E REVITALIZA 400ML",
+   "preco": 20.66,
+   "margemPct": 54.5
+  },
+  "20325": {
+   "nome": "SUNDOWN KIDS KIDS FPS60 100ML",
+   "preco": 25.11,
+   "margemPct": 18.0
+  },
+  "102761": {
+   "nome": "ABS SEMPRE LIVRE ADAPT PLUS SUAVE  ABAS C/32",
+   "preco": 14.38,
+   "margemPct": 24.7
+  },
+  "102763": {
+   "nome": "ABS SEMPRE LIVRE ADAPT NOITE/DIA SECA ABAS C/32",
+   "preco": 21.25,
+   "margemPct": 29.1
+  },
+  "92534": {
+   "nome": "COTONETE JOHNSON & JOHNSON POTE C/150 UNIDADES",
+   "preco": 10.97,
+   "margemPct": 21.6
+  },
+  "100215": {
+   "nome": "ABS SEMPRE LIVRE ADAPT PLUS SUAVE ABAS L16P14",
+   "preco": 8.1,
+   "margemPct": 25.6
+  },
+  "6270": {
+   "nome": "TYLENOL SINUS 500MG CPR C/24",
+   "preco": 14.54,
+   "margemPct": 17.0
+  },
+  "109439": {
+   "nome": "BAND-AID TRANSPARENTE VARIADOS C/30",
+   "preco": 13.13,
+   "margemPct": 21.1
+  },
+  "108936": {
+   "nome": "HIPOGLOS CLEAR CREME 30G",
+   "preco": 15.94,
+   "margemPct": 21.2
+  },
+  "25739": {
+   "nome": "COTONETE JOHNSON & JOHNSON L75P65 UNIDADES",
+   "preco": 4.08,
+   "margemPct": 22.1
+  },
+  "106128": {
+   "nome": "ABS INT OB PROCOMFORT + FÁCIL MÉDIO C/16",
+   "preco": 13.2,
+   "margemPct": 24.2
+  },
+  "106129": {
+   "nome": "ABS INT OB PROCOMFORT +FÁCIL SUPER C/16",
+   "preco": 13.71,
+   "margemPct": 22.4
+  },
+  "91537": {
+   "nome": "HIPOGLOS AMENDOAS CREME 40G",
+   "preco": 16.52,
+   "margemPct": 20.5
+  },
+  "99220": {
+   "nome": "CAREFREE PROT DIÁRIO FLEX S/PERF C/15",
+   "preco": 6.56,
+   "margemPct": 21.1
+  },
+  "99221": {
+   "nome": "CAREFREE PROT DIÁRIO FLEX S/PERF C/40",
+   "preco": 12.58,
+   "margemPct": 23.2
+  },
+  "99222": {
+   "nome": "CAREFREE PROT DIÁRIO FLEX S/PERF C/80",
+   "preco": 21.35,
+   "margemPct": 24.2
+  },
+  "661": {
+   "nome": "NEUTROGENA FAC PELE OLEO FPS70 40G",
+   "preco": 41.86,
+   "margemPct": 13.2
+  },
+  "2715": {
+   "nome": "COTONETE JOHNSON & JOHNSON C/75 UNIDADES",
+   "preco": 4.73,
+   "margemPct": 21.2
+  },
+  "99230": {
+   "nome": "COLONIA JOHNSON'S BABY LAVANDA 200ML",
+   "preco": 24.32,
+   "margemPct": 26.6
+  },
+  "99232": {
+   "nome": "OLEO JOHNSON'S BABY HORA DO SONO 200ML",
+   "preco": 43.95,
+   "margemPct": 31.3
+  },
+  "99236": {
+   "nome": "SHAMPOO JOHNSON'S BABY CABELOS CLAROS 400ML",
+   "preco": 16.66,
+   "margemPct": 20.2
+  },
+  "99241": {
+   "nome": "FIO DENTAL J&J REACH MENTA 50M",
+   "preco": 9.97,
+   "margemPct": 19.4
+  },
+  "99242": {
+   "nome": "FIO DENTAL J&J REACH EXTRA FINO 50M",
+   "preco": 10.75,
+   "margemPct": 18.8
+  },
+  "3755": {
+   "nome": "COTONETE JOHNSON & JOHNSON C/150 UNIDADES",
+   "preco": 8.95,
+   "margemPct": 23.0
+  },
+  "99245": {
+   "nome": "ABS SEMPRE LIVRE ADAPT PLUS SUAVE ABAS C/8",
+   "preco": 4.45,
+   "margemPct": 29.1
+  },
+  "101048": {
+   "nome": "LISTERINE ANTICARIES ZEROALCOOL 500ML",
+   "preco": 18.45,
+   "margemPct": 25.2
+  },
+  "5817": {
+   "nome": "SUNDOWN ECONOMICO FPS 30 200ML",
+   "preco": 31.11,
+   "margemPct": 14.0
+  },
+  "11967": {
+   "nome": "LISTERINE COOL MINT ZERO 1L",
+   "preco": 22.72,
+   "margemPct": 29.2
+  },
+  "11968": {
+   "nome": "LISTERINE COOL MINT 1L",
+   "preco": 22.94,
+   "margemPct": 27.2
+  },
+  "101570": {
+   "nome": "LISTERINE WHITENING EXTREME PRE-ESCOVAÇÃO 236ML",
+   "preco": 12.59,
+   "margemPct": 27.4
+  },
+  "11972": {
+   "nome": "NEUTROGENA NORWEGIAN LOC INT HID COM FRAG 400ML",
+   "preco": 52.84,
+   "margemPct": 54.5
+  },
+  "11975": {
+   "nome": "NEUTROGENA NORWEGIAN LOC INT HID SEM FRAG 400ML",
+   "preco": 53.25,
+   "margemPct": 19.7
+  },
+  "94412": {
+   "nome": "SABONETE LIQUIDO JOHNSON'S BABY CAB AOS PÉS 200ML",
+   "preco": 14.93,
+   "margemPct": 27.4
+  },
+  "94415": {
+   "nome": "CAREFREE PROT DIÁRIO ORIGINAL C/PERF C/40",
+   "preco": 9.76,
+   "margemPct": 24.7
+  },
+  "94420": {
+   "nome": "ABS SEMPRE LIVRE ADAPT ESPECIAL SUAVE  ABAS C/8",
+   "preco": 3.53,
+   "margemPct": 23.1
+  },
+  "94422": {
+   "nome": "ABS SEMPRE LIVRE ADAPT ESPECIAL SUAVE S/ABAS C/8",
+   "preco": 3.59,
+   "margemPct": 23.6
+  },
+  "107480": {
+   "nome": "ABS INT OB PROCOMFORT + FÁCIL MÉDIO C/8",
+   "preco": 7.95,
+   "margemPct": 20.9
+  },
+  "97497": {
+   "nome": "ABS SEMPRE LIVRE ADAPT ESPECIAL SUAVE ABAS L16P14",
+   "preco": 6.45,
+   "margemPct": 24.7
+  },
+  "19162": {
+   "nome": "NEUTROGENA HYDRO BOOST SÉRUM FACIAL ANTIMARCAS",
+   "preco": 49.54,
+   "margemPct": 25.4
+  },
+  "15579": {
+   "nome": "NEUTROGENA SUN FRESH BASTAO COR 3.0",
+   "preco": 105.19,
+   "margemPct": 25.6
+  },
+  "94428": {
+   "nome": "ABS SEMPRE LIVRE ADAPT NOITE/DIA SUAVE ABAS C/8",
+   "preco": 7.17,
+   "margemPct": 25.4
+  },
+  "94434": {
+   "nome": "CAREFREE PROT DIÁRIO ORIGINAL C/PERF C/15",
+   "preco": 5.28,
+   "margemPct": 25.3
+  },
+  "94440": {
+   "nome": "COND  JOHNSON'S BABY CLAROS 200ML",
+   "preco": 23.14,
+   "margemPct": 29.9
+  },
+  "94442": {
+   "nome": "BAND-AID TRANSPARENTE PEQ FERIMENTOS C/16 UNID",
+   "preco": 6.6,
+   "margemPct": 20.7
+  },
+  "94443": {
+   "nome": "FIO DENTAL J&J REACH ESSENCIAL MENTA 100M",
+   "preco": 10.57,
+   "margemPct": 18.8
+  },
+  "97515": {
+   "nome": "COND  JOHNSON'S BABY 200ML",
+   "preco": 17.13,
+   "margemPct": 27.7
+  },
+  "97517": {
+   "nome": "SHAMPOO JOHNSON'S BABY CABELOS CHEIRO PROL. 200ML",
+   "preco": 12.61,
+   "margemPct": 23.1
+  },
+  "94445": {
+   "nome": "FIO DENTAL J&J REACH EXPANSION PLUS ENCERADO 50M",
+   "preco": 10.82,
+   "margemPct": 19.3
+  },
+  "97519": {
+   "nome": "SHAMPOO JOHNSON'S BABY REGULAR 400ML",
+   "preco": 18.12,
+   "margemPct": 22.0
+  },
+  "97520": {
+   "nome": "LISTERINE ZEROALCOOL 250ML",
+   "preco": 9.44,
+   "margemPct": 27.6
+  },
+  "94446": {
+   "nome": "LISTERINE CUIDADO TOTAL 500ML",
+   "preco": 18.84,
+   "margemPct": 28.1
+  },
+  "15859": {
+   "nome": "HIPOGLOS ORIGINAL 40G",
+   "preco": 13.86,
+   "margemPct": 23.1
+  },
+  "15860": {
+   "nome": "TALCO JOHNSON'S BABY 100G",
+   "preco": 16.96,
+   "margemPct": 29.5
+  },
+  "97525": {
+   "nome": "CAREFREE PROT DIÁRIO TODODIA S/PERF C/15",
+   "preco": 5.43,
+   "margemPct": 30.0
+  },
+  "94454": {
+   "nome": "OLEO JOHNSON'S BABY PURO 200ML",
+   "preco": 39.27,
+   "margemPct": 22.1
+  },
+  "97526": {
+   "nome": "CAREFREE PROT DIÁRIO ORIGINAL S/PERF C/15",
+   "preco": 5.31,
+   "margemPct": 26.0
+  },
+  "94456": {
+   "nome": "OLEO JOHNSON'S BABY COM AMENDOAS 200ML",
+   "preco": 40.87,
+   "margemPct": 21.7
+  },
+  "97523": {
+   "nome": "CAREFREE PROT DIÁRIO ORIGINAL S/PERF C/40",
+   "preco": 10.25,
+   "margemPct": 23.7
+  },
+  "94458": {
+   "nome": "SABONETE LIQUIDO JOHNSON'S BABY HORA SONO 200ML",
+   "preco": 13.65,
+   "margemPct": 27.9
+  },
+  "94459": {
+   "nome": "SHAMPOO JOHNSON'S BABY REGULAR 200ML",
+   "preco": 11.75,
+   "margemPct": 24.8
+  },
+  "97524": {
+   "nome": "CAREFREE PROT DIÁRIO TODODIA S/PERF C/40",
+   "preco": 10.5,
+   "margemPct": 25.7
+  },
+  "100862": {
+   "nome": "ABS SEMPRE LIVRE ADAPT NOITE/DIA SUAVE ABAS L16P14",
+   "preco": 13.69,
+   "margemPct": 31.6
+  },
+  "100863": {
+   "nome": "ABS SEMPRE LIVRE ADAPT NOITE/DIA SUAVE ABAS L32P24",
+   "preco": 20.65,
+   "margemPct": 24.8
+  }
+ },
+ "kit": [
+  {
+   "produto": 101440,
+   "preco": 4.71,
+   "margemPct": 22.5,
+   "clientes": 40,
+   "qtd": 6
+  },
+  {
+   "produto": 94443,
+   "preco": 10.5,
+   "margemPct": 18.7,
+   "clientes": 33,
+   "qtd": 12
+  },
+  {
+   "produto": 99241,
+   "preco": 9.87,
+   "margemPct": 19.2,
+   "clientes": 31,
+   "qtd": 6
+  },
+  {
+   "produto": 2618,
+   "preco": 9.53,
+   "margemPct": 27.1,
+   "clientes": 27,
+   "qtd": 6
+  },
+  {
+   "produto": 94459,
+   "preco": 11.49,
+   "margemPct": 24.0,
+   "clientes": 27,
+   "qtd": 2
+  },
+  {
+   "produto": 97520,
+   "preco": 9.41,
+   "margemPct": 27.3,
+   "clientes": 26,
+   "qtd": 6
+  },
+  {
+   "produto": 94428,
+   "preco": 6.94,
+   "margemPct": 26.3,
+   "clientes": 25,
+   "qtd": 5
+  },
+  {
+   "produto": 100124,
+   "preco": 7.75,
+   "margemPct": 22.8,
+   "clientes": 25,
+   "qtd": 5
+  }
+ ],
+ "recompra": [
+  {
+   "cliente": 155707,
+   "ultimaCompra": "2026-10-20",
+   "diasSemComprar": 30,
+   "valorUltimaCompra": 4677.41,
+   "produtos": [
+    101442,
+    101440,
+    109439
+   ],
+   "qtds": {
+    "101442": 110,
+    "101440": 185,
+    "109439": 50
+   }
+  },
+  {
+   "cliente": 7698,
+   "ultimaCompra": "2026-10-09",
+   "diasSemComprar": 41,
+   "valorUltimaCompra": 3260.85,
+   "produtos": [
+    100615,
+    19162
+   ],
+   "qtds": {
+    "100615": 50,
+    "19162": 20
+   }
+  },
+  {
+   "cliente": 3972,
+   "ultimaCompra": "2026-10-30",
+   "diasSemComprar": 20,
+   "valorUltimaCompra": 2946.62,
+   "produtos": [
+    97519,
+    15859,
+    100863
+   ],
+   "qtds": {
+    "97519": 10,
+    "15859": 10,
+    "100863": 6
+   }
+  },
+  {
+   "cliente": 138604,
+   "ultimaCompra": "2026-10-30",
+   "diasSemComprar": 20,
+   "valorUltimaCompra": 2712.64,
+   "produtos": [
+    102761,
+    8207,
+    100863
+   ],
+   "qtds": {
+    "102761": 10,
+    "8207": 12,
+    "100863": 6
+   }
+  },
+  {
+   "cliente": 24069,
+   "ultimaCompra": "2026-10-15",
+   "diasSemComprar": 35,
+   "valorUltimaCompra": 1380.77,
+   "produtos": [
+    11967,
+    11968,
+    94442
+   ],
+   "qtds": {
+    "11967": 12,
+    "11968": 12,
+    "94442": 36
+   }
+  },
+  {
+   "cliente": 22923,
+   "ultimaCompra": "2026-10-15",
+   "diasSemComprar": 35,
+   "valorUltimaCompra": 1308.65,
+   "produtos": [
+    106129,
+    106128,
+    100124
+   ],
+   "qtds": {
+    "106129": 24,
+    "106128": 24,
+    "100124": 36
+   }
+  },
+  {
+   "cliente": 64937,
+   "ultimaCompra": "2026-10-30",
+   "diasSemComprar": 20,
+   "valorUltimaCompra": 987.92,
+   "produtos": [
+    100863,
+    8207,
+    94443
+   ],
+   "qtds": {
+    "100863": 6,
+    "8207": 6,
+    "94443": 6
+   }
+  },
+  {
+   "cliente": 115933,
+   "ultimaCompra": "2026-10-28",
+   "diasSemComprar": 22,
+   "valorUltimaCompra": 866.85,
+   "produtos": [
+    94454,
+    100215,
+    92534
+   ],
+   "qtds": {
+    "94454": 1,
+    "100215": 4,
+    "92534": 3
+   }
+  },
+  {
+   "cliente": 6701,
+   "ultimaCompra": "2026-10-30",
+   "diasSemComprar": 20,
+   "valorUltimaCompra": 836.7,
+   "produtos": [
+    100863,
+    2618,
+    102761
+   ],
+   "qtds": {
+    "100863": 6,
+    "2618": 12,
+    "102761": 6
+   }
+  },
+  {
+   "cliente": 194969,
+   "ultimaCompra": "2026-10-30",
+   "diasSemComprar": 20,
+   "valorUltimaCompra": 669.13,
+   "produtos": [
+    15709,
+    102761,
+    99241
+   ],
+   "qtds": {
+    "15709": 2,
+    "102761": 6,
+    "99241": 6
+   }
+  },
+  {
+   "cliente": 177862,
+   "ultimaCompra": "2026-10-30",
+   "diasSemComprar": 20,
+   "valorUltimaCompra": 565.61,
+   "produtos": [
+    5817,
+    94491,
+    100124
+   ],
+   "qtds": {
+    "5817": 2,
+    "94491": 6,
+    "100124": 6
+   }
+  },
+  {
+   "cliente": 183832,
+   "ultimaCompra": "2026-10-08",
+   "diasSemComprar": 42,
+   "valorUltimaCompra": 548.4,
+   "produtos": [
+    94440,
+    97515,
+    94412
+   ],
+   "qtds": {
+    "94440": 6,
+    "97515": 6,
+    "94412": 6
+   }
+  },
+  {
+   "cliente": 19489,
+   "ultimaCompra": "2026-10-16",
+   "diasSemComprar": 34,
+   "valorUltimaCompra": 520.73,
+   "produtos": [
+    101442,
+    2715,
+    101440
+   ],
+   "qtds": {
+    "101442": 6,
+    "2715": 12,
+    "101440": 12
+   }
+  },
+  {
+   "cliente": 189188,
+   "ultimaCompra": "2026-10-02",
+   "diasSemComprar": 48,
+   "valorUltimaCompra": 510.09,
+   "produtos": [
+    100131,
+    97327,
+    15860
+   ],
+   "qtds": {
+    "100131": 5,
+    "97327": 5,
+    "15860": 3
+   }
+  },
+  {
+   "cliente": 156593,
+   "ultimaCompra": "2026-10-07",
+   "diasSemComprar": 43,
+   "valorUltimaCompra": 409.6,
+   "produtos": [
+    101442,
+    94412,
+    97519
+   ],
+   "qtds": {
+    "101442": 6,
+    "94412": 3,
+    "97519": 3
+   }
+  },
+  {
+   "cliente": 190326,
+   "ultimaCompra": "2026-10-20",
+   "diasSemComprar": 30,
+   "valorUltimaCompra": 403.88,
+   "produtos": [
+    101442,
+    99222,
+    11975
+   ],
+   "qtds": {
+    "101442": 12,
+    "99222": 3,
+    "11975": 1
+   }
+  },
+  {
+   "cliente": 135652,
+   "ultimaCompra": "2026-10-06",
+   "diasSemComprar": 44,
+   "valorUltimaCompra": 348.47,
+   "produtos": [
+    101440,
+    101442
+   ],
+   "qtds": {
+    "101440": 48,
+    "101442": 12
+   }
+  },
+  {
+   "cliente": 129432,
+   "ultimaCompra": "2026-10-27",
+   "diasSemComprar": 23,
+   "valorUltimaCompra": 344.44,
+   "produtos": [
+    97615,
+    94459,
+    8207
+   ],
+   "qtds": {
+    "97615": 3,
+    "94459": 5,
+    "8207": 4
+   }
+  },
+  {
+   "cliente": 183153,
+   "ultimaCompra": "2026-10-01",
+   "diasSemComprar": 49,
+   "valorUltimaCompra": 335.35,
+   "produtos": [
+    108936,
+    94415,
+    102763
+   ],
+   "qtds": {
+    "108936": 4,
+    "94415": 6,
+    "102763": 2
+   }
+  },
+  {
+   "cliente": 64168,
+   "ultimaCompra": "2026-10-19",
+   "diasSemComprar": 31,
+   "valorUltimaCompra": 289.62,
+   "produtos": [
+    15859
+   ],
+   "qtds": {
+    "15859": 20
+   }
+  },
+  {
+   "cliente": 665181,
+   "ultimaCompra": "2026-10-20",
+   "diasSemComprar": 30,
+   "valorUltimaCompra": 288.92,
+   "produtos": [
+    2715
+   ],
+   "qtds": {
+    "2715": 60
+   }
+  },
+  {
+   "cliente": 166044,
+   "ultimaCompra": "2026-10-08",
+   "diasSemComprar": 42,
+   "valorUltimaCompra": 274.73,
+   "produtos": [
+    99232,
+    94456,
+    94454
+   ],
+   "qtds": {
+    "99232": 2,
+    "94456": 2,
+    "94454": 2
+   }
+  },
+  {
+   "cliente": 182965,
+   "ultimaCompra": "2026-10-09",
+   "diasSemComprar": 41,
+   "valorUltimaCompra": 269.98,
+   "produtos": [
+    21797,
+    16682,
+    94458
+   ],
+   "qtds": {
+    "21797": 3,
+    "16682": 3,
+    "94458": 3
+   }
+  },
+  {
+   "cliente": 147747,
+   "ultimaCompra": "2026-10-27",
+   "diasSemComprar": 23,
+   "valorUltimaCompra": 264.35,
+   "produtos": [
+    2652,
+    15711,
+    3632
+   ],
+   "qtds": {
+    "2652": 2,
+    "15711": 2,
+    "3632": 2
+   }
+  },
+  {
+   "cliente": 156590,
+   "ultimaCompra": "2026-10-07",
+   "diasSemComprar": 43,
+   "valorUltimaCompra": 235.3,
+   "produtos": [
+    94412,
+    97519,
+    94459
+   ],
+   "qtds": {
+    "94412": 3,
+    "97519": 3,
+    "94459": 3
+   }
+  },
+  {
+   "cliente": 207069,
+   "ultimaCompra": "2026-10-26",
+   "diasSemComprar": 24,
+   "valorUltimaCompra": 232.55,
+   "produtos": [
+    3755,
+    3632,
+    2715
+   ],
+   "qtds": {
+    "3755": 6,
+    "3632": 3,
+    "2715": 6
+   }
+  },
+  {
+   "cliente": 210677,
+   "ultimaCompra": "2026-10-08",
+   "diasSemComprar": 42,
+   "valorUltimaCompra": 223.28,
+   "produtos": [
+    101440,
+    94442,
+    109439
+   ],
+   "qtds": {
+    "101440": 12,
+    "94442": 8,
+    "109439": 3
+   }
+  },
+  {
+   "cliente": 776164,
+   "ultimaCompra": "2026-10-06",
+   "diasSemComprar": 44,
+   "valorUltimaCompra": 220.34,
+   "produtos": [
+    101440,
+    2715,
+    3755
+   ],
+   "qtds": {
+    "101440": 24,
+    "2715": 12,
+    "3755": 6
+   }
+  },
+  {
+   "cliente": 159611,
+   "ultimaCompra": "2026-10-06",
+   "diasSemComprar": 44,
+   "valorUltimaCompra": 220.34,
+   "produtos": [
+    101440,
+    2715,
+    3755
+   ],
+   "qtds": {
+    "101440": 24,
+    "2715": 12,
+    "3755": 6
+   }
+  },
+  {
+   "cliente": 25577,
+   "ultimaCompra": "2026-10-27",
+   "diasSemComprar": 23,
+   "valorUltimaCompra": 213.16,
+   "produtos": [
+    20325,
+    21039,
+    94459
+   ],
+   "qtds": {
+    "20325": 2,
+    "21039": 2,
+    "94459": 3
+   }
+  },
+  {
+   "cliente": 19538,
+   "ultimaCompra": "2026-10-16",
+   "diasSemComprar": 34,
+   "valorUltimaCompra": 211.77,
+   "produtos": [
+    94454,
+    106129,
+    20325
+   ],
+   "qtds": {
+    "94454": 1,
+    "106129": 2,
+    "20325": 1
+   }
+  },
+  {
+   "cliente": 1564147,
+   "ultimaCompra": "2026-10-16",
+   "diasSemComprar": 34,
+   "valorUltimaCompra": 209.46,
+   "produtos": [
+    100136,
+    101048,
+    11967
+   ],
+   "qtds": {
+    "100136": 1,
+    "101048": 1,
+    "11967": 1
+   }
+  },
+  {
+   "cliente": 7179,
+   "ultimaCompra": "2026-10-09",
+   "diasSemComprar": 41,
+   "valorUltimaCompra": 205.47,
+   "produtos": [
+    94456,
+    94454,
+    99241
+   ],
+   "qtds": {
+    "94456": 2,
+    "94454": 2,
+    "99241": 5
+   }
+  },
+  {
+   "cliente": 570536,
+   "ultimaCompra": "2026-10-15",
+   "diasSemComprar": 35,
+   "valorUltimaCompra": 202.28,
+   "produtos": [
+    3755,
+    25739
+   ],
+   "qtds": {
+    "3755": 12,
+    "25739": 24
+   }
+  },
+  {
+   "cliente": 210572,
+   "ultimaCompra": "2026-10-02",
+   "diasSemComprar": 48,
+   "valorUltimaCompra": 195.84,
+   "produtos": [
+    97519,
+    94459,
+    94454
+   ],
+   "qtds": {
+    "97519": 3,
+    "94459": 3,
+    "94454": 1
+   }
+  },
+  {
+   "cliente": 189075,
+   "ultimaCompra": "2026-10-09",
+   "diasSemComprar": 41,
+   "valorUltimaCompra": 179.88,
+   "produtos": [
+    99242,
+    15710,
+    94443
+   ],
+   "qtds": {
+    "99242": 2,
+    "15710": 2,
+    "94443": 2
+   }
+  },
+  {
+   "cliente": 145505,
+   "ultimaCompra": "2026-10-20",
+   "diasSemComprar": 30,
+   "valorUltimaCompra": 162.6,
+   "produtos": [
+    94456,
+    94454
+   ],
+   "qtds": {
+    "94456": 2,
+    "94454": 2
+   }
+  },
+  {
+   "cliente": 177841,
+   "ultimaCompra": "2026-10-14",
+   "diasSemComprar": 36,
+   "valorUltimaCompra": 161.71,
+   "produtos": [
+    15579,
+    7184,
+    102670
+   ],
+   "qtds": {
+    "15579": 1,
+    "7184": 1,
+    "102670": 1
+   }
+  },
+  {
+   "cliente": 196065,
+   "ultimaCompra": "2026-10-08",
+   "diasSemComprar": 42,
+   "valorUltimaCompra": 156.82,
+   "produtos": [
+    100862,
+    94428,
+    99611
+   ],
+   "qtds": {
+    "100862": 6,
+    "94428": 6,
+    "99611": 4
+   }
+  },
+  {
+   "cliente": 8868,
+   "ultimaCompra": "2026-10-07",
+   "diasSemComprar": 43,
+   "valorUltimaCompra": 150.17,
+   "produtos": [
+    94412,
+    94458,
+    15880
+   ],
+   "qtds": {
+    "94412": 3,
+    "94458": 3,
+    "15880": 1
+   }
+  },
+  {
+   "cliente": 210930,
+   "ultimaCompra": "2026-10-08",
+   "diasSemComprar": 42,
+   "valorUltimaCompra": 149.17,
+   "produtos": [
+    16475,
+    102761,
+    3755
+   ],
+   "qtds": {
+    "16475": 4,
+    "102761": 4,
+    "3755": 4
+   }
+  },
+  {
+   "cliente": 1115,
+   "ultimaCompra": "2026-10-20",
+   "diasSemComprar": 30,
+   "valorUltimaCompra": 148.07,
+   "produtos": [
+    101442,
+    101440,
+    11968
+   ],
+   "qtds": {
+    "101442": 6,
+    "101440": 12,
+    "11968": 1
+   }
+  },
+  {
+   "cliente": 56452,
+   "ultimaCompra": "2026-10-20",
+   "diasSemComprar": 30,
+   "valorUltimaCompra": 138.51,
+   "produtos": [
+    21039
+   ],
+   "qtds": {
+    "21039": 6
+   }
+  },
+  {
+   "cliente": 21837,
+   "ultimaCompra": "2026-10-28",
+   "diasSemComprar": 22,
+   "valorUltimaCompra": 129.72,
+   "produtos": [
+    100615
+   ],
+   "qtds": {
+    "100615": 2
+   }
+  },
+  {
+   "cliente": 78251,
+   "ultimaCompra": "2026-10-14",
+   "diasSemComprar": 36,
+   "valorUltimaCompra": 128.85,
+   "produtos": [
+    94415,
+    97526,
+    97525
+   ],
+   "qtds": {
+    "94415": 4,
+    "97526": 4,
+    "97525": 4
+   }
+  },
+  {
+   "cliente": 76236,
+   "ultimaCompra": "2026-10-06",
+   "diasSemComprar": 44,
+   "valorUltimaCompra": 124.6,
+   "produtos": [
+    97615,
+    94422,
+    3632
+   ],
+   "qtds": {
+    "97615": 1,
+    "94422": 6,
+    "3632": 1
+   }
+  },
+  {
+   "cliente": 57159,
+   "ultimaCompra": "2026-10-19",
+   "diasSemComprar": 31,
+   "valorUltimaCompra": 121.73,
+   "produtos": [
+    11968,
+    15859
+   ],
+   "qtds": {
+    "11968": 3,
+    "15859": 4
+   }
+  },
+  {
+   "cliente": 740,
+   "ultimaCompra": "2026-10-26",
+   "diasSemComprar": 24,
+   "valorUltimaCompra": 120.9,
+   "produtos": [
+    91537
+   ],
+   "qtds": {
+    "91537": 6
+   }
+  },
+  {
+   "cliente": 151374,
+   "ultimaCompra": "2026-10-05",
+   "diasSemComprar": 45,
+   "valorUltimaCompra": 117.86,
+   "produtos": [
+    100626,
+    100129
+   ],
+   "qtds": {
+    "100626": 2,
+    "100129": 2
+   }
+  },
+  {
+   "cliente": 191093,
+   "ultimaCompra": "2026-10-27",
+   "diasSemComprar": 23,
+   "valorUltimaCompra": 117.72,
+   "produtos": [
+    97517,
+    99230
+   ],
+   "qtds": {
+    "97517": 4,
+    "99230": 2
+   }
+  },
+  {
+   "cliente": 145273,
+   "ultimaCompra": "2026-10-26",
+   "diasSemComprar": 24,
+   "valorUltimaCompra": 115.72,
+   "produtos": [
+    6270,
+    94546
+   ],
+   "qtds": {
+    "6270": 4,
+    "94546": 2
+   }
+  },
+  {
+   "cliente": 3740,
+   "ultimaCompra": "2026-10-16",
+   "diasSemComprar": 34,
+   "valorUltimaCompra": 110.91,
+   "produtos": [
+    101442,
+    100124,
+    94491
+   ],
+   "qtds": {
+    "101442": 5,
+    "100124": 3,
+    "94491": 3
+   }
+  },
+  {
+   "cliente": 21304,
+   "ultimaCompra": "2026-10-06",
+   "diasSemComprar": 44,
+   "valorUltimaCompra": 107.04,
+   "produtos": [
+    94442,
+    94420,
+    94422
+   ],
+   "qtds": {
+    "94442": 8,
+    "94420": 5,
+    "94422": 5
+   }
+  },
+  {
+   "cliente": 182807,
+   "ultimaCompra": "2026-10-08",
+   "diasSemComprar": 42,
+   "valorUltimaCompra": 105.53,
+   "produtos": [
+    94456,
+    94454,
+    3755
+   ],
+   "qtds": {
+    "94456": 1,
+    "94454": 1,
+    "3755": 1
+   }
+  },
+  {
+   "cliente": 5127,
+   "ultimaCompra": "2026-10-09",
+   "diasSemComprar": 41,
+   "valorUltimaCompra": 104.03,
+   "produtos": [
+    2652,
+    94443
+   ],
+   "qtds": {
+    "2652": 4,
+    "94443": 4
+   }
+  },
+  {
+   "cliente": 1308,
+   "ultimaCompra": "2026-10-29",
+   "diasSemComprar": 21,
+   "valorUltimaCompra": 40.64,
+   "produtos": [
+    99611
+   ],
+   "qtds": {
+    "99611": 5
+   }
+  },
+  {
+   "cliente": 4179,
+   "ultimaCompra": "2026-10-07",
+   "diasSemComprar": 43,
+   "valorUltimaCompra": 33.9,
+   "produtos": [
+    15859
+   ],
+   "qtds": {
+    "15859": 2
+   }
+  },
+  {
+   "cliente": 8934,
+   "ultimaCompra": "2026-10-26",
+   "diasSemComprar": 24,
+   "valorUltimaCompra": 31.79,
+   "produtos": [
+    6270
+   ],
+   "qtds": {
+    "6270": 2
+   }
+  }
+ ],
+ "gatilho": [
+  {
+   "cliente": 147140,
+   "pedidoAtual": 94.87,
+   "faltam": 5.13,
+   "ultimaCompra": "2026-11-11",
+   "produtosAtuais": [
+    97524,
+    99679,
+    106129
+   ]
+  },
+  {
+   "cliente": 147237,
+   "pedidoAtual": 94.33,
+   "faltam": 5.67,
+   "ultimaCompra": "2026-11-13",
+   "produtosAtuais": [
+    7010,
+    94434,
+    99221
+   ]
+  },
+  {
+   "cliente": 144965,
+   "pedidoAtual": 87.32,
+   "faltam": 12.68,
+   "ultimaCompra": "2026-11-06",
+   "produtosAtuais": [
+    99611
+   ]
+  },
+  {
+   "cliente": 154260,
+   "pedidoAtual": 86.58,
+   "faltam": 13.42,
+   "ultimaCompra": "2026-11-10",
+   "produtosAtuais": [
+    94443,
+    94454,
+    97519
+   ]
+  },
+  {
+   "cliente": 140160,
+   "pedidoAtual": 85.61,
+   "faltam": 14.39,
+   "ultimaCompra": "2026-11-13",
+   "produtosAtuais": [
+    97519,
+    99236,
+    99242
+   ]
+  },
+  {
+   "cliente": 147134,
+   "pedidoAtual": 85.33,
+   "faltam": 14.67,
+   "ultimaCompra": "2026-11-13",
+   "produtosAtuais": [
+    18733,
+    95746
+   ]
+  },
+  {
+   "cliente": 5946,
+   "pedidoAtual": 85.17,
+   "faltam": 14.83,
+   "ultimaCompra": "2026-11-12",
+   "produtosAtuais": [
+    2618,
+    2651,
+    91537
+   ]
+  },
+  {
+   "cliente": 157480,
+   "pedidoAtual": 84.76,
+   "faltam": 15.24,
+   "ultimaCompra": "2026-11-13",
+   "produtosAtuais": [
+    5817,
+    97526,
+    106128
+   ]
+  },
+  {
+   "cliente": 1792621,
+   "pedidoAtual": 83.65,
+   "faltam": 16.35,
+   "ultimaCompra": "2026-11-06",
+   "produtosAtuais": [
+    99241
+   ]
+  },
+  {
+   "cliente": 155870,
+   "pedidoAtual": 79.14,
+   "faltam": 20.86,
+   "ultimaCompra": "2026-11-11",
+   "produtosAtuais": [
+    94459,
+    97515,
+    97525
+   ]
+  },
+  {
+   "cliente": 147139,
+   "pedidoAtual": 71.64,
+   "faltam": 28.36,
+   "ultimaCompra": "2026-11-13",
+   "produtosAtuais": [
+    94446,
+    94501,
+    99222
+   ]
+  },
+  {
+   "cliente": 9652,
+   "pedidoAtual": 64.68,
+   "faltam": 35.32,
+   "ultimaCompra": "2026-11-06",
+   "produtosAtuais": [
+    661,
+    94445,
+    97524
+   ]
+  },
+  {
+   "cliente": 147136,
+   "pedidoAtual": 64.65,
+   "faltam": 35.35,
+   "ultimaCompra": "2026-11-13",
+   "produtosAtuais": [
+    92534,
+    94415,
+    94434
+   ]
+  },
+  {
+   "cliente": 67319,
+   "pedidoAtual": 63.68,
+   "faltam": 36.32,
+   "ultimaCompra": "2026-11-06",
+   "produtosAtuais": [
+    97523,
+    97525,
+    107480
+   ]
+  },
+  {
+   "cliente": 5749,
+   "pedidoAtual": 62.74,
+   "faltam": 37.26,
+   "ultimaCompra": "2026-11-12",
+   "produtosAtuais": [
+    94428,
+    94443,
+    97612
+   ]
+  },
+  {
+   "cliente": 149859,
+   "pedidoAtual": 62.64,
+   "faltam": 37.36,
+   "ultimaCompra": "2026-11-12",
+   "produtosAtuais": [
+    2618,
+    5817,
+    94428
+   ]
+  },
+  {
+   "cliente": 5757,
+   "pedidoAtual": 60.19,
+   "faltam": 39.81,
+   "ultimaCompra": "2026-11-12",
+   "produtosAtuais": [
+    94459,
+    97497,
+    99220
+   ]
+  },
+  {
+   "cliente": 5920,
+   "pedidoAtual": 59.86,
+   "faltam": 40.14,
+   "ultimaCompra": "2026-11-12",
+   "produtosAtuais": [
+    2715,
+    94459,
+    97526
+   ]
+  },
+  {
+   "cliente": 24634,
+   "pedidoAtual": 58.19,
+   "faltam": 41.81,
+   "ultimaCompra": "2026-11-18",
+   "produtosAtuais": [
+    2651
+   ]
+  },
+  {
+   "cliente": 7349,
+   "pedidoAtual": 54.93,
+   "faltam": 45.07,
+   "ultimaCompra": "2026-11-12",
+   "produtosAtuais": [
+    15880,
+    97497,
+    101570
+   ]
+  },
+  {
+   "cliente": 140631,
+   "pedidoAtual": 52.84,
+   "faltam": 47.16,
+   "ultimaCompra": "2026-11-13",
+   "produtosAtuais": [
+    11972,
+    99611,
+    100862
+   ]
+  },
+  {
+   "cliente": 140507,
+   "pedidoAtual": 52.63,
+   "faltam": 47.37,
+   "ultimaCompra": "2026-11-13",
+   "produtosAtuais": [
+    18733,
+    99245,
+    100862
+   ]
+  },
+  {
+   "cliente": 55124,
+   "pedidoAtual": 47.11,
+   "faltam": 52.89,
+   "ultimaCompra": "2026-11-12",
+   "produtosAtuais": [
+    2618,
+    16478,
+    18733
+   ]
+  },
+  {
+   "cliente": 6375,
+   "pedidoAtual": 40.7,
+   "faltam": 59.3,
+   "ultimaCompra": "2026-11-12",
+   "produtosAtuais": [
+    94428,
+    100124
+   ]
+  },
+  {
+   "cliente": 9653,
+   "pedidoAtual": 38.11,
+   "faltam": 61.89,
+   "ultimaCompra": "2026-11-05",
+   "produtosAtuais": [
+    2618,
+    15710
+   ]
+  },
+  {
+   "cliente": 24219,
+   "pedidoAtual": 38.07,
+   "faltam": 61.93,
+   "ultimaCompra": "2026-11-17",
+   "produtosAtuais": [
+    94454
+   ]
+  },
+  {
+   "cliente": 4445,
+   "pedidoAtual": 34.78,
+   "faltam": 65.22,
+   "ultimaCompra": "2026-11-06",
+   "produtosAtuais": [
+    101440,
+    101442
+   ]
+  },
+  {
+   "cliente": 141861,
+   "pedidoAtual": 28.41,
+   "faltam": 71.59,
+   "ultimaCompra": "2026-11-04",
+   "produtosAtuais": [
+    94422
+   ]
+  },
+  {
+   "cliente": 24843,
+   "pedidoAtual": 22.17,
+   "faltam": 77.83,
+   "ultimaCompra": "2026-11-09",
+   "produtosAtuais": [
+    100129
+   ]
+  },
+  {
+   "cliente": 144548,
+   "pedidoAtual": 20.27,
+   "faltam": 79.73,
+   "ultimaCompra": "2026-11-13",
+   "produtosAtuais": [
+    97524
+   ]
+  }
+ ],
+ "novos": [
+  {
+   "cliente": 181976,
+   "curva": "B",
+   "valorUltimoPedido": 3975.65,
+   "ultimoPedido": "2026-11-13"
+  },
+  {
+   "cliente": 211026,
+   "curva": "B",
+   "valorUltimoPedido": 3973.0,
+   "ultimoPedido": "2026-11-05"
+  },
+  {
+   "cliente": 30597,
+   "curva": "B",
+   "valorUltimoPedido": 3957.12,
+   "ultimoPedido": "2026-11-11"
+  },
+  {
+   "cliente": 157930,
+   "curva": "B",
+   "valorUltimoPedido": 3957.04,
+   "ultimoPedido": "2026-11-17"
+  },
+  {
+   "cliente": 39887,
+   "curva": "B",
+   "valorUltimoPedido": 3953.15,
+   "ultimoPedido": "2026-11-04"
+  },
+  {
+   "cliente": 28329,
+   "curva": "B",
+   "valorUltimoPedido": 3943.17,
+   "ultimoPedido": "2026-11-16"
+  },
+  {
+   "cliente": 30011,
+   "curva": "A",
+   "valorUltimoPedido": 3935.64,
+   "ultimoPedido": "2026-11-13"
+  },
+  {
+   "cliente": 72442,
+   "curva": "B",
+   "valorUltimoPedido": 3932.65,
+   "ultimoPedido": "2026-11-16"
+  },
+  {
+   "cliente": 189704,
+   "curva": "B",
+   "valorUltimoPedido": 3930.23,
+   "ultimoPedido": "2026-11-12"
+  },
+  {
+   "cliente": 32685,
+   "curva": "B",
+   "valorUltimoPedido": 3924.96,
+   "ultimoPedido": "2026-11-11"
+  },
+  {
+   "cliente": 14283,
+   "curva": "B",
+   "valorUltimoPedido": 3917.32,
+   "ultimoPedido": "2026-11-11"
+  },
+  {
+   "cliente": 160126,
+   "curva": "A",
+   "valorUltimoPedido": 3906.6,
+   "ultimoPedido": "2026-11-06"
+  },
+  {
+   "cliente": 185159,
+   "curva": "A",
+   "valorUltimoPedido": 3904.88,
+   "ultimoPedido": "2026-11-17"
+  },
+  {
+   "cliente": 30522,
+   "curva": "B",
+   "valorUltimoPedido": 3902.04,
+   "ultimoPedido": "2026-11-17"
+  },
+  {
+   "cliente": 195689,
+   "curva": "B",
+   "valorUltimoPedido": 3887.82,
+   "ultimoPedido": "2026-11-18"
+  },
+  {
+   "cliente": 33754,
+   "curva": "A",
+   "valorUltimoPedido": 3879.4,
+   "ultimoPedido": "2026-11-06"
+  },
+  {
+   "cliente": 149269,
+   "curva": "B",
+   "valorUltimoPedido": 3870.08,
+   "ultimoPedido": "2026-11-11"
+  },
+  {
+   "cliente": 207129,
+   "curva": "B",
+   "valorUltimoPedido": 3870.02,
+   "ultimoPedido": "2026-11-11"
+  },
+  {
+   "cliente": 150376,
+   "curva": "B",
+   "valorUltimoPedido": 3867.65,
+   "ultimoPedido": "2026-11-16"
+  },
+  {
+   "cliente": 60706,
+   "curva": "B",
+   "valorUltimoPedido": 3859.02,
+   "ultimoPedido": "2026-11-11"
+  },
+  {
+   "cliente": 184836,
+   "curva": "B",
+   "valorUltimoPedido": 3845.52,
+   "ultimoPedido": "2026-11-17"
+  },
+  {
+   "cliente": 15304,
+   "curva": "B",
+   "valorUltimoPedido": 3827.81,
+   "ultimoPedido": "2026-11-13"
+  },
+  {
+   "cliente": 15427,
+   "curva": "B",
+   "valorUltimoPedido": 3816.6,
+   "ultimoPedido": "2026-11-16"
+  },
+  {
+   "cliente": 143833,
+   "curva": "B",
+   "valorUltimoPedido": 3811.21,
+   "ultimoPedido": "2026-11-12"
+  },
+  {
+   "cliente": 18200,
+   "curva": "B",
+   "valorUltimoPedido": 3807.64,
+   "ultimoPedido": "2026-11-10"
+  },
+  {
+   "cliente": 181227,
+   "curva": "A",
+   "valorUltimoPedido": 3803.0,
+   "ultimoPedido": "2026-11-06"
+  },
+  {
+   "cliente": 6814,
+   "curva": "A",
+   "valorUltimoPedido": 3794.67,
+   "ultimoPedido": "2026-11-18"
+  },
+  {
+   "cliente": 148315,
+   "curva": "B",
+   "valorUltimoPedido": 3787.31,
+   "ultimoPedido": "2026-11-17"
+  },
+  {
+   "cliente": 193404,
+   "curva": "B",
+   "valorUltimoPedido": 3787.06,
+   "ultimoPedido": "2026-11-04"
+  },
+  {
+   "cliente": 151571,
+   "curva": "B",
+   "valorUltimoPedido": 3784.56,
+   "ultimoPedido": "2026-11-05"
+  },
+  {
+   "cliente": 18399,
+   "curva": "B",
+   "valorUltimoPedido": 3780.65,
+   "ultimoPedido": "2026-11-13"
+  },
+  {
+   "cliente": 160036,
+   "curva": "B",
+   "valorUltimoPedido": 3769.5,
+   "ultimoPedido": "2026-11-05"
+  },
+  {
+   "cliente": 144811,
+   "curva": "B",
+   "valorUltimoPedido": 3752.16,
+   "ultimoPedido": "2026-11-16"
+  },
+  {
+   "cliente": 142733,
+   "curva": "B",
+   "valorUltimoPedido": 3743.99,
+   "ultimoPedido": "2026-11-10"
+  },
+  {
+   "cliente": 37839,
+   "curva": "B",
+   "valorUltimoPedido": 3743.28,
+   "ultimoPedido": "2026-11-16"
+  },
+  {
+   "cliente": 14682,
+   "curva": "B",
+   "valorUltimoPedido": 3740.63,
+   "ultimoPedido": "2026-11-11"
+  },
+  {
+   "cliente": 12346,
+   "curva": "B",
+   "valorUltimoPedido": 3738.5,
+   "ultimoPedido": "2026-11-09"
+  },
+  {
+   "cliente": 207082,
+   "curva": "B",
+   "valorUltimoPedido": 3732.93,
+   "ultimoPedido": "2026-11-11"
+  },
+  {
+   "cliente": 29251,
+   "curva": "B",
+   "valorUltimoPedido": 3732.1,
+   "ultimoPedido": "2026-11-17"
+  },
+  {
+   "cliente": 187779,
+   "curva": "B",
+   "valorUltimoPedido": 3723.02,
+   "ultimoPedido": "2026-11-17"
+  }
+ ]
+}

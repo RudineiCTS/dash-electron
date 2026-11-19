@@ -7,6 +7,7 @@ import NotFoundPage from './pages/NotFoundPage'
 import SecaoPage from './pages/SecaoPage'
 import ParametrosPage from './pages/ParametrosPage'
 import ExclusivasPage from './pages/ExclusivasPage'
+import OportunidadesPage from './pages/OportunidadesPage'
 
 /**
  * Rotas do app web (somente leitura). As URLs seguem as do app desktop:
@@ -32,6 +33,7 @@ export default function App() {
           <Route path="fidelizacao" element={<SecaoPage titulo="Fidelização" />} />
           <Route path="sac" element={<SecaoPage titulo="SAC" />} />
           <Route path="exclusivas" element={<ExclusivasPage />} />
+          <Route path="oportunidades" element={<OportunidadesPage />} />
           <Route path="parametros" element={<ParametrosPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>
