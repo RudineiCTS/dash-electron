@@ -66,7 +66,7 @@ export function TopCardTopic({
         <span className="text-sm text-other-text">
             {subtitles}
         </span>
-        {subValor &&  
+        {!!subValor &&
                 <span className="text-sm text-other-green font-bold">
                     <p className="text-other-text">Valores do Bees</p> {valorBess}
                 </span>

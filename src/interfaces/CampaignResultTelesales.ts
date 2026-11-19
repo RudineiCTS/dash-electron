@@ -7,6 +7,9 @@ export interface CampaignResult {
   supervisorName: string;
   idPersonSales: number;
   operatorName: string;
+  /** Grupo do digitador (Prospeção, Fidelização, Exclusiva, SAC); vazio quando não cadastrado. */
+  personGroup?: string | null;
+  personSubGroup?: string | null;
   individualTarget: number;
   assessedValue: number;
   percentageAchieved: number;

@@ -124,21 +124,27 @@ export default function CampaignsActive() {
                     <>
                         <TopCardTopic
                             title="Meta Total"
-                            subtitles="Objetivo das campanhas"
+                            subtitles={`Objetivo das ${totalCard.vendasComMeta} campanhas de vendas com meta`}
                             value={totalCard.totalMeta}
                             focus={false}
                         />
                         <TopCardTopic
                                 title="Realizado Total"
-                                subtitles="Realizado total das campanhas"
+                                subtitles="Realizado das campanhas de vendas com meta"
                                 value={totalCard.totalValor}
                                 subValor={totalCard.totalValorBess}
                                 focus={false}
                                 />
                         <TopCardTopic
                                 title="Percentual total"
-                                subtitles="Percentual total referente ao objetivo total"
-                                value={totalCard.totalValor == 0 ? 0 :((totalCard.totalValor/totalCard.totalMeta)*100)}
+                                subtitles={
+                                    totalCard.semMeta > 0
+                                        ? `Fora da conta: ${totalCard.semMeta} sem meta` +
+                                          (totalCard.outrasUnidades > 0 ? ` e ${totalCard.outrasUnidades} medidas em unidades` : "")
+                                        : "Realizado sobre a meta das campanhas de vendas"
+                                }
+                                value={totalCard.percentTotal}
+                                displayValue={totalCard.totalMeta > 0 ? `${totalCard.percentTotal.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%` : "—"}
                                 format="numero"
                                 focus={false}
                                 />

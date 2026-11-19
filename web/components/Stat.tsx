@@ -8,8 +8,8 @@ interface StatProps {
 export function Stat({ label, value, className = '' }: StatProps) {
   return (
     <div className={`min-w-0 ${className}`}>
-      <dt className="text-[11px] font-medium uppercase tracking-wide text-github-text-muted">{label}</dt>
-      <dd className="break-words text-sm font-semibold text-github-text">{value}</dd>
+      <dt className="text-[10px] font-medium uppercase tracking-wide text-github-text-muted">{label}</dt>
+      <dd className="whitespace-nowrap text-[13px] font-semibold text-github-text">{value}</dd>
     </div>
   )
 }
