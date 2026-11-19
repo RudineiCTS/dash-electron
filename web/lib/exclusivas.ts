@@ -27,13 +27,30 @@ export interface ExclusivaCliente {
   positivou: boolean
 }
 
-/** `referencia`: qualquer dia do mês, em YYYY-MM-DD. */
-export async function getExclusivasResumo(referencia: string, signal?: AbortSignal): Promise<ExclusivaResumo[]> {
-  const response = await api.get<ExclusivaResumo[]>('exclusivas/resumo', { params: { referencia }, signal })
+/**
+ * `referencia`: qualquer dia do mês, em YYYY-MM-DD.
+ * `idPessoaTelevendas`: só os resultados dessa pessoa (o usuário logado).
+ */
+export async function getExclusivasResumo(
+  referencia: string,
+  idPessoaTelevendas: number,
+  signal?: AbortSignal,
+): Promise<ExclusivaResumo[]> {
+  const response = await api.get<ExclusivaResumo[]>('exclusivas/resumo', {
+    params: { referencia, idPessoaTelevendas },
+    signal,
+  })
   return response.data
 }
 
-export async function getExclusivasClientes(referencia: string, signal?: AbortSignal): Promise<ExclusivaCliente[]> {
-  const response = await api.get<ExclusivaCliente[]>('exclusivas/clientes', { params: { referencia }, signal })
+export async function getExclusivasClientes(
+  referencia: string,
+  idPessoaTelevendas: number,
+  signal?: AbortSignal,
+): Promise<ExclusivaCliente[]> {
+  const response = await api.get<ExclusivaCliente[]>('exclusivas/clientes', {
+    params: { referencia, idPessoaTelevendas },
+    signal,
+  })
   return response.data
 }

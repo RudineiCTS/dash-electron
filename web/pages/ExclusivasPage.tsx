@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import dayjs from 'dayjs'
 import { Search } from 'lucide-react'
+import { PERMITIR_TROCA_USUARIO, useUsuario } from '../auth/UsuarioContext'
 import { EmptyState, ErrorState } from '../components/StateViews'
 import { getExclusivasClientes, getExclusivasResumo } from '../lib/exclusivas'
 import { formatCurrency } from '../lib/format'
@@ -20,41 +21,44 @@ function data(valor: string | null) {
   return valor ? dayjs(valor).format('DD/MM/YYYY') : '-'
 }
 
+/**
+ * Exclusivas do usuário logado ("Entrar como…"): só os resultados e os clientes dele.
+ * Sem usuário, a tela pede para entrar (mesmo comportamento de "Meus pedidos").
+ */
 export default function ExclusivasPage() {
+  const { idPessoa, usuario } = useUsuario()
+
   const [mes, setMes] = useState(() => dayjs().format('YYYY-MM'))
   const referencia = `${mes}-01`
 
   const [industria, setIndustria] = useState(TODAS)
-  const [operador, setOperador] = useState(TODAS)
   const [busca, setBusca] = useState('')
   const [limite, setLimite] = useState(PAGE_SIZE)
 
-  const resumo = useApiResource((signal) => getExclusivasResumo(referencia, signal), [referencia])
-  const clientes = useApiResource((signal) => getExclusivasClientes(referencia, signal), [referencia])
-
-  const operadores = useMemo(() => {
-    const lista = (clientes.data ?? []).filter((c) => !industria || c.industria === industria)
-    return [...new Set(lista.map((c) => c.digitador).filter((d): d is string => !!d))].sort((a, b) =>
-      a.localeCompare(b, 'pt-BR'),
-    )
-  }, [clientes.data, industria])
+  const resumo = useApiResource(
+    (signal) => (idPessoa ? getExclusivasResumo(referencia, idPessoa, signal) : Promise.resolve([])),
+    [referencia, idPessoa],
+  )
+  const clientes = useApiResource(
+    (signal) => (idPessoa ? getExclusivasClientes(referencia, idPessoa, signal) : Promise.resolve([])),
+    [referencia, idPessoa],
+  )
 
   const visiveis = useMemo(() => {
     const termo = busca.trim().toLowerCase()
     return (clientes.data ?? []).filter(
       (c) =>
         (!industria || c.industria === industria) &&
-        (!operador || c.digitador === operador) &&
         (!termo || (c.razaoSocial ?? '').toLowerCase().includes(termo) || String(c.idPessoaCliente ?? '').includes(termo)),
     )
-  }, [clientes.data, industria, operador, busca])
+  }, [clientes.data, industria, busca])
 
   const geradoEm = resumo.data?.find((r) => r.geradoEm)?.geradoEm
   const totalPositivados = (resumo.data ?? []).reduce((s, r) => s + r.positivados, 0)
+  const varias = (resumo.data?.length ?? 0) > 1
 
   function escolherIndustria(nome: string) {
     setIndustria((atual) => (atual === nome ? TODAS : nome))
-    setOperador(TODAS)
     setLimite(PAGE_SIZE)
   }
 
@@ -65,71 +69,67 @@ export default function ExclusivasPage() {
           Exclusivas
           <span className="ml-2 text-xs font-medium tracking-[0.15em] text-github-btn-green-hover">POSITIVAÇÃO POR CLIENTE</span>
         </h1>
-        <p className="text-sm text-github-text-muted">
-          {resumo.data && (
-            <>
-              <strong className="font-semibold text-github-text">{totalPositivados.toLocaleString('pt-BR')}</strong> positivados
-              {geradoEm && <> · atualizado em {dayjs(geradoEm).format('DD/MM HH:mm')}</>}
-            </>
-          )}
-        </p>
+        {idPessoa && resumo.data && resumo.data.length > 0 && (
+          <p className="text-sm text-github-text-muted">
+            {usuario?.operatorName && <>{usuario.operatorName} · </>}
+            <strong className="font-semibold text-github-text">{totalPositivados.toLocaleString('pt-BR')}</strong> positivados
+            {geradoEm && <> · atualizado em {dayjs(geradoEm).format('DD/MM HH:mm')}</>}
+          </p>
+        )}
       </div>
 
-      <section aria-label="Filtros" className="flex flex-wrap items-center gap-2">
-        <input
-          type="month"
-          aria-label="Mês"
-          value={mes}
-          onChange={(e) => {
-            if (e.target.value) {
-              setMes(e.target.value)
-              setIndustria(TODAS)
-              setOperador(TODAS)
-              setLimite(PAGE_SIZE)
-            }
-          }}
-          className={campo}
+      {!idPessoa && (
+        <EmptyState
+          message={
+            PERMITIR_TROCA_USUARIO
+              ? 'Escolha um usuário em “Entrar como…” no topo para ver as exclusivas.'
+              : 'Entre no sistema para ver as suas exclusivas.'
+          }
         />
-        <select
-          aria-label="Operador"
-          value={operador}
-          onChange={(e) => {
-            setOperador(e.target.value)
-            setLimite(PAGE_SIZE)
-          }}
-          className={`${campo} max-w-[16rem]`}
-        >
-          <option value={TODAS}>Operador: todos</option>
-          {operadores.map((o) => (
-            <option key={o} value={o}>
-              {o}
-            </option>
-          ))}
-        </select>
-        <label className="relative block w-full sm:w-64">
-          <span className="sr-only">Buscar cliente</span>
-          <Search size={16} className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-github-text-muted" />
-          <input
-            type="search"
-            value={busca}
-            onChange={(e) => {
-              setBusca(e.target.value)
-              setLimite(PAGE_SIZE)
-            }}
-            placeholder="Buscar cliente ou código"
-            className={`${campo} w-full pl-8`}
-          />
-        </label>
-      </section>
-
-      {resumo.loading && <div className="h-24 animate-pulse rounded-xl border border-github-border bg-github-bg-card" aria-busy="true" />}
-      {resumo.error && <ErrorState message={resumo.error} onRetry={resumo.reload} />}
-
-      {resumo.data && resumo.data.length === 0 && (
-        <EmptyState message="Ainda não há resultado de exclusivas para esse mês. A carga roda uma vez por dia." />
       )}
 
-      {resumo.data && resumo.data.length > 0 && (
+      {idPessoa && (
+        <section aria-label="Filtros" className="flex flex-wrap items-center gap-2">
+          <input
+            type="month"
+            aria-label="Mês"
+            value={mes}
+            onChange={(e) => {
+              if (e.target.value) {
+                setMes(e.target.value)
+                setIndustria(TODAS)
+                setLimite(PAGE_SIZE)
+              }
+            }}
+            className={campo}
+          />
+          <label className="relative block w-full sm:w-64">
+            <span className="sr-only">Buscar cliente</span>
+            <Search size={16} className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-github-text-muted" />
+            <input
+              type="search"
+              value={busca}
+              onChange={(e) => {
+                setBusca(e.target.value)
+                setLimite(PAGE_SIZE)
+              }}
+              placeholder="Buscar cliente ou código"
+              className={`${campo} w-full pl-8`}
+            />
+          </label>
+        </section>
+      )}
+
+      {idPessoa && resumo.loading && (
+        <div className="h-24 animate-pulse rounded-xl border border-github-border bg-github-bg-card" aria-busy="true" />
+      )}
+      {idPessoa && resumo.error && <ErrorState message={resumo.error} onRetry={resumo.reload} />}
+
+      {idPessoa && resumo.data && !resumo.error && resumo.data.length === 0 && (
+        <EmptyState message="Nenhum resultado de exclusivas para este usuário neste mês." />
+      )}
+
+      {idPessoa && resumo.data && resumo.data.length > 0 && (
         <ul className="grid grid-cols-[repeat(auto-fill,minmax(13rem,1fr))] gap-2.5" aria-label="Indústrias">
           {resumo.data.map((r) => {
             const nome = r.industria ?? ''
@@ -151,9 +151,7 @@ export default function ExclusivasPage() {
                     {r.positivados.toLocaleString('pt-BR')}
                     <span className="ml-1 text-xs font-normal text-github-text-muted">positivados</span>
                   </p>
-                  <p className="mt-2 text-xs text-github-text-muted">
-                    {formatCurrency(r.totalVenda)} · {r.operadores} {r.operadores === 1 ? 'operador' : 'operadores'}
-                  </p>
+                  <p className="mt-2 text-xs text-github-text-muted">{formatCurrency(r.totalVenda)} em vendas</p>
                 </button>
               </li>
             )
@@ -161,25 +159,26 @@ export default function ExclusivasPage() {
         </ul>
       )}
 
-      {clientes.loading && <div className="h-40 animate-pulse rounded-xl border border-github-border bg-github-bg-card" aria-busy="true" />}
-      {clientes.error && <ErrorState message={clientes.error} onRetry={clientes.reload} />}
+      {idPessoa && clientes.loading && (
+        <div className="h-40 animate-pulse rounded-xl border border-github-border bg-github-bg-card" aria-busy="true" />
+      )}
+      {idPessoa && clientes.error && <ErrorState message={clientes.error} onRetry={clientes.reload} />}
 
-      {clientes.data && clientes.data.length > 0 &&
+      {idPessoa && clientes.data && clientes.data.length > 0 &&
         (visiveis.length === 0 ? (
           <EmptyState message="Nenhum cliente encontrado para esses filtros." />
         ) : (
           <section aria-label="Clientes" className="flex flex-col gap-2">
             <p className="text-sm text-github-text-muted">
               <strong className="font-semibold text-github-text">{visiveis.length.toLocaleString('pt-BR')}</strong> clientes
-              {industria ? <> em {nomeIndustria(industria)}</> : <> em todas as indústrias</>}
+              {industria && <> em {nomeIndustria(industria)}</>}
             </p>
             <div className="overflow-x-auto rounded-xl border border-github-border bg-github-bg-card">
               <table className="w-full text-left text-sm">
                 <thead className="bg-github-bg-hover text-[10px] uppercase tracking-wide text-github-text-muted">
                   <tr>
                     <th className="py-2 pl-3 font-medium">Cliente</th>
-                    {!industria && <th className="px-2 py-2 font-medium">Indústria</th>}
-                    <th className="px-2 py-2 font-medium">Operador</th>
+                    {varias && !industria && <th className="px-2 py-2 font-medium">Indústria</th>}
                     <th className="px-2 py-2 text-right font-medium">Pedidos</th>
                     <th className="px-2 py-2 text-right font-medium">Venda líquida</th>
                     <th className="hidden px-2 py-2 font-medium md:table-cell">1ª compra</th>
@@ -193,14 +192,13 @@ export default function ExclusivasPage() {
                       key={`${c.industria}-${c.idPessoaTelevendas}-${c.idPessoaCliente}`}
                       className="border-t border-github-border hover:bg-github-bg-hover"
                     >
-                      <td className="max-w-[18rem] py-1.5 pl-3">
+                      <td className="max-w-[20rem] py-1.5 pl-3">
                         <p className="truncate font-semibold">{c.razaoSocial ?? '-'}</p>
                         <p className="text-xs text-github-text-muted">Cód. {c.idPessoaCliente ?? '-'}</p>
                       </td>
-                      {!industria && (
+                      {varias && !industria && (
                         <td className="whitespace-nowrap px-2 py-1.5 text-xs text-github-text-muted">{nomeIndustria(c.industria)}</td>
                       )}
-                      <td className="max-w-[12rem] truncate px-2 py-1.5">{c.digitador ?? '-'}</td>
                       <td className="px-2 py-1.5 text-right">{c.pedidos}</td>
                       <td className="whitespace-nowrap px-2 py-1.5 text-right font-semibold">{formatCurrency(c.totalVenda)}</td>
                       <td className="hidden whitespace-nowrap px-2 py-1.5 md:table-cell">{data(c.primeiraCompra)}</td>
