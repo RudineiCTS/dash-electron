@@ -27,17 +27,51 @@ export interface ExclusivaCliente {
   positivou: boolean
 }
 
+/** Um pré-pedido do cliente no mês (GET /api/exclusivas/pedidos). */
+export interface ExclusivaPedido {
+  industria: string | null
+  digitador: string | null
+  idPrePedido: number | null
+  /** Pedidos do pré-pedido, separados por vírgula. */
+  idPedido: string | null
+  venda: number
+  devolucao: number
+  totalVenda: number
+  dataFaturamento: string | null
+  /** Este pré-pedido foi o que positivou o cliente no mês. */
+  positivou: boolean
+}
+
+export async function getExclusivasPedidos(
+  referencia: string,
+  idPessoaCliente: number,
+  industria: string | null,
+  idPessoaTelevendas: number | null,
+  signal?: AbortSignal,
+): Promise<ExclusivaPedido[]> {
+  const response = await api.get<ExclusivaPedido[]>('exclusivas/pedidos', {
+    params: {
+      referencia,
+      idPessoaCliente,
+      ...(industria ? { industria } : {}),
+      ...(idPessoaTelevendas ? { idPessoaTelevendas } : {}),
+    },
+    signal,
+  })
+  return response.data
+}
+
 /**
  * `referencia`: qualquer dia do mês, em YYYY-MM-DD.
- * `idPessoaTelevendas`: só os resultados dessa pessoa (o usuário logado).
+ * `idPessoaTelevendas`: só os resultados dessa pessoa; `null` = de todos (visão do gestor).
  */
 export async function getExclusivasResumo(
   referencia: string,
-  idPessoaTelevendas: number,
+  idPessoaTelevendas: number | null,
   signal?: AbortSignal,
 ): Promise<ExclusivaResumo[]> {
   const response = await api.get<ExclusivaResumo[]>('exclusivas/resumo', {
-    params: { referencia, idPessoaTelevendas },
+    params: { referencia, ...(idPessoaTelevendas ? { idPessoaTelevendas } : {}) },
     signal,
   })
   return response.data
@@ -45,11 +79,11 @@ export async function getExclusivasResumo(
 
 export async function getExclusivasClientes(
   referencia: string,
-  idPessoaTelevendas: number,
+  idPessoaTelevendas: number | null,
   signal?: AbortSignal,
 ): Promise<ExclusivaCliente[]> {
   const response = await api.get<ExclusivaCliente[]>('exclusivas/clientes', {
-    params: { referencia, idPessoaTelevendas },
+    params: { referencia, ...(idPessoaTelevendas ? { idPessoaTelevendas } : {}) },
     signal,
   })
   return response.data
