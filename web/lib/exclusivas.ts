@@ -29,6 +29,69 @@ export interface ExclusivaCliente {
   positivadoPorOutro: boolean
 }
 
+/** Carteira de uma indústria exclusiva no mês (GET /api/exclusivas/carteira/resumo). */
+export interface CarteiraResumo {
+  industria: string | null
+  carteira: number
+  positivados: number
+  /** Clientes da carteira que ainda não positivaram. */
+  pendentes: number
+}
+
+export type SituacaoCarteira = 'todos' | 'positivados' | 'pendentes'
+
+/** Cliente da carteira (GET /api/exclusivas/carteira/clientes). */
+export interface CarteiraCliente {
+  idPessoaCliente: number
+  nomeCliente: string | null
+  positivou: boolean
+  /** Operador que positivou (vazio se ainda não positivou). */
+  digitador: string | null
+  pedidos: number
+  totalVenda: number
+  primeiraCompra: string | null
+}
+
+export interface CarteiraPagina {
+  total: number
+  pagina: number
+  tamanho: number
+  itens: CarteiraCliente[]
+}
+
+/** `idPessoaTelevendas`: só as indústrias dessa pessoa; `null` = todas (gestor). */
+export async function getCarteiraResumo(
+  referencia: string,
+  idPessoaTelevendas: number | null,
+  signal?: AbortSignal,
+): Promise<CarteiraResumo[]> {
+  const response = await api.get<CarteiraResumo[]>('exclusivas/carteira/resumo', {
+    params: { referencia, ...(idPessoaTelevendas ? { idPessoaTelevendas } : {}) },
+    signal,
+  })
+  return response.data
+}
+
+export async function getCarteiraClientes(
+  params: {
+    referencia: string
+    industria: string
+    situacao: SituacaoCarteira
+    busca: string
+    pagina: number
+    tamanho: number
+    idPessoaTelevendas: number | null
+  },
+  signal?: AbortSignal,
+): Promise<CarteiraPagina> {
+  const { idPessoaTelevendas, busca, ...resto } = params
+  const response = await api.get<CarteiraPagina>('exclusivas/carteira/clientes', {
+    params: { ...resto, ...(busca.trim() ? { busca: busca.trim() } : {}), ...(idPessoaTelevendas ? { idPessoaTelevendas } : {}) },
+    signal,
+  })
+  return response.data
+}
+
 /** Um pré-pedido do cliente no mês (GET /api/exclusivas/pedidos). */
 export interface ExclusivaPedido {
   industria: string | null
