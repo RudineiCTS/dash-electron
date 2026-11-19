@@ -49,7 +49,12 @@ interface Recompra extends Analise {
   produtos: number[]
   qtds: Record<string, number>
 }
+interface OfertaLinha extends KitLinha {
+  origem: 'reposição' | 'ainda não levou' | 'repetir' | 'novidade'
+}
 interface Gatilho extends Analise {
+  oferta?: OfertaLinha[]
+  potencialProx?: { nivel: 'alto' | 'médio' | 'baixo'; mensal: number; ticketGeral: number; pedidos6m: number | null; alvo: number }
   pedidoAtual: number
   faltam: number
   ultimaCompra: string
@@ -104,6 +109,7 @@ async function carregar(signal: AbortSignal): Promise<Dados> {
 type Caminho = 'recompra' | 'gatilho' | 'novos'
 
 interface Linha {
+  origem?: string
   nome: string
   preco: number
   qtd: number
@@ -147,6 +153,13 @@ function simples(t: string): string {
 /** "Farma E Alimentar - Hpc Jmo" -> "Hpc Jmo" */
 const categoria = (c: string) => c.replace(/^(Farma E Alimentar|Farma|Alimentar|Glifage) - /, '')
 
+const MOTIVO_OFERTA: Record<string, string> = {
+  reposição: 'Ele costuma repor esse tipo de produto e está na hora',
+  'ainda não levou': 'Compra esse tipo de produto de outras marcas e ainda não levou da J&J',
+  repetir: 'Já levou antes: repetir',
+  novidade: 'Novidade na linha',
+}
+
 const ROTULO_CURVA: Record<string, string> = { A: 'Cliente top', B: 'Cliente bom', C: 'Dá para crescer' }
 
 const CHAVE = 'compass-web:oportunidades-ligados'
@@ -167,7 +180,7 @@ function salvarLigados(s: Set<string>) {
 
 const CAMINHOS: { id: Caminho; numero: number; titulo: string }[] = [
   { id: 'recompra', numero: 1, titulo: 'Quem já comprou e sumiu' },
-  { id: 'gatilho', numero: 2, titulo: 'Pedido quase lá' },
+  { id: 'gatilho', numero: 2, titulo: 'Oportunidades do mês' },
   { id: 'novos', numero: 3, titulo: 'Clientes novos' },
 ]
 
@@ -231,6 +244,7 @@ export default function OportunidadesPage() {
   const lista: Analise[] = caminho === 'recompra' ? d.recompra : caminho === 'gatilho' ? d.gatilho : d.novos
   const feitos = lista.filter((x) => ligados.has(`${caminho}:${x.cliente}`)).length
   const prontos = (l: Analise[]) => l.filter((x) => x.status === 'ok').length
+  const oportMes = d.gatilho.filter((g) => g.status === 'ok' && g.oferta && totalLinhas(g.oferta) >= r.gatilhoValor)
   const voltando40 = Math.round(prontos(d.recompra) * 0.4)
 
   /* monta o pedido sugerido e o roteiro de cada cliente */
@@ -255,7 +269,20 @@ export default function OportunidadesPage() {
     }
     if (c === 'gatilho') {
       const x = a as Gatilho
-      // pedido NOVO que sozinho passa do valor da positivação: o que ele já leva primeiro, depois os mais vendidos
+      if (x.oferta && x.oferta.length > 0 && totalLinhas(x.oferta) >= r.gatilhoValor) {
+        const linhasO: Linha[] = x.oferta.map((o) => ({ nome: bonito(o.nome), preco: o.preco, qtd: o.qtd, margemPct: o.margemPct, origem: o.origem }))
+        const nomesO = linhasO.slice(0, 2).map((l) => l.nome).join(' e ')
+        const pp = x.potencialProx
+        return {
+          rotulo: 'Pedido novo sugerido',
+          base: `Comprou J&J em ${dayjs(x.ultimaCompra).format('DD/MM')}, mas o maior pedido foi de ${reais(x.pedidoAtual)}. Para positivar, ele precisa de um pedido NOVO de pelo menos ${reais(r.gatilhoValor)}.`,
+          linhas: linhasO,
+          extra: pp
+            ? `Chance de passar de ${reais(r.gatilhoValor)}: ${pp.nivel}. Ele pede cerca de ${reais(pp.ticketGeral)} por pedido no geral e pode levar ~${reais(pp.mensal)}/mês de J&J`
+            : undefined,
+          fala: `“Oi! Aqui é da Solfarma. Vi que você experimentou a J&J este mês. Separei ${nomesO} e mais alguns itens que combinam com o que você já vende. Montei um pedido de ${reais(totalLinhas(linhasO))}, posso enviar?”`,
+        }
+      }
       const kitQtd = new Map(d!.kit.map((k) => [k.produto, k.qtd]))
       const ids = [...x.produtosAtuais, ...d!.kit.map((k) => k.produto)].filter((p, n, arr) => arr.indexOf(p) === n && produto(p).preco > 0)
       const linhas: Linha[] = []
@@ -330,7 +357,7 @@ export default function OportunidadesPage() {
             c.id === 'recompra'
               ? `Compraram J&J nos últimos 6 meses e não compraram em novembro. Se 4 em cada 10 dos liberados voltarem (${voltando40}), são cerca de ${reais(voltando40 * r.ticketRecompra)} em vendas.`
               : c.id === 'gatilho'
-                ? `Compraram, mas nenhum pedido chegou a ${reais(r.gatilhoValor)}. Eles já compram. Um pedido novo de pelo menos ${reais(r.gatilhoValor)} positiva o cliente para você.`
+                ? `Já experimentaram a J&J este mês, mas nenhum pedido chegou a ${reais(r.gatilhoValor)}. ${oportMes.length} deles podem fechar um pedido novo: seriam ${oportMes.length} positivações a mais e cerca de ${reais(oportMes.reduce((t, x) => t + totalLinhas(x.oferta ?? []), 0))} em vendas.`
                 : `Os ${d.novos.length} melhores entre ${r.elegiveis} clientes que compram produtos parecidos e ainda não levam J&J. Todos juntos podem comprar cerca de ${reais(r.potencialElegiveis)} por mês.`
           return (
             <button
@@ -484,7 +511,10 @@ export default function OportunidadesPage() {
                           <tbody>
                             {info.linhas.map((l) => (
                               <tr key={l.nome} className="border-t border-github-border">
-                                <td className="py-1.5 pl-3">{l.nome}</td>
+                                <td className="py-1.5 pl-3">
+                                  {l.nome}
+                                  {l.origem && <span className="block text-[11px] text-github-text-muted">{MOTIVO_OFERTA[l.origem]}</span>}
+                                </td>
                                 <td className="px-2 py-1.5 text-right">{l.qtd}</td>
                                 <td className="whitespace-nowrap px-2 py-1.5 text-right">{reais(l.preco)}</td>
                                 <td className="whitespace-nowrap py-1.5 pl-2 pr-3 text-right font-semibold">{reais(subtotal(l))}</td>
