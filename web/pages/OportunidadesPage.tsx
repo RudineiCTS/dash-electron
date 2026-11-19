@@ -244,13 +244,13 @@ export default function OportunidadesPage() {
         margemPct: produto(p).margemPct,
       }))
       return {
-        rotulo: 'Pedido sugerido',
+        rotulo: 'Pedido sugerido (o que ele mais levou em 6 meses)',
         base: `Comprou ${reais(x.valorUltimaCompra)} em ${dayjs(x.ultimaCompra).format('DD/MM')} e está há ${x.diasSemComprar} dias sem comprar.`,
         linhas,
-        fala: `“Oi! Aqui é da Solfarma. No mês passado você levou ${linhas
+        fala: `“Oi! Aqui é da Solfarma. Nos últimos meses você levou ${linhas
           .slice(0, 2)
           .map((l) => l.nome)
-          .join(' e ')}. Estou separando os pedidos deste mês — posso repetir o que você levou?”`,
+          .join(' e ')}. Estou separando os pedidos deste mês — posso repetir o que você costuma levar?”`,
       }
     }
     if (c === 'gatilho') {
