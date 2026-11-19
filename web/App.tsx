@@ -2,6 +2,7 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { WebLayout } from './layout/WebLayout'
 import CampaignsPage from './pages/CampaignsPage'
 import CampaignDetailPage from './pages/CampaignDetailPage'
+import CampaignOrdersPage from './pages/CampaignOrdersPage'
 import NotFoundPage from './pages/NotFoundPage'
 import SecaoPage from './pages/SecaoPage'
 import ParametrosPage from './pages/ParametrosPage'
@@ -25,6 +26,7 @@ export default function App() {
           <Route index element={<Navigate to="/campaigns" replace />} />
           <Route path="campaigns" element={<CampaignsPage />} />
           <Route path="campaigns/details/:id" element={<CampaignDetailPage />} />
+          <Route path="campaigns/details/:id/pedidos" element={<CampaignOrdersPage />} />
           <Route path="prospeccao" element={<SecaoPage titulo="Prospecção" />} />
           <Route path="fidelizacao" element={<SecaoPage titulo="Fidelização" />} />
           <Route path="sac" element={<SecaoPage titulo="SAC" />} />

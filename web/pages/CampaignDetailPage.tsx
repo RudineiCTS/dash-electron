@@ -1,10 +1,11 @@
 import { useMemo, useState } from 'react'
 import { Link, useParams, useSearchParams } from 'react-router-dom'
-import { ArrowLeft, Search } from 'lucide-react'
+import { ArrowLeft, ClipboardList, Search } from 'lucide-react'
 import {
   getCampaignSummaryDetailsById,
   getCampaignSummaryPerPeriod,
 } from '@shared/services/campaign.teleseler'
+import { useUsuario } from '../auth/UsuarioContext'
 import { ProgressBar } from '../components/ProgressBar'
 import { Stat } from '../components/Stat'
 import { EmptyState, ErrorState } from '../components/StateViews'
@@ -28,6 +29,7 @@ export default function CampaignDetailPage() {
   const idCampaign = Number(id)
   const [params] = useSearchParams()
   const competencia = params.get('competencia') ?? defaultCompetencia()
+  const { idPessoa } = useUsuario()
   const [busca, setBusca] = useState('')
   const [limite, setLimite] = useState(PAGE_SIZE)
 
@@ -71,6 +73,25 @@ export default function CampaignDetailPage() {
           #{idCampaign}
           {tipo && ` · ${tipo}`}
         </span>
+
+        {/* Pedidos só do usuário logado (no header, "Entrar como…") */}
+        {idPessoa ? (
+          <Link
+            to={`/campaigns/details/${idCampaign}/pedidos?competencia=${competencia}`}
+            className="flex h-8 items-center gap-1.5 rounded-md bg-github-btn-green px-3 text-sm font-medium text-white hover:opacity-90 sm:ml-auto"
+          >
+            <ClipboardList size={15} /> Ver meus pedidos
+          </Link>
+        ) : (
+          <button
+            type="button"
+            disabled
+            title="Escolha um usuário em “Entrar como…” no topo"
+            className="flex h-8 cursor-not-allowed items-center gap-1.5 rounded-md bg-github-btn-green px-3 text-sm font-medium text-white opacity-50 sm:ml-auto"
+          >
+            <ClipboardList size={15} /> Ver meus pedidos
+          </button>
+        )}
       </div>
 
       {resumo && (

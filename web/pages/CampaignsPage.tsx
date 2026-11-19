@@ -151,6 +151,7 @@ export default function CampaignsPage() {
         </button>
       </section>
 
+
       {data && !error && totais.vendasComMeta > 0 && (
         <section
           aria-label="Totais de vendas"

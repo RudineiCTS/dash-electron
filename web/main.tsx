@@ -2,6 +2,7 @@ import { createRoot } from 'react-dom/client'
 import { ThemeProvider } from '@shared/context/ThemeContext'
 import App from './App'
 import { anonymousAuth } from './auth/authAdapter'
+import { UsuarioProvider } from './auth/UsuarioContext'
 import { configureHttp } from './lib/http'
 import './styles.css'
 
@@ -10,6 +11,8 @@ configureHttp(anonymousAuth)
 
 createRoot(document.getElementById('root')!).render(
   <ThemeProvider>
-    <App />
+    <UsuarioProvider>
+      <App />
+    </UsuarioProvider>
   </ThemeProvider>,
 )

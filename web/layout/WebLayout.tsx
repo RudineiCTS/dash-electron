@@ -1,4 +1,6 @@
 import { Link, NavLink, Outlet } from 'react-router-dom'
+import { PERMITIR_TROCA_USUARIO, useUsuario } from '../auth/UsuarioContext'
+import { DigitadoraCombobox } from '../components/DigitadoraCombobox'
 import { ThemeButton } from '../components/ThemeButton'
 import { ABAS } from './abas'
 
@@ -17,16 +19,29 @@ function classeAba(isActive: boolean, vertical: boolean) {
  * uma faixa horizontal rolável logo abaixo do header.
  */
 export function WebLayout() {
+  const { idPessoa, entrarComo } = useUsuario()
+
   return (
     <div className="min-h-dvh bg-github-bg text-github-text">
       <header className="sticky top-0 z-10 bg-[#32307B] pt-[env(safe-area-inset-top)] text-white shadow-sm">
-        <div className="flex h-14 w-full items-center justify-between pl-[max(1rem,env(safe-area-inset-left))] pr-[max(0.5rem,env(safe-area-inset-right))] sm:px-6">
-          <Link to="/campaigns" className="flex min-w-0 items-center gap-2">
+        <div className="flex h-14 w-full items-center gap-2 pl-[max(1rem,env(safe-area-inset-left))] pr-[max(0.5rem,env(safe-area-inset-right))] sm:px-6">
+          <Link to="/campaigns" className="flex shrink-0 items-center gap-2">
             <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-[#DD8100] text-xs font-semibold">
               S
             </span>
-            <span className="truncate text-sm font-semibold">Solfarma Comercial</span>
+            <span className="hidden truncate text-sm font-semibold sm:inline">Solfarma Comercial</span>
           </Link>
+
+          {/* Simulação de login: quem for escolhido aqui é "o usuário logado" em todas as telas */}
+          {PERMITIR_TROCA_USUARIO && (
+            <DigitadoraCombobox
+              value={idPessoa}
+              onChange={entrarComo}
+              ariaLabel="Entrar como (simulação de login)"
+              placeholder="Entrar como…"
+              className="ml-auto min-w-0 flex-1 sm:max-w-xs sm:flex-none sm:basis-72"
+            />
+          )}
           <ThemeButton />
         </div>
       </header>
