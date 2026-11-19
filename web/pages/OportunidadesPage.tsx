@@ -12,14 +12,12 @@ interface Produto {
   estoque?: number
   nome: string
   preco: number
-  margemPct: number
 }
 interface KitLinha {
   produto: number
   nome: string
   preco: number
   qtd: number
-  margemPct: number
 }
 /** O que a inteligência calculou para cada cliente. */
 interface Analise {
@@ -41,7 +39,6 @@ interface Analise {
   jnj6: number
   kit: KitLinha[]
   total: number
-  margemEst: number
 }
 interface Recompra extends Analise {
   ultimaCompra: string
@@ -65,7 +62,6 @@ type Novo = Analise
 interface KitItem {
   produto: number
   preco: number
-  margemPct: number
   clientes: number
   qtd: number
 }
@@ -73,7 +69,6 @@ interface Dados {
   geradoEm: string
   observacao: string
   resumo: {
-    margemLiquidaPct: number
     ticketRecompra: number
     ticketNovo: number
     clientesOutubro: number
@@ -115,12 +110,10 @@ interface Linha {
   nome: string
   preco: number
   qtd: number
-  margemPct: number
 }
 
 const subtotal = (l: Linha) => l.preco * l.qtd
 const totalLinhas = (ls: Linha[]) => ls.reduce((s, l) => s + subtotal(l), 0)
-const margemLinhas = (ls: Linha[]) => ls.reduce((s, l) => s + (subtotal(l) * l.margemPct) / 100, 0)
 const reais = (n: number) => formatCurrency(n)
 
 /** "FIO DENTAL J&J REACH ESSENCIAL MENTA 100M" -> "Fio Dental J&J Reach Essencial Menta 100M" */
@@ -223,9 +216,9 @@ export default function OportunidadesPage() {
   }, [caminho])
 
   const d = dados.data
-  const produto = (id: number | string): Produto => d?.produtos[String(id)] ?? { nome: `Produto ${id}`, preco: 0, margemPct: 0 }
+  const produto = (id: number | string): Produto => d?.produtos[String(id)] ?? { nome: `Produto ${id}`, preco: 0 }
   const kitPadrao = useMemo<Linha[]>(
-    () => (d ? d.kit.map((k) => ({ nome: bonito(d.produtos[String(k.produto)]?.nome ?? ''), preco: k.preco, qtd: k.qtd, margemPct: k.margemPct })) : []),
+    () => (d ? d.kit.map((k) => ({ nome: bonito(d.produtos[String(k.produto)]?.nome ?? ''), preco: k.preco, qtd: k.qtd })) : []),
     [d],
   )
 
@@ -258,7 +251,6 @@ export default function OportunidadesPage() {
         nome: bonito(produto(p).nome),
         preco: produto(p).preco,
         qtd: x.qtds[String(p)] ?? 1,
-        margemPct: produto(p).margemPct,
       }))
       return {
         rotulo: 'Pedido sugerido (o que ele mais levou em 6 meses)',
@@ -273,7 +265,7 @@ export default function OportunidadesPage() {
     if (c === 'gatilho') {
       const x = a as Gatilho
       if (x.oferta && x.oferta.length > 0 && totalLinhas(x.oferta) >= r.gatilhoValor) {
-        const linhasO: Linha[] = x.oferta.map((o) => ({ id: o.produto, nome: bonito(o.nome), preco: o.preco, qtd: o.qtd, margemPct: o.margemPct, origem: o.origem }))
+        const linhasO: Linha[] = x.oferta.map((o) => ({ id: o.produto, nome: bonito(o.nome), preco: o.preco, qtd: o.qtd, origem: o.origem }))
         const nomesO = linhasO.slice(0, 2).map((l) => l.nome).join(' e ')
         const pp = x.potencialProx
         return {
@@ -294,7 +286,7 @@ export default function OportunidadesPage() {
         const pr = produto(p)
         const falta = r.gatilhoValor - totalLinhas(linhas)
         const qtd = Math.max(1, Math.min(kitQtd.get(p) ?? 3, Math.ceil(falta / pr.preco)))
-        linhas.push({ id: p, nome: bonito(pr.nome), preco: pr.preco, qtd, margemPct: pr.margemPct })
+        linhas.push({ id: p, nome: bonito(pr.nome), preco: pr.preco, qtd })
       }
       if (linhas.length && totalLinhas(linhas) < r.gatilhoValor) {
         linhas[0].qtd += Math.ceil((r.gatilhoValor - totalLinhas(linhas)) / linhas[0].preco)
@@ -309,7 +301,7 @@ export default function OportunidadesPage() {
       }
     }
     const linhas: Linha[] = a.kit.length
-      ? a.kit.map((k) => ({ id: k.produto, nome: bonito(k.nome), preco: k.preco, qtd: k.qtd, margemPct: k.margemPct }))
+      ? a.kit.map((k) => ({ id: k.produto, nome: bonito(k.nome), preco: k.preco, qtd: k.qtd }))
       : kitPadrao
     return {
       rotulo: 'Pedido de entrada sugerido',
@@ -543,9 +535,6 @@ export default function OportunidadesPage() {
                           {info.rotulo}: {reais(totalLinhas(info.linhas))}
                         </strong>
                         {info.extra && <span className="text-github-text-muted"> · {info.extra}</span>}
-                      </p>
-                      <p className="text-xs text-github-text-muted">
-                        Se fechar, a empresa ganha cerca de {reais(margemLinhas(info.linhas))} de lucro nesse pedido (já descontado o que o fabricante devolve).
                       </p>
                     </div>
 
