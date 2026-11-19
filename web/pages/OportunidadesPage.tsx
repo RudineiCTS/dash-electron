@@ -9,6 +9,7 @@ import { useApiResource } from '../lib/useApiResource'
 /* ----------------------------- dados da demonstração ----------------------------- */
 
 interface Produto {
+  estoque?: number
   nome: string
   preco: number
   margemPct: number
@@ -109,6 +110,7 @@ async function carregar(signal: AbortSignal): Promise<Dados> {
 type Caminho = 'recompra' | 'gatilho' | 'novos'
 
 interface Linha {
+  id?: number
   origem?: string
   nome: string
   preco: number
@@ -252,6 +254,7 @@ export default function OportunidadesPage() {
     if (c === 'recompra') {
       const x = a as Recompra
       const linhas = x.produtos.map((p) => ({
+        id: p,
         nome: bonito(produto(p).nome),
         preco: produto(p).preco,
         qtd: x.qtds[String(p)] ?? 1,
@@ -270,7 +273,7 @@ export default function OportunidadesPage() {
     if (c === 'gatilho') {
       const x = a as Gatilho
       if (x.oferta && x.oferta.length > 0 && totalLinhas(x.oferta) >= r.gatilhoValor) {
-        const linhasO: Linha[] = x.oferta.map((o) => ({ nome: bonito(o.nome), preco: o.preco, qtd: o.qtd, margemPct: o.margemPct, origem: o.origem }))
+        const linhasO: Linha[] = x.oferta.map((o) => ({ id: o.produto, nome: bonito(o.nome), preco: o.preco, qtd: o.qtd, margemPct: o.margemPct, origem: o.origem }))
         const nomesO = linhasO.slice(0, 2).map((l) => l.nome).join(' e ')
         const pp = x.potencialProx
         return {
@@ -291,7 +294,7 @@ export default function OportunidadesPage() {
         const pr = produto(p)
         const falta = r.gatilhoValor - totalLinhas(linhas)
         const qtd = Math.max(1, Math.min(kitQtd.get(p) ?? 3, Math.ceil(falta / pr.preco)))
-        linhas.push({ nome: bonito(pr.nome), preco: pr.preco, qtd, margemPct: pr.margemPct })
+        linhas.push({ id: p, nome: bonito(pr.nome), preco: pr.preco, qtd, margemPct: pr.margemPct })
       }
       if (linhas.length && totalLinhas(linhas) < r.gatilhoValor) {
         linhas[0].qtd += Math.ceil((r.gatilhoValor - totalLinhas(linhas)) / linhas[0].preco)
@@ -306,7 +309,7 @@ export default function OportunidadesPage() {
       }
     }
     const linhas: Linha[] = a.kit.length
-      ? a.kit.map((k) => ({ nome: bonito(k.nome), preco: k.preco, qtd: k.qtd, margemPct: k.margemPct }))
+      ? a.kit.map((k) => ({ id: k.produto, nome: bonito(k.nome), preco: k.preco, qtd: k.qtd, margemPct: k.margemPct }))
       : kitPadrao
     return {
       rotulo: 'Pedido de entrada sugerido',
@@ -496,6 +499,15 @@ export default function OportunidadesPage() {
                       </ul>
                     </div>
 
+                    {x.status !== 'ok' ? (
+                      <div>
+                        <p className="text-xs font-semibold uppercase tracking-wide text-github-text-muted">3. O que oferecer</p>
+                        <p className="mt-1 rounded-lg border border-[#BA7517]/40 bg-[#BA7517]/10 px-3 py-2 text-sm">
+                          Sem pedido sugerido por enquanto. Antes de oferecer, fale com o financeiro para liberar o crédito ou regularizar os boletos. Depois disso este cliente volta a ser uma oportunidade.
+                        </p>
+                      </div>
+                    ) : (
+                      <>
                     <div>
                       <p className="text-xs font-semibold uppercase tracking-wide text-github-text-muted">3. O que oferecer</p>
                       <div className="mt-1 overflow-x-auto rounded-lg border border-github-border">
@@ -514,6 +526,9 @@ export default function OportunidadesPage() {
                                 <td className="py-1.5 pl-3">
                                   {l.nome}
                                   {l.origem && <span className="block text-[11px] text-github-text-muted">{MOTIVO_OFERTA[l.origem]}</span>}
+                                  {l.id != null && produto(l.id).estoque != null && (
+                                    <span className="block text-[11px] text-github-text-muted">Em estoque: {(produto(l.id).estoque ?? 0).toLocaleString('pt-BR')} un</span>
+                                  )}
                                 </td>
                                 <td className="px-2 py-1.5 text-right">{l.qtd}</td>
                                 <td className="whitespace-nowrap px-2 py-1.5 text-right">{reais(l.preco)}</td>
@@ -538,6 +553,8 @@ export default function OportunidadesPage() {
                       <p className="text-xs font-semibold uppercase tracking-wide text-github-text-muted">4. O que falar na ligação</p>
                       <p className="mt-0.5 rounded-lg bg-github-bg-hover px-3 py-2 italic">{info.fala}</p>
                     </div>
+                      </>
+                    )}
 
                     <button
                       type="button"
