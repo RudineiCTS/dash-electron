@@ -124,6 +124,31 @@ function bonito(nome: string) {
     .join(' ')
 }
 
+/** Troca o jargão da análise por linguagem de balcão. */
+function simples(t: string): string {
+  return t
+    .replace(/^Já comprou J&J nos últimos (\d+) meses \((R\$ [\d.,]+)\)/, 'Já comprou um pouco de J&J ($2 nos últimos $1 meses): é só aumentar')
+    .replace(/^Cliente ativo: compra a cada ~(\d+) dia\(s\)[.,]? ?[Úú]ltima há (\d+)/, 'Cliente que compra sempre: a cada ~$1 dia(s). Última compra há $2')
+    .replace(/^Compra de outras marcas nas categorias do J&J \((R\$ [\d.,]+) em (\d+) meses\) e quase não compra J&J/, 'Gastou $1 em $2 meses com outras marcas do mesmo tipo de produto e quase não leva J&J: espaço aberto na prateleira dele')
+    .replace(/^Repõe (.+?) a cada ~(\d+) dias; a última compra foi há (\d+): está na janela de reposição/, 'Costuma repor $1 a cada ~$2 dias e a última compra foi há $3: o estoque dele deve estar acabando, hora de ligar')
+    .replace(/^Está há (\d+) dias sem comprar \(ciclo normal ~(\d+)\)/, 'Está há $1 dias sem comprar (o normal dele é a cada ~$2): ligue antes que compre de outro')
+    .replace(/^Está sumindo: (\d+) dias sem comprar \(ciclo normal ~(\d+)\)/, 'Está sumindo: $1 dias sem comprar (o normal dele é a cada ~$2). Vale uma ligação agora')
+    .replace(/^Compras caíram (\d+)% nos últimos (\d+) dias/, 'As compras dele caíram $1% nos últimos $2 dias: converse para entender')
+    .replace(/^Sem limite de crédito cadastrado: confirmar antes de vender/, 'Sem limite de crédito cadastrado: confirme antes de fechar')
+    .replace(/^Só (R\$ [\d.,]+) livres de (R\$ [\d.,]+) de limite/, 'Só $1 livres de $2 de limite: monte um pedido que caiba')
+    .replace(/^Crédito livre apertado: (R\$ [\d.,]+)/, 'Crédito livre apertado: $1. Monte um pedido que caiba')
+    .replace(/^Cliente grande: confirmar se já tem vendedor dedicado/, 'Cliente grande: veja se alguém já cuida dele')
+    .replace(/^Título vencido há (\d+) dias \((R\$ [\d.,]+)\)\s*:? ?confirmar/, 'Tem boleto atrasado há $1 dias ($2): confirme com o financeiro antes de vender')
+    .replace(/^Título vencido há (\d+) dias/, 'Tem boleto atrasado há $1 dias')
+    .replace(/^Passou do ciclo de reposição de uma categoria do J&J: pode estar comprando em outro lugar/, 'Já passou da hora de repor um produto do tipo J&J: pode estar comprando em outro lugar')
+    .replace(/(Farma E Alimentar|Farma|Alimentar|Glifage) · /g, '').replace(/(Farma E Alimentar|Farma|Alimentar|Glifage) - /g, '')
+}
+
+/** "Farma E Alimentar - Hpc Jmo" -> "Hpc Jmo" */
+const categoria = (c: string) => c.replace(/^(Farma E Alimentar|Farma|Alimentar|Glifage) - /, '')
+
+const ROTULO_CURVA: Record<string, string> = { A: 'Cliente top', B: 'Cliente bom', C: 'Dá para crescer' }
+
 const CHAVE = 'compass-web:oportunidades-ligados'
 function lerLigados(): Set<string> {
   try {
@@ -159,10 +184,10 @@ function Chip({ children, tom }: { children: ReactNode; tom: 'verde' | 'ambar' |
 function chipsStatus(a: Analise) {
   return (
     <>
-      {a.status === 'ok' && <Chip tom="verde">Crédito ok</Chip>}
-      {a.status === 'sem_credito' && <Chip tom="ambar">Sem crédito livre</Chip>}
+      {a.status === 'ok' && <Chip tom="verde">Pode vender</Chip>}
+      {a.status === 'sem_credito' && <Chip tom="ambar">Crédito curto</Chip>}
       {a.status === 'bloqueado' && <Chip tom="vermelho">Não vender agora</Chip>}
-      {a.curva && <Chip tom="neutro">Curva {a.curva}</Chip>}
+      {a.curva && <Chip tom="neutro">{ROTULO_CURVA[a.curva] ?? `Curva ${a.curva}`}</Chip>}
     </>
   )
 }
@@ -248,10 +273,10 @@ export default function OportunidadesPage() {
       : kitPadrao
     return {
       rotulo: 'Pedido de entrada sugerido',
-      base: `Compra pouco ou nada de J&J. Pela análise, o potencial é de cerca de ${reais(a.potencial)} por mês.`,
+      base: `Compra pouco ou nada de J&J. Pelo que ele compra de outras marcas, pode levar cerca de ${reais(a.potencial)} por mês.`,
       linhas,
-      extra: `Potencial estimado: ${reais(a.potencial)}/mês`,
-      fala: `“Oi! Você já compra com a gente e queremos te apresentar a linha J&J, pensando no que você já vende${a.perfil.length ? ` (${a.perfil[0].toLowerCase()})` : ''}. Posso montar um pedido de teste só com os que mais saem?”`,
+      extra: `Pode comprar cerca de ${reais(a.potencial)} por mês`,
+      fala: `“Oi! Você já compra com a gente e queremos te apresentar a linha J&J, pensando no que você já vende${a.perfil.length ? ` (${categoria(a.perfil[0]).toLowerCase()})` : ''}. Posso montar um pedido de teste só com os que mais saem?”`,
     }
   }
 
@@ -263,11 +288,10 @@ export default function OportunidadesPage() {
           <span className="ml-2 text-xs font-medium tracking-[0.15em] text-github-btn-green-hover">PASSO A PASSO</span>
         </h1>
         <p className="mt-1 text-sm text-github-text-muted">
-          Três caminhos, do mais fácil para o mais difícil. Cada cliente já vem analisado: o que compra, quando precisa repor, crédito e inadimplência.
+          Três caminhos, do mais fácil para o mais difícil de vender. Cada cliente já vem com o que ele costuma comprar, quando precisa repor e se pode comprar. É só ligar e oferecer.
         </p>
         <p className="mt-2 rounded-lg border border-dashed border-github-border bg-github-bg-card px-3 py-2 text-xs text-github-text-muted">
-          Demonstração com dados reais de out/nov de 2026 (até 18/11). Clientes só pelo código. A lista de “novos” vem de uma amostra de{' '}
-          {r.amostrados.toLocaleString('pt-BR')} dos {r.universo.toLocaleString('pt-BR')} clientes ativos.
+          Demonstração com dados reais de out/nov de 2026 (até 18/11). Clientes só pelo código. Os “novos” foram escolhidos entre uma parte dos clientes; tem mais gente boa por aí.
         </p>
         <button
           type="button"
@@ -275,17 +299,16 @@ export default function OportunidadesPage() {
           aria-expanded={metodo}
           className="mt-2 flex items-center gap-1 text-sm font-medium text-github-text-link"
         >
-          {metodo ? <ChevronDown size={15} /> : <ChevronRight size={15} />} Como a lista é montada
+          {metodo ? <ChevronDown size={15} /> : <ChevronRight size={15} />} Como a lista é escolhida
         </button>
         {metodo && (
-          <dl className="mt-1 grid grid-cols-1 gap-2 rounded-xl border border-github-border bg-github-bg-card p-3 sm:grid-cols-2">
-            {d.metodo.map((m) => (
-              <div key={m.titulo}>
-                <dt className="text-xs font-semibold uppercase tracking-wide text-github-text-muted">{m.titulo}</dt>
-                <dd className="text-sm">{m.texto}</dd>
-              </div>
-            ))}
-          </dl>
+          <ul className="mt-1 list-disc space-y-1 rounded-xl border border-github-border bg-github-bg-card py-3 pl-8 pr-3 text-sm">
+            <li>Olhamos o que o cliente compra de outras marcas parecidas com a J&amp;J: quanto mais ele compra, mais espaço para a J&amp;J.</li>
+            <li>Vemos há quanto tempo ele não compra e de quanto em quanto tempo costuma comprar. Passou da hora? Ele está precisando repor.</li>
+            <li>Conferimos se ele pode comprar: limite de crédito livre e boletos atrasados. Quem não pode fica marcado, para você não perder tempo.</li>
+            <li>Tudo vira uma nota de 0 a 100: quanto maior, mais fácil e mais vale a pena ligar. Comece pelas maiores.</li>
+            <li>O pedido sugerido cabe no crédito do cliente e traz os produtos que mais combinam com o que ele já compra.</li>
+          </ul>
         )}
       </div>
 
@@ -295,10 +318,10 @@ export default function OportunidadesPage() {
           const l: Analise[] = c.id === 'recompra' ? d.recompra : c.id === 'gatilho' ? d.gatilho : d.novos
           const texto =
             c.id === 'recompra'
-              ? `Compraram em outubro e não voltaram. Se 4 em cada 10 dos que estão liberados voltarem (${voltando40}): cerca de ${reais(voltando40 * r.ticketRecompra)} em vendas.`
+              ? `Compraram em outubro e ainda não voltaram. Se 4 em cada 10 dos liberados voltarem (${voltando40}), são cerca de ${reais(voltando40 * r.ticketRecompra)} em vendas.`
               : c.id === 'gatilho'
-                ? `Compraram, mas nenhum pedido chegou a ${reais(r.gatilhoValor)}. Cada um que passar desse valor vira mais um positivado.`
-                : `Os ${d.novos.length} melhores de ${r.elegiveis} clientes que compram as categorias do J&J e ainda não compram J&J. Potencial total dos ${r.elegiveis}: ${reais(r.potencialElegiveis)}/mês.`
+                ? `Compraram, mas nenhum pedido chegou a ${reais(r.gatilhoValor)}. Falta pouco: cada um que passar desse valor vira mais um positivado para você.`
+                : `Os ${d.novos.length} melhores entre ${r.elegiveis} clientes que compram produtos parecidos e ainda não levam J&J. Todos juntos podem comprar cerca de ${reais(r.potencialElegiveis)} por mês.`
           return (
             <button
               key={c.id}
@@ -318,7 +341,7 @@ export default function OportunidadesPage() {
               <p className="mt-2 text-3xl font-semibold leading-none">
                 {l.length}
                 <span className="ml-1 text-xs font-normal text-github-text-muted">
-                  clientes · {prontos(l)} liberados
+                  clientes · {prontos(l)} prontos para vender
                 </span>
               </p>
               <p className="mt-2 text-xs text-github-text-muted">{texto}</p>
@@ -328,19 +351,16 @@ export default function OportunidadesPage() {
       </section>
 
       <p className="rounded-xl border border-github-border bg-github-bg-card px-3 py-2 text-xs text-github-text-muted">
-        <strong className="text-github-text">Para o gestor:</strong> {r.grandes} contas grandes (ticket médio acima de R$ 2.500) compram as mesmas
-        categorias e quase não compram J&amp;J, com potencial de {reais(r.potencialGrandes)}/mês. Elas ficaram fora da lista do operador, porque
-        provavelmente já têm vendedor ou canal dedicado.
+        <strong className="text-github-text">Para o gestor:</strong> {r.grandes} clientes grandes (pedidos acima de R$ 2.500) compram produtos parecidos e quase não levam J&amp;J: podem render {reais(r.potencialGrandes)} por mês. Ficaram fora da lista das vendedoras porque provavelmente já têm alguém cuidando.
         {r.bloqueados + r.semCredito > 0 && (
-          <> Além disso, {r.bloqueados + r.semCredito} candidatos foram descartados por crédito ou inadimplência.</>
+          <> Além disso, {r.bloqueados + r.semCredito} clientes foram tirados da lista por falta de crédito ou boleto atrasado.</>
         )}
       </p>
 
       <section aria-label="Lista de clientes" className="flex flex-col gap-2">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <p className="text-sm text-github-text-muted">
-            <strong className="font-semibold text-github-text">{CAMINHOS.find((c) => c.id === caminho)?.titulo}</strong> · do mais promissor para o
-            menos; clique em um cliente para ver o roteiro
+            <strong className="font-semibold text-github-text">{CAMINHOS.find((c) => c.id === caminho)?.titulo}</strong> · comece de cima: os primeiros têm mais chance. Clique no cliente para ver o roteiro
           </p>
           <p className="text-sm text-github-text-muted">
             <strong className="font-semibold text-github-text">{feitos}</strong> de {lista.length} já ligados
@@ -358,7 +378,7 @@ export default function OportunidadesPage() {
                 ? `Última compra ${reais((x as Recompra).valorUltimaCompra)} · ${(x as Recompra).diasSemComprar} dias atrás`
                 : caminho === 'gatilho'
                   ? `Pedido de ${reais((x as Gatilho).pedidoAtual)} · faltam ${reais((x as Gatilho).faltam)}`
-                  : `Potencial ${reais(x.potencial)}/mês · ${x.porte}`
+                  : `Pode comprar ~${reais(x.potencial)} por mês · cliente ${x.porte.toLowerCase()}`
             const credito = x.credito
             return (
               <li key={chave} className="rounded-xl border border-github-border bg-github-bg-card">
@@ -376,9 +396,9 @@ export default function OportunidadesPage() {
                     </span>
                     <span className="block text-xs text-github-text-muted">{resumoLinha}</span>
                   </span>
-                  <span className="shrink-0 text-right" title="Nota de 0 a 100: potencial e prontidão para comprar">
+                  <span className="shrink-0 text-right" title="De 0 a 100: quanto maior, mais fácil e mais vale a pena ligar">
                     <span className="block text-lg font-semibold leading-none">{x.score}</span>
-                    <span className="text-[10px] uppercase tracking-wide text-github-text-muted">nota</span>
+                    <span className="text-[10px] uppercase tracking-wide text-github-text-muted">chance</span>
                   </span>
                   {ligado && (
                     <span className="flex items-center gap-1 rounded bg-[#639922]/15 px-1.5 text-[11px] font-medium text-[#639922]">
@@ -390,50 +410,50 @@ export default function OportunidadesPage() {
                 {info && (
                   <div className="flex flex-col gap-3 border-t border-github-border px-3 py-3 text-sm">
                     <div>
-                      <p className="text-xs font-semibold uppercase tracking-wide text-github-text-muted">1. Por que ligar</p>
+                      <p className="text-xs font-semibold uppercase tracking-wide text-github-text-muted">1. Por que ligar agora</p>
                       <p className="mt-0.5">{info.base}</p>
                       {x.motivos.length > 0 && (
                         <ul className="mt-1 list-disc space-y-0.5 pl-5 text-github-text">
                           {x.motivos.map((m) => (
-                            <li key={m}>{m}</li>
+                            <li key={m}>{simples(m)}</li>
                           ))}
                         </ul>
                       )}
                       <p className="mt-1.5 text-xs text-github-text-muted">
-                        {x.perfil.length > 0 && <>Compra mais: {x.perfil.join(', ')}. </>}
-                        {x.ciclo.intervalo != null && <>Pedido a cada ~{x.ciclo.intervalo} dia(s), último há {x.ciclo.recencia}. </>}
-                        {x.ciclo.ticket != null && <>Ticket médio {reais(x.ciclo.ticket)}.</>}
+                        {x.perfil.length > 0 && <>Compra mais: {x.perfil.map(categoria).join(', ')}. </>}
+                        {x.ciclo.intervalo != null && <>Costuma pedir a cada ~{x.ciclo.intervalo} dia(s); o último foi há {x.ciclo.recencia}. </>}
+                        {x.ciclo.ticket != null && <>Cada pedido dele é de cerca de {reais(x.ciclo.ticket)}.</>}
                       </p>
                     </div>
 
                     <div>
-                      <p className="text-xs font-semibold uppercase tracking-wide text-github-text-muted">2. Cuidados antes de ligar</p>
+                      <p className="text-xs font-semibold uppercase tracking-wide text-github-text-muted">2. Antes de ligar, confira</p>
                       <ul className="mt-1 space-y-1">
                         <li className="text-xs">
-                          Crédito:{' '}
+                          Pode comprar a prazo?{' '}
                           {credito.disponivel == null ? (
-                            <span className="text-[#BA7517]">sem limite cadastrado, confirmar antes de vender</span>
+                            <span className="text-[#BA7517]">sem limite cadastrado, confirme antes de fechar</span>
                           ) : (
                             <>
-                              limite {reais(credito.limite)}, saldo devedor {reais(credito.saldo)},{' '}
-                              <strong className={credito.disponivel < 100 ? 'text-[#E24B4A]' : ''}>{reais(Math.max(credito.disponivel, 0))} livres</strong>
-                              {info.linhas.length > 0 && credito.disponivel >= totalLinhas(info.linhas) && ' — o pedido sugerido cabe'}
+                              limite {reais(credito.limite)}, já usou {reais(credito.saldo)},{' '}
+                              <strong className={credito.disponivel < 100 ? 'text-[#E24B4A]' : ''}>{reais(Math.max(credito.disponivel, 0))} livres para comprar</strong>
+                              {info.linhas.length > 0 && credito.disponivel >= totalLinhas(info.linhas) && ' · o pedido sugerido cabe'}
                             </>
                           )}
                         </li>
                         <li className="text-xs">
-                          Inadimplência:{' '}
+                          Boletos atrasados:{' '}
                           {x.inad ? (
                             <span className="text-[#E24B4A]">
-                              {x.inad.titulos} título(s) vencido(s), o mais antigo há {x.inad.dias} dias ({reais(x.inad.valor)})
+                              {x.inad.titulos} boleto(s) vencido(s), o mais antigo há {x.inad.dias} dias ({reais(x.inad.valor)}). Fale com o financeiro antes
                             </span>
                           ) : (
-                            'sem títulos vencidos'
+                            'nenhum, está em dia'
                           )}
                         </li>
                         {x.alertas.map((al) => (
                           <li key={al} className="flex items-start gap-1.5 text-xs text-[#BA7517]">
-                            <AlertTriangle size={13} className="mt-0.5 shrink-0" /> {al}
+                            <AlertTriangle size={13} className="mt-0.5 shrink-0" /> {simples(al)}
                           </li>
                         ))}
                       </ul>
@@ -470,14 +490,12 @@ export default function OportunidadesPage() {
                         {info.extra && <span className="text-github-text-muted"> · {info.extra}</span>}
                       </p>
                       <p className="text-xs text-github-text-muted">
-                        Margem líquida estimada: {reais(margemLinhas(info.linhas))} (
-                        {totalLinhas(info.linhas) > 0 ? Math.round((margemLinhas(info.linhas) / totalLinhas(info.linhas)) * 100) : 0}%), já
-                        considerando o reembolso do fabricante.
+                        Se fechar, a empresa ganha cerca de {reais(margemLinhas(info.linhas))} de lucro nesse pedido (já descontado o que o fabricante devolve).
                       </p>
                     </div>
 
                     <div>
-                      <p className="text-xs font-semibold uppercase tracking-wide text-github-text-muted">4. O que falar</p>
+                      <p className="text-xs font-semibold uppercase tracking-wide text-github-text-muted">4. O que falar na ligação</p>
                       <p className="mt-0.5 rounded-lg bg-github-bg-hover px-3 py-2 italic">{info.fala}</p>
                     </div>
 
