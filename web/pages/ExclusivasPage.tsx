@@ -18,6 +18,14 @@ function nomeIndustria(nome: string | null) {
   return (nome ?? 'Sem indústria').replace(/^POSITIVAÇÃO\s+/i, '')
 }
 
+/** "NESTLE" -> "Nestle"; "J&J" e "P&G HPC" ficam como estão (siglas); "BOTICÁRIO EXCLUSIVO" -> "Boticário Exclusivo". */
+function industriaEmTexto(nome: string | null) {
+  return nomeIndustria(nome)
+    .split(' ')
+    .map((p) => (p.includes('&') || p.length <= 3 ? p : p.charAt(0) + p.slice(1).toLowerCase()))
+    .join(' ')
+}
+
 function data(valor: string | null) {
   return valor ? dayjs(valor).format('DD/MM/YYYY') : '-'
 }
@@ -344,11 +352,19 @@ export default function ExclusivasPage() {
                           <td className="hidden whitespace-nowrap px-2 py-1.5 md:table-cell">{data(c.ultimaCompra)}</td>
                           <td className="py-1.5 pl-2 pr-3">
                             <span
-                              className={`inline-block whitespace-nowrap rounded px-1.5 text-[11px] font-medium ${
-                                c.positivou ? 'bg-[#639922]/15 text-[#639922]' : 'bg-github-bg-hover text-github-text-muted'
+                              className={`inline-block max-w-[15rem] rounded px-1.5 text-[11px] font-medium leading-tight ${
+                                c.positivou
+                                  ? 'bg-[#639922]/15 text-[#639922]'
+                                  : c.positivadoPorOutro
+                                    ? 'bg-[#BA7517]/15 text-[#BA7517]'
+                                    : 'bg-github-bg-hover text-github-text-muted'
                               }`}
                             >
-                              {c.positivou ? 'Positivado' : 'Sem positivação'}
+                              {c.positivou
+                                ? 'Positivado'
+                                : c.positivadoPorOutro
+                                  ? `Positivado por outro operador Exclusivo ${industriaEmTexto(c.industria)}`
+                                  : 'Sem positivação'}
                             </span>
                           </td>
                         </tr>

@@ -25,6 +25,8 @@ export interface ExclusivaCliente {
   primeiraCompra: string | null
   ultimaCompra: string | null
   positivou: boolean
+  /** Este operador não positivou, mas outro operador da mesma indústria já tinha positivado o cliente. */
+  positivadoPorOutro: boolean
 }
 
 /** Um pré-pedido do cliente no mês (GET /api/exclusivas/pedidos). */
