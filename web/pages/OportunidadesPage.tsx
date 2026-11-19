@@ -255,17 +255,27 @@ export default function OportunidadesPage() {
     }
     if (c === 'gatilho') {
       const x = a as Gatilho
-      const jaTem = new Set(x.produtosAtuais)
-      const candidato = d!.kit.find((k) => !jaTem.has(k.produto)) ?? d!.kit[0]
-      const nome = bonito(produto(candidato.produto).nome)
-      const qtd = Math.max(1, Math.ceil(x.faltam / candidato.preco))
-      const linhas: Linha[] = [{ nome, preco: candidato.preco, qtd, margemPct: candidato.margemPct }]
+      // pedido NOVO que sozinho passa do valor da positivação: o que ele já leva primeiro, depois os mais vendidos
+      const kitQtd = new Map(d!.kit.map((k) => [k.produto, k.qtd]))
+      const ids = [...x.produtosAtuais, ...d!.kit.map((k) => k.produto)].filter((p, n, arr) => arr.indexOf(p) === n && produto(p).preco > 0)
+      const linhas: Linha[] = []
+      for (const p of ids) {
+        if (totalLinhas(linhas) >= r.gatilhoValor) break
+        const pr = produto(p)
+        const falta = r.gatilhoValor - totalLinhas(linhas)
+        const qtd = Math.max(1, Math.min(kitQtd.get(p) ?? 3, Math.ceil(falta / pr.preco)))
+        linhas.push({ nome: bonito(pr.nome), preco: pr.preco, qtd, margemPct: pr.margemPct })
+      }
+      if (linhas.length && totalLinhas(linhas) < r.gatilhoValor) {
+        linhas[0].qtd += Math.ceil((r.gatilhoValor - totalLinhas(linhas)) / linhas[0].preco)
+      }
+      const nomes = linhas.slice(0, 2).map((l) => l.nome).join(' e ')
       return {
-        rotulo: 'Acrescentar ao pedido',
-        base: `Comprou em ${dayjs(x.ultimaCompra).format('DD/MM')}, mas o maior pedido foi de ${reais(x.pedidoAtual)}. Faltam ${reais(x.faltam)} para chegar a ${reais(r.gatilhoValor)}.`,
+        rotulo: 'Pedido novo sugerido',
+        base: `Comprou em ${dayjs(x.ultimaCompra).format('DD/MM')}, mas o maior pedido dele foi de ${reais(x.pedidoAtual)}. Para positivar, ele precisa de um pedido NOVO de pelo menos ${reais(r.gatilhoValor)}.`,
         linhas,
-        extra: `Pedido atual ${reais(x.pedidoAtual)} + sugestão = ${reais(x.pedidoAtual + totalLinhas(linhas))}`,
-        fala: `“Seu último pedido ficou em ${reais(x.pedidoAtual)}. Posso incluir ${nome} para completar um pedido de ${reais(r.gatilhoValor)}?”`,
+        extra: `O pedido tem que passar de ${reais(r.gatilhoValor)} sozinho. Não vale somar com o pedido anterior`,
+        fala: `“Oi! Aqui é da Solfarma. Estou fechando os pedidos de J&J deste mês e quero te passar ${nomes}. Montei um pedido de ${reais(totalLinhas(linhas))} para você, posso enviar?”`,
       }
     }
     const linhas: Linha[] = a.kit.length
@@ -320,7 +330,7 @@ export default function OportunidadesPage() {
             c.id === 'recompra'
               ? `Compraram em outubro e ainda não voltaram. Se 4 em cada 10 dos liberados voltarem (${voltando40}), são cerca de ${reais(voltando40 * r.ticketRecompra)} em vendas.`
               : c.id === 'gatilho'
-                ? `Compraram, mas nenhum pedido chegou a ${reais(r.gatilhoValor)}. Falta pouco: cada um que passar desse valor vira mais um positivado para você.`
+                ? `Compraram, mas nenhum pedido chegou a ${reais(r.gatilhoValor)}. Eles já compram. Um pedido novo de pelo menos ${reais(r.gatilhoValor)} positiva o cliente para você.`
                 : `Os ${d.novos.length} melhores entre ${r.elegiveis} clientes que compram produtos parecidos e ainda não levam J&J. Todos juntos podem comprar cerca de ${reais(r.potencialElegiveis)} por mês.`
           return (
             <button
@@ -377,7 +387,7 @@ export default function OportunidadesPage() {
               caminho === 'recompra'
                 ? `Última compra ${reais((x as Recompra).valorUltimaCompra)} · ${(x as Recompra).diasSemComprar} dias atrás`
                 : caminho === 'gatilho'
-                  ? `Pedido de ${reais((x as Gatilho).pedidoAtual)} · faltam ${reais((x as Gatilho).faltam)}`
+                  ? `Maior pedido ${reais((x as Gatilho).pedidoAtual)} · precisa de um pedido novo de ${reais(r.gatilhoValor)}`
                   : `Pode comprar ~${reais(x.potencial)} por mês · cliente ${x.porte.toLowerCase()}`
             const credito = x.credito
             return (
