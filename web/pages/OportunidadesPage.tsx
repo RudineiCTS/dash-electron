@@ -301,7 +301,7 @@ export default function OportunidadesPage() {
           Três caminhos, do mais fácil para o mais difícil de vender. Cada cliente já vem com o que ele costuma comprar, quando precisa repor e se pode comprar. É só ligar e oferecer.
         </p>
         <p className="mt-2 rounded-lg border border-dashed border-github-border bg-github-bg-card px-3 py-2 text-xs text-github-text-muted">
-          Demonstração com dados reais de out/nov de 2026 (até 18/11). Clientes só pelo código. Os “novos” foram escolhidos entre uma parte dos clientes; tem mais gente boa por aí.
+          Demonstração com dados reais dos últimos 6 meses (até 18/11/2026). Clientes só pelo código. Os “novos” foram escolhidos entre uma parte dos clientes; tem mais gente boa por aí.
         </p>
         <button
           type="button"
@@ -328,7 +328,7 @@ export default function OportunidadesPage() {
           const l: Analise[] = c.id === 'recompra' ? d.recompra : c.id === 'gatilho' ? d.gatilho : d.novos
           const texto =
             c.id === 'recompra'
-              ? `Compraram em outubro e ainda não voltaram. Se 4 em cada 10 dos liberados voltarem (${voltando40}), são cerca de ${reais(voltando40 * r.ticketRecompra)} em vendas.`
+              ? `Compraram J&J nos últimos 6 meses e não compraram em novembro. Se 4 em cada 10 dos liberados voltarem (${voltando40}), são cerca de ${reais(voltando40 * r.ticketRecompra)} em vendas.`
               : c.id === 'gatilho'
                 ? `Compraram, mas nenhum pedido chegou a ${reais(r.gatilhoValor)}. Eles já compram. Um pedido novo de pelo menos ${reais(r.gatilhoValor)} positiva o cliente para você.`
                 : `Os ${d.novos.length} melhores entre ${r.elegiveis} clientes que compram produtos parecidos e ainda não levam J&J. Todos juntos podem comprar cerca de ${reais(r.potencialElegiveis)} por mês.`
