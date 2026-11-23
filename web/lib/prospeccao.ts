@@ -46,17 +46,17 @@ export interface ProspeccaoCarteira {
   limiteUtilizado: number
   telefone: string | null
   telefone2: string | null
-  /** Já aparece no painel de prospecção da competência (vendeu). */
+  /** Já aparece no painel de prospecção do mês (vendeu). */
   noPainel: boolean
 }
 
+/** Carteira do mês atual inteiro; `idPessoaTelevendas`: só dessa operadora (o gestor escolhe uma). */
 export async function getProspeccaoCarteira(
-  competencia: string,
   idPessoaTelevendas: number | null,
   signal?: AbortSignal,
 ): Promise<ProspeccaoCarteira[]> {
   const response = await api.get<ProspeccaoCarteira[]>('prospeccao/carteira', {
-    params: { competencia, ...(idPessoaTelevendas ? { idPessoaTelevendas } : {}) },
+    params: { ...(idPessoaTelevendas ? { idPessoaTelevendas } : {}) },
     signal,
   })
   return response.data

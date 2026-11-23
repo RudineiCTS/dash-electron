@@ -12,8 +12,6 @@ const campo = 'h-9 rounded-md border border-github-border bg-github-bg-card px-2
 type Situacao = 'todos' | 'vendeu' | 'pendentes'
 
 interface Props {
-  /** Competência escolhida (YYYY-MM-DD); o mês dela define a carteira. */
-  competencia: string
   /** Operadora logada; `null` = gestor (escolhe uma operadora para ver a carteira). */
   idPessoaTelevendas: number | null
   /** Operadoras que o gestor pode escolher. */
@@ -21,11 +19,11 @@ interface Props {
 }
 
 /**
- * Carteira de prospecção: todos os clientes que a operadora deve trabalhar no mês,
- * marcando quem já vendeu na competência e quem ainda está pendente.
+ * Carteira de prospecção: todos os clientes que a operadora deve trabalhar no mês atual (inteiro),
+ * marcando quem já vendeu no mês e quem ainda está pendente.
  * Gestor: precisa escolher uma operadora (a carteira de todas junta é grande demais para abrir de uma vez).
  */
-export function ProspeccaoCarteira({ competencia, idPessoaTelevendas, operadoras }: Props) {
+export function ProspeccaoCarteira({ idPessoaTelevendas, operadoras }: Props) {
   const ehGestor = idPessoaTelevendas == null
   const [escolhida, setEscolhida] = useState<number | null>(null)
   const [situacao, setSituacao] = useState<Situacao>('todos')
@@ -34,8 +32,8 @@ export function ProspeccaoCarteira({ competencia, idPessoaTelevendas, operadoras
 
   const idFiltro = ehGestor ? escolhida : idPessoaTelevendas
   const carteira = useApiResource(
-    (signal) => (idFiltro ? getProspeccaoCarteira(competencia, idFiltro, signal) : Promise.resolve([])),
-    [competencia, idFiltro],
+    (signal) => (idFiltro ? getProspeccaoCarteira(idFiltro, signal) : Promise.resolve([])),
+    [idFiltro],
   )
 
   const todos = useMemo(() => carteira.data ?? [], [carteira.data])

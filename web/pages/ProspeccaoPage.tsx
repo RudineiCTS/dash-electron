@@ -219,7 +219,6 @@ export default function ProspeccaoPage() {
           {abaAtiva === 'carteira' ? (
             mes ? (
               <ProspeccaoCarteira
-                competencia={mes}
                 idPessoaTelevendas={idPessoaFiltro}
                 operadoras={linhasResumo
                   .filter((r) => r.idPessoaTelevendas != null)
