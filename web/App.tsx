@@ -9,6 +9,7 @@ import ParametrosPage from './pages/ParametrosPage'
 import ExclusivasPage from './pages/ExclusivasPage'
 import OportunidadesPage from './pages/OportunidadesPage'
 import FidelizacaoPage from './pages/FidelizacaoPage'
+import ProspeccaoPage from './pages/ProspeccaoPage'
 
 /**
  * Rotas do app web (somente leitura). As URLs seguem as do app desktop:
@@ -30,7 +31,7 @@ export default function App() {
           <Route path="campaigns" element={<CampaignsPage />} />
           <Route path="campaigns/details/:id" element={<CampaignDetailPage />} />
           <Route path="campaigns/details/:id/pedidos" element={<CampaignOrdersPage />} />
-          <Route path="prospeccao" element={<SecaoPage titulo="Prospecção" />} />
+          <Route path="prospeccao" element={<ProspeccaoPage />} />
           <Route path="fidelizacao" element={<FidelizacaoPage />} />
           <Route path="sac" element={<SecaoPage titulo="SAC" />} />
           <Route path="exclusivas" element={<ExclusivasPage />} />
