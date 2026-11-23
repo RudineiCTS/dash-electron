@@ -1,9 +1,8 @@
 import { api } from '@shared/services/api'
 
-/** Mês disponível no painel (GET /api/prospeccao/meses). */
+/** Competência disponível no painel (GET /api/prospeccao/meses): a data de MesCompetencia, ex.: 2026-10-31. */
 export interface ProspeccaoMes {
-  ano: number
-  mes: number
+  competencia: string
   clientes: number
 }
 
@@ -38,26 +37,26 @@ export async function getProspeccaoMeses(signal?: AbortSignal): Promise<Prospecc
   return response.data
 }
 
-/** `referencia`: qualquer dia do mês (YYYY-MM-DD). `idPessoaTelevendas`: só os clientes dessa pessoa; `null` = de todos (gestor). */
+/** `competencia`: a data de MesCompetencia (YYYY-MM-DD). `idPessoaTelevendas`: só os clientes dessa pessoa; `null` = de todos (gestor). */
 export async function getProspeccaoClientes(
-  referencia: string,
+  competencia: string,
   idPessoaTelevendas: number | null,
   signal?: AbortSignal,
 ): Promise<ProspeccaoCliente[]> {
   const response = await api.get<ProspeccaoCliente[]>('prospeccao/clientes', {
-    params: { referencia, ...(idPessoaTelevendas ? { idPessoaTelevendas } : {}) },
+    params: { competencia, ...(idPessoaTelevendas ? { idPessoaTelevendas } : {}) },
     signal,
   })
   return response.data
 }
 
 export async function getProspeccaoResumo(
-  referencia: string,
+  competencia: string,
   idPessoaTelevendas: number | null,
   signal?: AbortSignal,
 ): Promise<ProspeccaoResumo[]> {
   const response = await api.get<ProspeccaoResumo[]>('prospeccao/resumo', {
-    params: { referencia, ...(idPessoaTelevendas ? { idPessoaTelevendas } : {}) },
+    params: { competencia, ...(idPessoaTelevendas ? { idPessoaTelevendas } : {}) },
     signal,
   })
   return response.data

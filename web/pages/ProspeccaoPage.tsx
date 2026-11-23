@@ -12,8 +12,8 @@ const PAGE_SIZE = 30
 const TODOS = ''
 const campo = 'h-9 rounded-md border border-github-border bg-github-bg-card px-2.5 text-sm text-github-text'
 
-const NOME_MES = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro']
-const rotuloMes = (ano: number, mes: number) => `${NOME_MES[mes - 1]} de ${ano}`
+/** Competência é uma data (ex.: 31/10/2026); a do mês corrente pode ser parcial (ex.: 18/11/2026). */
+const rotuloCompetencia = (competencia: string) => dayjs(competencia).format('DD/MM/YYYY')
 
 /** "SEM VENDAS NOS ÚLTIMOS 6 MESES" -> "Sem vendas nos últimos 6 meses" (só para exibir). */
 function tipoEmTexto(tipo: string | null) {
@@ -40,7 +40,7 @@ export default function ProspeccaoPage() {
   const idPessoaFiltro = ehGestor ? null : idPessoa
 
   const meses = useApiResource((signal) => getProspeccaoMeses(signal), [])
-  const [mes, setMes] = useState<string | null>(null) // "YYYY-MM"
+  const [mes, setMes] = useState<string | null>(null) // competência: "YYYY-MM-DD"
   const [tipo, setTipo] = useState(TODOS)
   const [operadora, setOperadora] = useState(TODOS)
   const [busca, setBusca] = useState('')
@@ -50,17 +50,16 @@ export default function ProspeccaoPage() {
   /** Mês mais recente que tem clientes. */
   useEffect(() => {
     if (mes != null || !meses.data?.length) return
-    const m = meses.data[0]
-    setMes(`${m.ano}-${String(m.mes).padStart(2, '0')}`)
+    setMes(dayjs(meses.data[0].competencia).format('YYYY-MM-DD'))
   }, [meses.data, mes])
 
   const clientes = useApiResource(
-    (signal) => (pronto && mes ? getProspeccaoClientes(`${mes}-01`, idPessoaFiltro, signal) : Promise.resolve([])),
+    (signal) => (pronto && mes ? getProspeccaoClientes(mes, idPessoaFiltro, signal) : Promise.resolve([])),
     [mes, idPessoa, ehGestor, carregandoGestor],
   )
 
   const resumo = useApiResource(
-    (signal) => (pronto && mes ? getProspeccaoResumo(`${mes}-01`, idPessoaFiltro, signal) : Promise.resolve([])),
+    (signal) => (pronto && mes ? getProspeccaoResumo(mes, idPessoaFiltro, signal) : Promise.resolve([])),
     [mes, idPessoa, ehGestor, carregandoGestor],
   )
   const linhasResumo = useMemo(() => resumo.data ?? [], [resumo.data])
@@ -105,7 +104,7 @@ export default function ProspeccaoPage() {
         {pronto && todos.length > 0 && (
           <p className="text-sm text-github-text-muted">
             {usuario?.operatorName && <>{usuario.operatorName}{ehGestor && ' (gestor)'} · </>}
-            <strong className="font-semibold text-github-text">{todos.length.toLocaleString('pt-BR')}</strong> clientes no mês
+            <strong className="font-semibold text-github-text">{todos.length.toLocaleString('pt-BR')}</strong> clientes na competência
           </p>
         )}
       </div>
@@ -146,7 +145,7 @@ export default function ProspeccaoPage() {
 
           <div className="flex flex-wrap items-end gap-2">
             <label className="flex flex-col gap-1 text-xs text-github-text-muted">
-              Mês
+              Competência
               <select
                 className={campo}
                 value={mes ?? ''}
@@ -158,10 +157,10 @@ export default function ProspeccaoPage() {
                 }}
               >
                 {(meses.data ?? []).map((m) => {
-                  const v = `${m.ano}-${String(m.mes).padStart(2, '0')}`
+                  const v = dayjs(m.competencia).format('YYYY-MM-DD')
                   return (
                     <option key={v} value={v}>
-                      {rotuloMes(m.ano, m.mes)}
+                      {rotuloCompetencia(m.competencia)}
                     </option>
                   )
                 })}
@@ -213,7 +212,7 @@ export default function ProspeccaoPage() {
             ) : resumo.loading || meses.loading ? (
               <div className="h-40 animate-pulse rounded-xl border border-github-border bg-github-bg-card" aria-busy="true" />
             ) : linhasResumo.length === 0 ? (
-              <EmptyState message="Nenhum cliente em prospecção neste mês." />
+              <EmptyState message="Nenhum cliente em prospecção nesta competência." />
             ) : (
               <section aria-label="Resumo por operadora" className="overflow-x-auto rounded-xl border border-github-border bg-github-bg-card">
                 <table className="w-full text-left text-sm">
@@ -259,7 +258,7 @@ export default function ProspeccaoPage() {
           ) : clientes.loading || meses.loading ? (
             <div className="h-40 animate-pulse rounded-xl border border-github-border bg-github-bg-card" aria-busy="true" />
           ) : todos.length === 0 ? (
-            <EmptyState message={`Nenhum cliente em prospecção neste mês${ehGestor ? '' : ' para você'}.`} />
+            <EmptyState message={`Nenhum cliente em prospecção nesta competência${ehGestor ? '' : ' para você'}.`} />
           ) : (
             <>
               <section aria-label="Totais" className="grid grid-cols-2 gap-2.5 md:grid-cols-4">
@@ -329,7 +328,7 @@ export default function ProspeccaoPage() {
                 </button>
               )}
               <p className="text-xs text-github-text-muted">
-                Mês de competência: {dayjs(todos[0].mesCompetencia).format('MM/YYYY')}. “Mês nº” é há quantos meses seguidos o cliente está em prospecção.
+                Competência de {dayjs(todos[0].mesCompetencia).format('DD/MM/YYYY')}. “Mês nº” é há quantos meses seguidos o cliente está em prospecção.
               </p>
             </>
           )}
