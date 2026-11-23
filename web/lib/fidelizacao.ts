@@ -93,3 +93,25 @@ export async function getFidelizacaoProdutos(
   const response = await api.get<FidelizacaoProdutoHits[]>('fidelizacao/produtos', { params: { idMeta, idKpi, idPessoaCliente }, signal })
   return response.data
 }
+
+/** Cliente da carteira de uma pessoa no período (GET /api/fidelizacao/carteira). */
+export interface FidelizacaoCarteiraCliente {
+  idPessoaCliente: number
+  nomeCliente: string | null
+  /** Data de cadastro (yyyy-MM-dd, texto). */
+  dataCadastroCliente: string | null
+  limiteUtilizado: number
+  telefone: string | null
+  telefone2: string | null
+  /** Aparece nos clientes calculados dos KPIs da pessoa no período. */
+  comCompra: boolean
+}
+
+export async function getFidelizacaoCarteira(
+  idPeriodo: number,
+  idPessoa: number,
+  signal?: AbortSignal,
+): Promise<FidelizacaoCarteiraCliente[]> {
+  const response = await api.get<FidelizacaoCarteiraCliente[]>('fidelizacao/carteira', { params: { idPeriodo, idPessoa }, signal })
+  return response.data
+}

@@ -5,6 +5,7 @@ import { PERMITIR_TROCA_USUARIO, useUsuario } from '../auth/UsuarioContext'
 import { useGestor } from '../auth/useGestor'
 import { ProgressBar } from '../components/ProgressBar'
 import { EmptyState, ErrorState } from '../components/StateViews'
+import { FidelizacaoCarteira } from './FidelizacaoCarteira'
 import { FidelizacaoDetalhe } from './FidelizacaoDetalhe'
 import { getFidelizacaoPeriodos, getFidelizacaoResultado, type FidelizacaoLinha } from '../lib/fidelizacao'
 import { formatCurrency } from '../lib/format'
@@ -102,6 +103,8 @@ export default function FidelizacaoPage() {
   const [escolhida, setEscolhida] = useState<number | null>(null)
   /** KPI aberto (clientes). */
   const [kpiAberto, setKpiAberto] = useState<FidelizacaoLinha | null>(null)
+  /** Dentro da pessoa: os KPIs ou a carteira dela. */
+  const [visao, setVisao] = useState<'kpis' | 'carteira'>('kpis')
 
   /** Período de hoje; se nenhum contém hoje, o mais recente. */
   useEffect(() => {
@@ -129,6 +132,7 @@ export default function FidelizacaoPage() {
   /** Trocar de pessoa ou de período fecha a abertura do KPI. */
   useEffect(() => {
     setKpiAberto(null)
+    setVisao('kpis')
   }, [pessoaAberta, idPeriodo])
 
   return (
@@ -245,7 +249,28 @@ export default function FidelizacaoPage() {
               </p>
             )}
           </div>
-          {kpis.length === 0 ? (
+          <div role="tablist" aria-label="Visão da pessoa" className="flex w-fit gap-0.5 rounded-lg bg-github-bg-hover p-0.5">
+            {(
+              [
+                { id: 'kpis', label: 'KPIs' },
+                { id: 'carteira', label: 'Carteira' },
+              ] as const
+            ).map((t) => (
+              <button
+                key={t.id}
+                type="button"
+                role="tab"
+                aria-selected={visao === t.id}
+                onClick={() => setVisao(t.id)}
+                className={`h-8 rounded-md px-3 text-sm font-medium ${visao === t.id ? 'bg-github-bg-card shadow-sm' : 'text-github-text-muted'}`}
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
+          {visao === 'carteira' && pessoaAberta != null && idPeriodo != null ? (
+            <FidelizacaoCarteira idPeriodo={idPeriodo} idPessoa={pessoaAberta} nomePessoa={dadosPessoa?.pessoa ?? usuario?.operatorName ?? 'pessoa'} />
+          ) : kpis.length === 0 ? (
             <EmptyState message="Nenhum KPI calculado para esta pessoa no período." />
           ) : (
             <ul className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
@@ -259,7 +284,7 @@ export default function FidelizacaoPage() {
               ))}
             </ul>
           )}
-          {kpiAberto && <FidelizacaoDetalhe key={`${kpiAberto.idMeta}-${kpiAberto.idKpi}`} linha={kpiAberto} onFechar={() => setKpiAberto(null)} />}
+          {visao === 'kpis' && kpiAberto && <FidelizacaoDetalhe key={`${kpiAberto.idMeta}-${kpiAberto.idKpi}`} linha={kpiAberto} onFechar={() => setKpiAberto(null)} />}
         </section>
       )}
     </div>
