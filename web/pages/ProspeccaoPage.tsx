@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useState } from 'react'
 import dayjs from 'dayjs'
-import { Search } from 'lucide-react'
+import { Download, Search } from 'lucide-react'
 import { PERMITIR_TROCA_USUARIO, useUsuario } from '../auth/UsuarioContext'
 import { useGestor } from '../auth/useGestor'
 import { ProgressBar } from '../components/ProgressBar'
 import { EmptyState, ErrorState } from '../components/StateViews'
+import { exportarExcel } from '../lib/exportarExcel'
 import { formatCurrency } from '../lib/format'
 import { getProspeccaoClientes, getProspeccaoMeses, getProspeccaoResumo } from '../lib/prospeccao'
 import { ProspeccaoCarteira } from './ProspeccaoCarteira'
@@ -99,6 +100,26 @@ export default function ProspeccaoPage() {
         (!termo || (c.nomeCliente ?? '').toLowerCase().includes(termo) || String(c.idCliente).includes(termo)),
     )
   }, [todos, tipo, operadora, busca])
+
+  /** Baixa em Excel as vendas dos clientes que estão na tela (respeita os filtros). */
+  function baixarExcel() {
+    exportarExcel({
+      arquivo: `prospeccao-clientes-${mes ?? 'competencia'}`,
+      aba: 'Clientes',
+      totalizar: true,
+      linhas: visiveis,
+      colunas: [
+        { titulo: 'Código', tipo: 'numero', largura: 10, valor: (c) => c.idCliente },
+        { titulo: 'Cliente', largura: 40, valor: (c) => c.nomeCliente },
+        ...(ehGestor ? [{ titulo: 'Operadora', largura: 32, valor: (c: (typeof visiveis)[number]) => c.nomeDigitador }] : []),
+        { titulo: 'Mês nº', tipo: 'numero', largura: 8, valor: (c) => c.sequenciaMeses },
+        { titulo: 'Tipo', largura: 32, valor: (c) => tipoEmTexto(c.tipoProspeccao) },
+        { titulo: 'Faturado', tipo: 'moeda', largura: 14, valor: (c) => c.totalFaturado },
+        { titulo: 'Loja virtual', tipo: 'moeda', largura: 14, valor: (c) => c.faturamentoLojaVirtual },
+        { titulo: 'Internet', tipo: 'moeda', largura: 14, valor: (c) => c.faturamentoInternet },
+      ],
+    })
+  }
 
   const soma = (f: (c: (typeof todos)[number]) => number) => visiveis.reduce((s, c) => s + f(c), 0)
   const colunasExtras = ehGestor ? 1 : 0
@@ -326,6 +347,17 @@ export default function ProspeccaoPage() {
                   </div>
                 ))}
               </section>
+
+              <div className="flex justify-end">
+                <button
+                  type="button"
+                  onClick={baixarExcel}
+                  disabled={visiveis.length === 0}
+                  className="flex h-9 items-center gap-1.5 rounded-md border border-github-border bg-github-bg-card px-3 text-sm font-medium hover:bg-github-bg-hover disabled:opacity-50"
+                >
+                  <Download size={15} /> Exportar Excel ({visiveis.length.toLocaleString('pt-BR')})
+                </button>
+              </div>
 
               <section aria-label="Clientes" className="overflow-x-auto rounded-xl border border-github-border bg-github-bg-card">
                 <table className="w-full text-left text-sm">
