@@ -70,7 +70,7 @@ function CardKpi({ l, ativo, onAbrir }: { l: FidelizacaoLinha; ativo: boolean; o
       <p className="mt-1 text-xs text-github-text-muted">
         Prêmio: <strong className="font-semibold text-github-text">{formatCurrency(l.valorPremio)}</strong>
       </p>
-      {l.idMeta != null && l.idKpi != null && (
+      {l.idMeta != null && l.idKpi != null && l.tipoDetalhe != null && (
         <button
           type="button"
           onClick={() => onAbrir(l)}

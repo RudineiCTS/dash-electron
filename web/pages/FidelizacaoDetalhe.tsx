@@ -14,8 +14,6 @@ const campo = 'h-9 rounded-md border border-github-border bg-github-bg-card px-2
 
 const nomeDoKpi = (l: FidelizacaoLinha) => l.nomeKpi?.trim() || l.descricaoKpi?.trim() || l.codigoKpi || 'KPI'
 
-/** KPI de cobertura de clientes: a lista é só dos clientes positivados (sem separar Bees). */
-const ehCobertura = (l: FidelizacaoLinha) => /cobertura/i.test(`${l.nomeKpi ?? ''} ${l.descricaoKpi ?? ''}`)
 
 /** Produtos que um cliente comprou e entraram na conta dos Hits. */
 function ProdutosDoCliente({ idMeta, idKpi, idCliente }: { idMeta: number; idKpi: number; idCliente: number }) {
@@ -70,8 +68,10 @@ export function FidelizacaoDetalhe({ linha, onFechar }: { linha: FidelizacaoLinh
   )
 
   const tipo = detalhe.data?.tipo
-  const cobertura = ehCobertura(linha)
-  const total = tipo === 'valor' ? (detalhe.data?.valores.length ?? 0) : (detalhe.data?.hits.length ?? 0)
+  /** O tipo vem da fórmula de cálculo do KPI (API): valor, cobertura (positivados) ou hits. */
+  const cobertura = tipo === 'cobertura'
+  const ehValor = tipo === 'valor' || tipo === 'cobertura'
+  const total = ehValor ? (detalhe.data?.valores.length ?? 0) : (detalhe.data?.hits.length ?? 0)
   const somaValor = (detalhe.data?.valores ?? []).reduce((s, c) => s + c.valorTotal, 0)
 
   return (
@@ -80,7 +80,7 @@ export function FidelizacaoDetalhe({ linha, onFechar }: { linha: FidelizacaoLinh
         <div>
           <p className="text-sm font-semibold">{nomeDoKpi(linha)}</p>
           <p className="text-xs text-github-text-muted">
-            {tipo === 'valor' && (cobertura ? <>Clientes positivados no período</> : <>Clientes que compõem o valor apurado</>)}
+            {ehValor && (cobertura ? <>Clientes positivados no período</> : <>Clientes que compõem o valor apurado</>)}
             {tipo === 'hits' && <>Clientes na conta dos Hits · clique em um cliente para ver os produtos</>}
           </p>
         </div>
@@ -118,7 +118,7 @@ export function FidelizacaoDetalhe({ linha, onFechar }: { linha: FidelizacaoLinh
             <p className="text-sm text-github-text-muted">
               <strong className="font-semibold text-github-text">{total.toLocaleString('pt-BR')}</strong>{' '}
               {cobertura ? 'clientes positivados' : 'clientes'}
-              {tipo === 'valor' && (
+              {ehValor && (
                 <>
                   {' '}
                   · total <strong className="font-semibold text-github-text">{formatCurrency(somaValor)}</strong>
@@ -128,7 +128,7 @@ export function FidelizacaoDetalhe({ linha, onFechar }: { linha: FidelizacaoLinh
           </div>
 
           <div className="overflow-x-auto rounded-lg border border-github-border">
-            {tipo === 'valor' ? (
+            {ehValor ? (
               <table className="w-full text-left text-sm">
                 <thead className="text-[11px] uppercase tracking-wide text-github-text-muted">
                   <tr className="border-b border-github-border">
@@ -196,13 +196,13 @@ export function FidelizacaoDetalhe({ linha, onFechar }: { linha: FidelizacaoLinh
             )}
           </div>
 
-          {(tipo === 'valor' ? valores.length : hits.length) > limite && (
+          {(ehValor ? valores.length : hits.length) > limite && (
             <button
               type="button"
               onClick={() => setLimite((n) => n + PAGE_SIZE)}
               className="h-9 rounded-md border border-github-border bg-github-bg-card text-sm font-medium"
             >
-              Mostrar mais ({(tipo === 'valor' ? valores.length : hits.length) - limite})
+              Mostrar mais ({(ehValor ? valores.length : hits.length) - limite})
             </button>
           )}
           {tipo === 'hits' && (

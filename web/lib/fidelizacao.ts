@@ -16,6 +16,9 @@ export interface FidelizacaoLinha {
   idSupervisor: number | null
   tipoPessoa: string | null
   idKpi: number | null
+  idFormulaCalculo: number | null
+  /** Como o KPI abre os clientes (definido pela fórmula de cálculo do KPI); null = sem abertura. */
+  tipoDetalhe: 'valor' | 'cobertura' | 'hits' | null
   codigoKpi: string | null
   nomeKpi: string | null
   descricaoKpi: string | null
@@ -64,8 +67,8 @@ export interface FidelizacaoClienteHits {
 
 /** Abertura de um KPI (GET /api/fidelizacao/clientes). */
 export interface FidelizacaoDetalhe {
-  /** "valor" (Loja Virtual / Setor), "hits" ou "nenhum" (ainda sem clientes calculados). */
-  tipo: 'valor' | 'hits' | 'nenhum'
+  /** "valor" (Loja Virtual / Setor), "cobertura" (clientes positivados), "hits" ou "nenhum". */
+  tipo: 'valor' | 'cobertura' | 'hits' | 'nenhum'
   valores: FidelizacaoClienteValor[]
   hits: FidelizacaoClienteHits[]
 }
