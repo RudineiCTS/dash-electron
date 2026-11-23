@@ -7,6 +7,7 @@ import { ProgressBar } from '../components/ProgressBar'
 import { EmptyState, ErrorState } from '../components/StateViews'
 import { formatCurrency } from '../lib/format'
 import { getProspeccaoClientes, getProspeccaoMeses, getProspeccaoResumo } from '../lib/prospeccao'
+import { ProspeccaoCarteira } from './ProspeccaoCarteira'
 import { useApiResource } from '../lib/useApiResource'
 
 const PAGE_SIZE = 30
@@ -46,13 +47,19 @@ export default function ProspeccaoPage() {
   const [operadora, setOperadora] = useState(TODOS)
   const [busca, setBusca] = useState('')
   const [limite, setLimite] = useState(PAGE_SIZE)
-  const [aba, setAba] = useState<'resumo' | 'clientes'>('resumo')
+  const [aba, setAba] = useState<'resumo' | 'clientes' | 'carteira'>('resumo')
 
-  /** Mês mais recente que tem clientes. */
+  /** Só as competências do mês atual; se o mês ainda não tem nenhuma, a mais recente. */
+  const competencias = useMemo(() => {
+    const todas = meses.data ?? []
+    const doMes = todas.filter((m) => dayjs(m.competencia).isSame(dayjs(), 'month'))
+    return doMes.length > 0 ? doMes : todas.slice(0, 1)
+  }, [meses.data])
+
   useEffect(() => {
-    if (mes != null || !meses.data?.length) return
-    setMes(dayjs(meses.data[0].competencia).format('YYYY-MM-DD'))
-  }, [meses.data, mes])
+    if (mes != null || !competencias.length) return
+    setMes(dayjs(competencias[0].competencia).format('YYYY-MM-DD'))
+  }, [competencias, mes])
 
   const clientes = useApiResource(
     (signal) => (pronto && mes ? getProspeccaoClientes(mes, idPessoaFiltro, signal) : Promise.resolve([])),
@@ -75,7 +82,7 @@ export default function ProspeccaoPage() {
     [linhasResumo],
   )
   /** Gestor começa no resumo do time; operadora vai direto aos próprios clientes. */
-  const abaAtiva = ehGestor ? aba : 'clientes'
+  const abaAtiva = ehGestor ? aba : aba === 'carteira' ? 'carteira' : 'clientes'
 
   const todos = useMemo(() => clientes.data ?? [], [clientes.data])
   const tipos = useMemo(() => [...new Set(todos.map((c) => c.tipoProspeccao).filter((t): t is string => !!t))].sort(), [todos])
@@ -123,21 +130,22 @@ export default function ProspeccaoPage() {
         />
       ) : (
         <>
-          {ehGestor && (
+          {(
             <div role="tablist" aria-label="Visão" className="flex w-fit gap-0.5 rounded-lg bg-github-bg-hover p-0.5">
               {(
                 [
-                  { id: 'resumo', label: 'Resumo' },
-                  { id: 'clientes', label: 'Clientes' },
-                ] as const
+                  ...(ehGestor ? [{ id: 'resumo', label: 'Resumo' } as const] : []),
+                  { id: 'clientes', label: 'Clientes' } as const,
+                  { id: 'carteira', label: 'Carteira' } as const,
+                ]
               ).map((t) => (
                 <button
                   key={t.id}
                   type="button"
                   role="tab"
-                  aria-selected={aba === t.id}
+                  aria-selected={abaAtiva === t.id}
                   onClick={() => setAba(t.id)}
-                  className={`h-8 rounded-md px-3 text-sm font-medium ${aba === t.id ? 'bg-github-bg-card shadow-sm' : 'text-github-text-muted'}`}
+                  className={`h-8 rounded-md px-3 text-sm font-medium ${abaAtiva === t.id ? 'bg-github-bg-card shadow-sm' : 'text-github-text-muted'}`}
                 >
                   {t.label}
                 </button>
@@ -158,7 +166,7 @@ export default function ProspeccaoPage() {
                   setLimite(PAGE_SIZE)
                 }}
               >
-                {(meses.data ?? []).map((m) => {
+                {competencias.map((m) => {
                   const v = dayjs(m.competencia).format('YYYY-MM-DD')
                   return (
                     <option key={v} value={v}>
@@ -208,7 +216,17 @@ export default function ProspeccaoPage() {
             )}
           </div>
 
-          {abaAtiva === 'resumo' ? (
+          {abaAtiva === 'carteira' ? (
+            mes ? (
+              <ProspeccaoCarteira
+                competencia={mes}
+                idPessoaTelevendas={idPessoaFiltro}
+                operadoras={linhasResumo
+                  .filter((r) => r.idPessoaTelevendas != null)
+                  .map((r) => ({ id: r.idPessoaTelevendas as number, nome: r.nomeDigitador ?? `Pessoa ${r.idPessoaTelevendas}` }))}
+              />
+            ) : null
+          ) : abaAtiva === 'resumo' ? (
             resumo.error ? (
               <ErrorState message={resumo.error} onRetry={resumo.reload} />
             ) : resumo.loading || meses.loading ? (

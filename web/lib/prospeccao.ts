@@ -36,6 +36,32 @@ export interface ProspeccaoResumo {
   premio: number
 }
 
+/** Cliente da carteira de prospecção de uma operadora (GET /api/prospeccao/carteira). */
+export interface ProspeccaoCarteira {
+  idPessoaTelevendas: number
+  nomeDigitador: string | null
+  idCliente: number
+  nomeCliente: string | null
+  dataCadastroCliente: string | null
+  limiteUtilizado: number
+  telefone: string | null
+  telefone2: string | null
+  /** Já aparece no painel de prospecção da competência (vendeu). */
+  noPainel: boolean
+}
+
+export async function getProspeccaoCarteira(
+  competencia: string,
+  idPessoaTelevendas: number | null,
+  signal?: AbortSignal,
+): Promise<ProspeccaoCarteira[]> {
+  const response = await api.get<ProspeccaoCarteira[]>('prospeccao/carteira', {
+    params: { competencia, ...(idPessoaTelevendas ? { idPessoaTelevendas } : {}) },
+    signal,
+  })
+  return response.data
+}
+
 export async function getProspeccaoMeses(signal?: AbortSignal): Promise<ProspeccaoMes[]> {
   const response = await api.get<ProspeccaoMes[]>('prospeccao/meses', { signal })
   return response.data
