@@ -1,11 +1,12 @@
 import { Fragment, useMemo, useState } from 'react'
 import dayjs from 'dayjs'
-import { ChevronDown, ChevronRight, Search } from 'lucide-react'
+import { ChevronDown, ChevronRight, Download, Search } from 'lucide-react'
 import { PERMITIR_TROCA_USUARIO, useUsuario } from '../auth/UsuarioContext'
 import { useGestor } from '../auth/useGestor'
 import { PedidosDoClienteExclusiva } from '../components/PedidosDoClienteExclusiva'
 import { EmptyState, ErrorState } from '../components/StateViews'
 import { getExclusivasClientes, getExclusivasResumo } from '../lib/exclusivas'
+import { exportarExcel } from '../lib/exportarExcel'
 import { formatCurrency } from '../lib/format'
 import { useApiResource } from '../lib/useApiResource'
 import { ExclusivasCarteira } from './ExclusivasCarteira'
@@ -87,6 +88,33 @@ export default function ExclusivasPage() {
   /** Gestor só vê os clientes depois de escolher uma indústria. */
   const mostrarClientes = !ehGestor || !!industria
   const colunas = 5 + (varias && !industria ? 1 : 0) + (ehGestor ? 1 : 0) + 2 /* 1ª compra e última (md+) */
+
+  /** Baixa em Excel os clientes do resultado que estão na tela (todos, não só a página mostrada). */
+  function baixarExcel() {
+    exportarExcel({
+      arquivo: `exclusivas-resultado-${mes}${industria ? `-${nomeIndustria(industria)}` : ''}`.replace(/\s+/g, '-'),
+      aba: 'Resultado',
+      totalizar: true,
+      linhas: visiveis,
+      colunas: [
+        { titulo: 'Código', tipo: 'numero', largura: 10, valor: (c) => c.idPessoaCliente },
+        { titulo: 'Cliente', largura: 40, valor: (c) => c.razaoSocial },
+        { titulo: 'Indústria', largura: 24, valor: (c) => nomeIndustria(c.industria) },
+        ...(ehGestor ? [{ titulo: 'Operador', largura: 32, valor: (c: (typeof visiveis)[number]) => c.digitador }] : []),
+        { titulo: 'Pedidos', tipo: 'numero', largura: 9, valor: (c) => c.pedidos },
+        { titulo: 'Venda', tipo: 'moeda', largura: 14, valor: (c) => c.venda },
+        { titulo: 'Devolução', tipo: 'moeda', largura: 14, valor: (c) => c.devolucao },
+        { titulo: 'Venda líquida', tipo: 'moeda', largura: 14, valor: (c) => c.totalVenda },
+        { titulo: '1ª compra', largura: 12, valor: (c) => (c.primeiraCompra ? dayjs(c.primeiraCompra).format('DD/MM/YYYY') : '') },
+        { titulo: 'Última compra', largura: 13, valor: (c) => (c.ultimaCompra ? dayjs(c.ultimaCompra).format('DD/MM/YYYY') : '') },
+        {
+          titulo: 'Situação',
+          largura: 34,
+          valor: (c) => (c.positivou ? 'Positivado' : c.positivadoPorOutro ? `Positivado por outro operador Exclusivo ${industriaEmTexto(c.industria)}` : 'Sem positivação'),
+        },
+      ],
+    })
+  }
 
   function escolherIndustria(nome: string) {
     setIndustria((atual) => (atual === nome ? TODAS : nome))
@@ -259,7 +287,17 @@ export default function ExclusivasPage() {
           <EmptyState message="Nenhum cliente encontrado para esses filtros." />
         ) : (
           <section aria-label="Clientes" className="flex flex-col gap-2">
-            <p className="text-sm text-github-text-muted">
+            <div className="flex justify-end">
+              <button
+                type="button"
+                onClick={baixarExcel}
+                disabled={visiveis.length === 0}
+                className="flex h-9 items-center gap-1.5 rounded-md border border-github-border bg-github-bg-card px-3 text-sm font-medium hover:bg-github-bg-hover disabled:opacity-50"
+              >
+                <Download size={15} /> Exportar Excel ({visiveis.length.toLocaleString('pt-BR')})
+              </button>
+            </div>
+                        <p className="text-sm text-github-text-muted">
               <strong className="font-semibold text-github-text">{visiveis.length.toLocaleString('pt-BR')}</strong> clientes
               {industria && <> em {nomeIndustria(industria)}</>} · clique em um cliente para ver os pedidos
             </p>

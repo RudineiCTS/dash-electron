@@ -1,9 +1,10 @@
 import { Fragment, useEffect, useState } from 'react'
 import dayjs from 'dayjs'
-import { ChevronDown, ChevronRight, Search } from 'lucide-react'
+import { ChevronDown, ChevronRight, Download, Search } from 'lucide-react'
 import { PedidosDoClienteExclusiva } from '../components/PedidosDoClienteExclusiva'
 import { EmptyState, ErrorState } from '../components/StateViews'
-import { getCarteiraClientes, getCarteiraResumo, type SituacaoCarteira } from '../lib/exclusivas'
+import { getCarteiraClientes, getCarteiraResumo, type CarteiraCliente, type SituacaoCarteira } from '../lib/exclusivas'
+import { exportarExcel } from '../lib/exportarExcel'
 import { formatCurrency } from '../lib/format'
 import { useApiResource } from '../lib/useApiResource'
 
@@ -55,6 +56,8 @@ export function ExclusivasCarteira({ mes, onMes, idPessoaFiltro, ehGestor }: Exc
   const [buscaAplicada, setBuscaAplicada] = useState('')
   const [pagina, setPagina] = useState(1)
   const [aberto, setAberto] = useState<number | null>(null)
+  const [exportando, setExportando] = useState<string | null>(null)
+  const [erroExcel, setErroExcel] = useState<string | null>(null)
 
   // Quem tem uma indústria só já entra nela; senão escolhe um card.
   const unica = resumo.data && resumo.data.length === 1 ? (resumo.data[0].industria ?? '') : ''
@@ -85,6 +88,53 @@ export function ExclusivasCarteira({ mes, onMes, idPessoaFiltro, ehGestor }: Exc
     setIndustria((atual) => (atual === nome ? '' : nome))
     setPagina(1)
     setAberto(null)
+  }
+
+  /** Baixa em Excel a carteira com os filtros atuais: busca todas as páginas (200 por vez) e gera o arquivo. */
+  async function baixarExcel() {
+    if (!industriaAtiva || exportando) return
+    setErroExcel(null)
+    try {
+      const todos: CarteiraCliente[] = []
+      let paginaAtual = 1
+      let totalGeral = 0
+      do {
+        setExportando(totalGeral ? `Buscando ${todos.length.toLocaleString('pt-BR')} de ${totalGeral.toLocaleString('pt-BR')}...` : 'Buscando...')
+        const r = await getCarteiraClientes({
+          referencia,
+          industria: industriaAtiva,
+          situacao,
+          busca: buscaAplicada,
+          pagina: paginaAtual,
+          tamanho: 200,
+          idPessoaTelevendas: idPessoaFiltro,
+        })
+        todos.push(...r.itens)
+        totalGeral = r.total
+        paginaAtual += 1
+        if (r.itens.length === 0) break
+      } while (todos.length < totalGeral)
+
+      exportarExcel({
+        arquivo: `exclusivas-carteira-${mes}-${nomeIndustria(industriaAtiva)}-${situacao}`.replace(/\s+/g, '-'),
+        aba: 'Carteira',
+        totalizar: true,
+        linhas: todos,
+        colunas: [
+          { titulo: 'Código', tipo: 'numero', largura: 10, valor: (c) => c.idPessoaCliente },
+          { titulo: 'Cliente', largura: 40, valor: (c) => c.nomeCliente },
+          { titulo: 'Situação', largura: 14, valor: (c) => (c.positivou ? 'Positivado' : 'A positivar') },
+          ...(ehGestor ? [{ titulo: 'Operador', largura: 32, valor: (c: (typeof todos)[number]) => c.digitador }] : []),
+          { titulo: 'Pedidos', tipo: 'numero', largura: 9, valor: (c) => c.pedidos },
+          { titulo: 'Venda líquida', tipo: 'moeda', largura: 14, valor: (c) => c.totalVenda },
+          { titulo: '1ª compra', largura: 12, valor: (c) => (c.primeiraCompra ? dayjs(c.primeiraCompra).format('DD/MM/YYYY') : '') },
+        ],
+      })
+    } catch {
+      setErroExcel('Não foi possível gerar o Excel. Tente de novo.')
+    } finally {
+      setExportando(null)
+    }
   }
 
   const total = clientes.data?.total ?? 0
@@ -203,6 +253,17 @@ export function ExclusivasCarteira({ mes, onMes, idPessoaFiltro, ehGestor }: Exc
           <EmptyState message="Nenhum cliente encontrado para esses filtros." />
         ) : (
           <section aria-label="Clientes da carteira" className="flex flex-col gap-2">
+            <div className="flex items-center justify-end gap-3">
+              {erroExcel && <span className="text-sm text-other-redflag">{erroExcel}</span>}
+              <button
+                type="button"
+                onClick={baixarExcel}
+                disabled={!!exportando}
+                className="flex h-9 items-center gap-1.5 rounded-md border border-github-border bg-github-bg-card px-3 text-sm font-medium hover:bg-github-bg-hover disabled:opacity-60"
+              >
+                <Download size={15} /> {exportando ?? `Exportar Excel (${total.toLocaleString('pt-BR')})`}
+              </button>
+            </div>
             <p className="text-sm text-github-text-muted">
               <strong className="font-semibold text-github-text">{total.toLocaleString('pt-BR')}</strong> clientes em{' '}
               {nomeIndustria(industriaAtiva)}
