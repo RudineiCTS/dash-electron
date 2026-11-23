@@ -3,6 +3,7 @@ import dayjs from 'dayjs'
 import { Search } from 'lucide-react'
 import { PERMITIR_TROCA_USUARIO, useUsuario } from '../auth/UsuarioContext'
 import { useGestor } from '../auth/useGestor'
+import { ProgressBar } from '../components/ProgressBar'
 import { EmptyState, ErrorState } from '../components/StateViews'
 import { formatCurrency } from '../lib/format'
 import { getProspeccaoClientes, getProspeccaoMeses, getProspeccaoResumo } from '../lib/prospeccao'
@@ -69,6 +70,7 @@ export default function ProspeccaoPage() {
       faturado: linhasResumo.reduce((s, r) => s + r.totalFaturado, 0),
       lojaVirtual: linhasResumo.reduce((s, r) => s + r.totalLojaVirtual, 0),
       internet: linhasResumo.reduce((s, r) => s + r.totalInternet, 0),
+      premio: linhasResumo.reduce((s, r) => s + r.premio, 0),
     }),
     [linhasResumo],
   )
@@ -222,7 +224,8 @@ export default function ProspeccaoPage() {
                       <th className="px-2 py-2 text-right font-medium">Positivados</th>
                       <th className="px-2 py-2 text-right font-medium">Faturado</th>
                       <th className="px-2 py-2 text-right font-medium">Loja virtual</th>
-                      <th className="py-2 pl-2 pr-3 text-right font-medium">Internet</th>
+                      <th className="px-2 py-2 text-right font-medium">Internet</th>
+                      <th className="py-2 pl-2 pr-3 text-right font-medium">Prêmio</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -239,7 +242,10 @@ export default function ProspeccaoPage() {
                         <td className="px-2 py-2 text-right">{r.totalPositivado.toLocaleString('pt-BR')}</td>
                         <td className="whitespace-nowrap px-2 py-2 text-right font-semibold">{formatCurrency(r.totalFaturado)}</td>
                         <td className="whitespace-nowrap px-2 py-2 text-right">{formatCurrency(r.totalLojaVirtual)}</td>
-                        <td className="whitespace-nowrap py-2 pl-2 pr-3 text-right">{formatCurrency(r.totalInternet)}</td>
+                        <td className="whitespace-nowrap px-2 py-2 text-right">{formatCurrency(r.totalInternet)}</td>
+                        <td className="whitespace-nowrap py-2 pl-2 pr-3 text-right font-semibold">
+                          {r.premio > 0 ? formatCurrency(r.premio) : <span className="font-normal text-github-text-muted">-</span>}
+                        </td>
                       </tr>
                     ))}
                     <tr className="bg-github-bg-hover font-semibold">
@@ -247,7 +253,8 @@ export default function ProspeccaoPage() {
                       <td className="px-2 py-2 text-right">{totalResumo.positivados.toLocaleString('pt-BR')}</td>
                       <td className="whitespace-nowrap px-2 py-2 text-right">{formatCurrency(totalResumo.faturado)}</td>
                       <td className="whitespace-nowrap px-2 py-2 text-right">{formatCurrency(totalResumo.lojaVirtual)}</td>
-                      <td className="whitespace-nowrap py-2 pl-2 pr-3 text-right">{formatCurrency(totalResumo.internet)}</td>
+                      <td className="whitespace-nowrap px-2 py-2 text-right">{formatCurrency(totalResumo.internet)}</td>
+                      <td className="whitespace-nowrap py-2 pl-2 pr-3 text-right">{formatCurrency(totalResumo.premio)}</td>
                     </tr>
                   </tbody>
                 </table>
@@ -261,6 +268,32 @@ export default function ProspeccaoPage() {
             <EmptyState message={`Nenhum cliente em prospecção nesta competência${ehGestor ? '' : ' para você'}.`} />
           ) : (
             <>
+              {!ehGestor && linhasResumo[0] && (
+                <section aria-label="Seu resultado" className="rounded-xl border border-github-border bg-github-bg-card px-3 py-2.5">
+                  <p className="text-sm">
+                    <strong className="font-semibold">{linhasResumo[0].totalPositivado}</strong> positivados de{' '}
+                    <strong className="font-semibold">{linhasResumo[0].metaPositivados}</strong> para ganhar prêmio
+                    {linhasResumo[0].premio > 0 ? (
+                      <>
+                        {' '}
+                        · prêmio de <strong className="font-semibold text-[#3B6D11]">{formatCurrency(linhasResumo[0].premio)}</strong>
+                      </>
+                    ) : (
+                      <>
+                        {' '}
+                        · faltam <strong className="font-semibold">{Math.max(linhasResumo[0].metaPositivados - linhasResumo[0].totalPositivado, 0)}</strong> para começar a ganhar
+                      </>
+                    )}
+                  </p>
+                  <div className="mt-2">
+                    <ProgressBar
+                      percent={(linhasResumo[0].totalPositivado / Math.max(linhasResumo[0].metaPositivados, 1)) * 100}
+                      colorClass={linhasResumo[0].premio > 0 ? 'bg-[#3B6D11]' : 'bg-[#EF9F27]'}
+                    />
+                  </div>
+                </section>
+              )}
+
               <section aria-label="Totais" className="grid grid-cols-2 gap-2.5 md:grid-cols-4">
                 {[
                   { rotulo: 'Clientes', valor: visiveis.length.toLocaleString('pt-BR') },

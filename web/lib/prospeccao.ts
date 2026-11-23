@@ -30,6 +30,10 @@ export interface ProspeccaoResumo {
   totalFaturado: number
   totalLojaVirtual: number
   totalInternet: number
+  /** Positivados necessários para ganhar prêmio. */
+  metaPositivados: number
+  /** 0 enquanto não bater a meta de positivados. */
+  premio: number
 }
 
 export async function getProspeccaoMeses(signal?: AbortSignal): Promise<ProspeccaoMes[]> {
