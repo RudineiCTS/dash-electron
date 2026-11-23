@@ -10,6 +10,8 @@ export interface FidelizacaoPeriodo {
 /** Uma pessoa em um KPI no período (GET /api/fidelizacao/resultado). */
 export interface FidelizacaoLinha {
   idPessoa: number
+  /** Meta da pessoa no período: com ela abre os clientes do KPI. */
+  idMeta: number | null
   pessoa: string | null
   idSupervisor: number | null
   tipoPessoa: string | null
@@ -40,5 +42,51 @@ export async function getFidelizacaoResultado(
     params: { idPeriodo, ...(idPessoa ? { idPessoa } : {}) },
     signal,
   })
+  return response.data
+}
+
+/** Cliente que compõe um KPI de valor (Loja Virtual / Setor). */
+export interface FidelizacaoClienteValor {
+  idPessoaCliente: number
+  nomeCliente: string | null
+  valorVenda: number
+  valorVendaBees: number
+  valorTotal: number
+}
+
+/** Cliente que compõe um KPI de Hits, com quantos produtos distintos comprou. */
+export interface FidelizacaoClienteHits {
+  idPessoaCliente: number
+  nomeCliente: string | null
+  quantidadeProdutos: number
+  valorFaturado: number
+}
+
+/** Abertura de um KPI (GET /api/fidelizacao/clientes). */
+export interface FidelizacaoDetalhe {
+  /** "valor" (Loja Virtual / Setor), "hits" ou "nenhum" (ainda sem clientes calculados). */
+  tipo: 'valor' | 'hits' | 'nenhum'
+  valores: FidelizacaoClienteValor[]
+  hits: FidelizacaoClienteHits[]
+}
+
+export interface FidelizacaoProdutoHits {
+  idProduto: number
+  descProduto: string | null
+  valorFaturado: number
+}
+
+export async function getFidelizacaoClientes(idMeta: number, idKpi: number, signal?: AbortSignal): Promise<FidelizacaoDetalhe> {
+  const response = await api.get<FidelizacaoDetalhe>('fidelizacao/clientes', { params: { idMeta, idKpi }, signal })
+  return response.data
+}
+
+export async function getFidelizacaoProdutos(
+  idMeta: number,
+  idKpi: number,
+  idPessoaCliente: number,
+  signal?: AbortSignal,
+): Promise<FidelizacaoProdutoHits[]> {
+  const response = await api.get<FidelizacaoProdutoHits[]>('fidelizacao/produtos', { params: { idMeta, idKpi, idPessoaCliente }, signal })
   return response.data
 }

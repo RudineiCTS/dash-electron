@@ -5,6 +5,7 @@ import { PERMITIR_TROCA_USUARIO, useUsuario } from '../auth/UsuarioContext'
 import { useGestor } from '../auth/useGestor'
 import { ProgressBar } from '../components/ProgressBar'
 import { EmptyState, ErrorState } from '../components/StateViews'
+import { FidelizacaoDetalhe } from './FidelizacaoDetalhe'
 import { getFidelizacaoPeriodos, getFidelizacaoResultado, type FidelizacaoLinha } from '../lib/fidelizacao'
 import { formatCurrency } from '../lib/format'
 import { useApiResource } from '../lib/useApiResource'
@@ -52,7 +53,7 @@ function resumirPessoas(linhas: FidelizacaoLinha[]): PessoaResumo[] {
     .sort((a, b) => a.pessoa.localeCompare(b.pessoa, 'pt-BR'))
 }
 
-function CardKpi({ l }: { l: FidelizacaoLinha }) {
+function CardKpi({ l, ativo, onAbrir }: { l: FidelizacaoLinha; ativo: boolean; onAbrir: (l: FidelizacaoLinha) => void }) {
   const comMeta = l.valorMeta > 0
   const st = statusDe(l.realizado, comMeta)
   return (
@@ -69,6 +70,18 @@ function CardKpi({ l }: { l: FidelizacaoLinha }) {
       <p className="mt-1 text-xs text-github-text-muted">
         Prêmio: <strong className="font-semibold text-github-text">{formatCurrency(l.valorPremio)}</strong>
       </p>
+      {l.idMeta != null && l.idKpi != null && (
+        <button
+          type="button"
+          onClick={() => onAbrir(l)}
+          aria-pressed={ativo}
+          className={`mt-2 h-8 rounded-md border px-2.5 text-xs font-medium ${
+            ativo ? 'border-github-btn-green bg-github-bg-hover' : 'border-github-border hover:bg-github-bg-hover'
+          }`}
+        >
+          {ativo ? 'Fechar clientes' : 'Ver clientes'}
+        </button>
+      )}
     </li>
   )
 }
@@ -87,6 +100,8 @@ export default function FidelizacaoPage() {
   const periodos = useApiResource((signal) => getFidelizacaoPeriodos(signal), [])
   const [idPeriodo, setIdPeriodo] = useState<number | null>(null)
   const [escolhida, setEscolhida] = useState<number | null>(null)
+  /** KPI aberto (clientes). */
+  const [kpiAberto, setKpiAberto] = useState<FidelizacaoLinha | null>(null)
 
   /** Período de hoje; se nenhum contém hoje, o mais recente. */
   useEffect(() => {
@@ -110,6 +125,11 @@ export default function FidelizacaoPage() {
   const pessoaAberta = ehGestor ? escolhida : idPessoa
   const kpis = useMemo(() => linhas.filter((l) => l.idPessoa === pessoaAberta), [linhas, pessoaAberta])
   const dadosPessoa = pessoas.find((p) => p.idPessoa === pessoaAberta)
+
+  /** Trocar de pessoa ou de período fecha a abertura do KPI. */
+  useEffect(() => {
+    setKpiAberto(null)
+  }, [pessoaAberta, idPeriodo])
 
   return (
     <div className="flex flex-col gap-3">
@@ -230,10 +250,16 @@ export default function FidelizacaoPage() {
           ) : (
             <ul className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
               {kpis.map((l) => (
-                <CardKpi key={`${l.idPessoa}-${l.idKpi}`} l={l} />
+                <CardKpi
+                  key={`${l.idPessoa}-${l.idKpi}`}
+                  l={l}
+                  ativo={kpiAberto?.idKpi === l.idKpi && kpiAberto?.idMeta === l.idMeta}
+                  onAbrir={(x) => setKpiAberto((atual) => (atual?.idKpi === x.idKpi && atual?.idMeta === x.idMeta ? null : x))}
+                />
               ))}
             </ul>
           )}
+          {kpiAberto && <FidelizacaoDetalhe key={`${kpiAberto.idMeta}-${kpiAberto.idKpi}`} linha={kpiAberto} onFechar={() => setKpiAberto(null)} />}
         </section>
       )}
     </div>
