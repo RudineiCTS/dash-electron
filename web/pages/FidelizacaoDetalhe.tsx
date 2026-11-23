@@ -14,6 +14,9 @@ const campo = 'h-9 rounded-md border border-github-border bg-github-bg-card px-2
 
 const nomeDoKpi = (l: FidelizacaoLinha) => l.nomeKpi?.trim() || l.descricaoKpi?.trim() || l.codigoKpi || 'KPI'
 
+/** KPI de cobertura de clientes: a lista é só dos clientes positivados (sem separar Bees). */
+const ehCobertura = (l: FidelizacaoLinha) => /cobertura/i.test(`${l.nomeKpi ?? ''} ${l.descricaoKpi ?? ''}`)
+
 /** Produtos que um cliente comprou e entraram na conta dos Hits. */
 function ProdutosDoCliente({ idMeta, idKpi, idCliente }: { idMeta: number; idKpi: number; idCliente: number }) {
   const produtos = useApiResource((signal) => getFidelizacaoProdutos(idMeta, idKpi, idCliente, signal), [idMeta, idKpi, idCliente])
@@ -67,6 +70,7 @@ export function FidelizacaoDetalhe({ linha, onFechar }: { linha: FidelizacaoLinh
   )
 
   const tipo = detalhe.data?.tipo
+  const cobertura = ehCobertura(linha)
   const total = tipo === 'valor' ? (detalhe.data?.valores.length ?? 0) : (detalhe.data?.hits.length ?? 0)
   const somaValor = (detalhe.data?.valores ?? []).reduce((s, c) => s + c.valorTotal, 0)
 
@@ -76,7 +80,7 @@ export function FidelizacaoDetalhe({ linha, onFechar }: { linha: FidelizacaoLinh
         <div>
           <p className="text-sm font-semibold">{nomeDoKpi(linha)}</p>
           <p className="text-xs text-github-text-muted">
-            {tipo === 'valor' && <>Clientes que compõem o valor apurado</>}
+            {tipo === 'valor' && (cobertura ? <>Clientes positivados no período</> : <>Clientes que compõem o valor apurado</>)}
             {tipo === 'hits' && <>Clientes na conta dos Hits · clique em um cliente para ver os produtos</>}
           </p>
         </div>
@@ -112,7 +116,8 @@ export function FidelizacaoDetalhe({ linha, onFechar }: { linha: FidelizacaoLinh
               />
             </label>
             <p className="text-sm text-github-text-muted">
-              <strong className="font-semibold text-github-text">{total.toLocaleString('pt-BR')}</strong> clientes
+              <strong className="font-semibold text-github-text">{total.toLocaleString('pt-BR')}</strong>{' '}
+              {cobertura ? 'clientes positivados' : 'clientes'}
               {tipo === 'valor' && (
                 <>
                   {' '}
@@ -128,9 +133,9 @@ export function FidelizacaoDetalhe({ linha, onFechar }: { linha: FidelizacaoLinh
                 <thead className="text-[11px] uppercase tracking-wide text-github-text-muted">
                   <tr className="border-b border-github-border">
                     <th className="py-2 pl-3 font-medium">Cliente</th>
-                    <th className="px-2 py-2 text-right font-medium">Venda</th>
-                    <th className="px-2 py-2 text-right font-medium">Bees</th>
-                    <th className="py-2 pl-2 pr-3 text-right font-medium">Total</th>
+                    {!cobertura && <th className="px-2 py-2 text-right font-medium">Venda</th>}
+                    {!cobertura && <th className="px-2 py-2 text-right font-medium">Bees</th>}
+                    <th className="py-2 pl-2 pr-3 text-right font-medium">Total vendido</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -140,8 +145,8 @@ export function FidelizacaoDetalhe({ linha, onFechar }: { linha: FidelizacaoLinh
                         <span className="font-medium">{c.nomeCliente ?? `Cliente ${c.idPessoaCliente}`}</span>
                         <span className="ml-1.5 text-xs text-github-text-muted">{c.idPessoaCliente}</span>
                       </td>
-                      <td className="whitespace-nowrap px-2 py-2 text-right">{formatCurrency(c.valorVenda)}</td>
-                      <td className="whitespace-nowrap px-2 py-2 text-right text-github-text-muted">{formatCurrency(c.valorVendaBees)}</td>
+                      {!cobertura && <td className="whitespace-nowrap px-2 py-2 text-right">{formatCurrency(c.valorVenda)}</td>}
+                      {!cobertura && <td className="whitespace-nowrap px-2 py-2 text-right text-github-text-muted">{formatCurrency(c.valorVendaBees)}</td>}
                       <td className="whitespace-nowrap py-2 pl-2 pr-3 text-right font-semibold">{formatCurrency(c.valorTotal)}</td>
                     </tr>
                   ))}
