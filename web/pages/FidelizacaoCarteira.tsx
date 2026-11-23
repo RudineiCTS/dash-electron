@@ -50,7 +50,7 @@ export function FidelizacaoCarteira({ idPeriodo, idPessoa, nomePessoa }: Props) 
         { titulo: 'Cliente', largura: 40, valor: (c) => c.nomeCliente },
         { titulo: 'Situação', largura: 14, valor: (c) => (c.comCompra ? 'Com compra' : 'Sem compra') },
         { titulo: 'Cadastro', largura: 12, valor: (c) => (c.dataCadastroCliente ? dayjs(c.dataCadastroCliente).format('DD/MM/YYYY') : '') },
-        { titulo: 'Limite utilizado', tipo: 'moeda', largura: 16, valor: (c) => c.limiteUtilizado },
+        { titulo: 'Limite disponível', tipo: 'moeda', largura: 16, valor: (c) => c.limiteDisponivel },
         { titulo: 'Telefone', largura: 16, valor: (c) => c.telefone },
         { titulo: 'Telefone 2', largura: 16, valor: (c) => c.telefone2 },
       ],
@@ -117,7 +117,7 @@ export function FidelizacaoCarteira({ idPeriodo, idPessoa, nomePessoa }: Props) 
               <th className="py-2 pl-3 font-medium">Cliente</th>
               <th className="px-2 py-2 font-medium">Situação</th>
               <th className="hidden px-2 py-2 font-medium md:table-cell">Cadastro</th>
-              <th className="hidden px-2 py-2 text-right font-medium md:table-cell">Limite utilizado</th>
+              <th className="hidden px-2 py-2 text-right font-medium md:table-cell">Limite disponível</th>
               <th className="py-2 pl-2 pr-3 font-medium">Telefone</th>
             </tr>
           </thead>
@@ -140,7 +140,7 @@ export function FidelizacaoCarteira({ idPeriodo, idPessoa, nomePessoa }: Props) 
                 <td className="hidden whitespace-nowrap px-2 py-2 text-github-text-muted md:table-cell">
                   {c.dataCadastroCliente ? dayjs(c.dataCadastroCliente).format('DD/MM/YYYY') : '-'}
                 </td>
-                <td className="hidden whitespace-nowrap px-2 py-2 text-right md:table-cell">{formatCurrency(c.limiteUtilizado)}</td>
+                <td className="hidden whitespace-nowrap px-2 py-2 text-right md:table-cell">{formatCurrency(c.limiteDisponivel)}</td>
                 <td className="whitespace-nowrap py-2 pl-2 pr-3 text-github-text-muted">
                   {[c.telefone, c.telefone2].filter((t) => !!t?.trim()).join(' · ') || '-'}
                 </td>

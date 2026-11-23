@@ -100,7 +100,7 @@ export interface FidelizacaoCarteiraCliente {
   nomeCliente: string | null
   /** Data de cadastro (yyyy-MM-dd, texto). */
   dataCadastroCliente: string | null
-  limiteUtilizado: number
+  limiteDisponivel: number
   telefone: string | null
   telefone2: string | null
   /** Aparece nos clientes calculados dos KPIs da pessoa no período. */
