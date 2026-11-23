@@ -67,7 +67,20 @@ function abaConferivel(aba: AbaBase): boolean {
  * A base pode ter uma aba por papel (VENDEDOR, SUPERVISOR, GERENTE). Tudo acontece no navegador:
  * a planilha não é enviada a lugar nenhum.
  */
-export function useConferenciaCampanha(retorno: RetornoScript | null) {
+export interface OpcoesConferenciaCampanha {
+  /**
+   * Tipos de pessoa (1 gerente, 2 supervisor, 3 vendedor...) que entram na conferência; null/omitido = todos.
+   * As linhas da planilha de pessoas de outro tipo são descartadas, não viram "só na planilha".
+   */
+  tiposIncluidos?: number[] | null;
+  /** Como chamar o prêmio nas colunas do arquivo baixado (ex.: "Prêmio (pontos)"); padrão "Prêmio". */
+  rotuloPremio?: string;
+}
+
+export function useConferenciaCampanha(retorno: RetornoScript | null, opcoes: OpcoesConferenciaCampanha = {}) {
+  const tiposIncluidos = opcoes.tiposIncluidos ?? null;
+  const rotuloPremio = opcoes.rotuloPremio ?? "Prêmio";
+  const chaveTipos = tiposIncluidos ? tiposIncluidos.join(",") : "todos";
   const [nomeArquivo, setNomeArquivo] = useState("");
   const [abas, setAbas] = useState<AbaBase[]>([]);
   /** Sobe a cada planilha carregada; a tela usa para abrir o popup de avisos uma vez por arquivo. */
@@ -171,15 +184,23 @@ export function useConferenciaCampanha(retorno: RetornoScript | null) {
       });
     }
 
+    // confere contra TODAS as pessoas (assim a linha da planilha de um tipo não escolhido ainda acha o dono dela) e
+    // só depois tira da tela os tipos que o usuário não quer comparar
     const conferencia = conferir(sistema, base, { tolerancia });
+    const incluidos = chaveTipos === "todos" ? null : chaveTipos.split(",").filter(Boolean).map(Number);
+    const resultados = incluidos
+      ? conferencia.resultados.filter((r) => r.tipoPessoa === null || incluidos.includes(r.tipoPessoa))
+      : conferencia.resultados;
+    const sistemaConsiderado = incluidos ? sistema.filter((p) => incluidos.includes(p.tipoPessoa)) : sistema;
+
     return {
-      resultados: conferencia.resultados,
+      resultados,
       // primeiro o que a base não trouxe (vai para o popup), depois os avisos do casamento
-      avisos: [...validarBase(sistema, infos, conferencia.resultados), ...conferencia.avisos],
+      avisos: [...validarBase(sistemaConsiderado, infos, resultados), ...conferencia.avisos],
       linhasNaBase: base.length,
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [retorno, abas, sistema, tolerancia]);
+  }, [retorno, abas, sistema, tolerancia, chaveTipos]);
 
   const resumo = useMemo(() => (saida ? resumir(saida.resultados) : null), [saida]);
 
@@ -199,9 +220,9 @@ export function useConferenciaCampanha(retorno: RetornoScript | null) {
       "Valor sistema",
       "Valor base",
       "Dif. valor",
-      "Prêmio sistema",
-      "Prêmio base",
-      "Dif. prêmio",
+      `${rotuloPremio} sistema`,
+      `${rotuloPremio} base`,
+      `Dif. ${rotuloPremio.charAt(0).toLowerCase()}${rotuloPremio.slice(1)}`,
       "Observação",
     ];
     const paraLinha = (r: ResultadoConferencia): (string | number | null)[] => [
@@ -229,7 +250,7 @@ export function useConferenciaCampanha(retorno: RetornoScript | null) {
       ],
       `conferencia-campanha-${dayjs().format("YYYYMMDD-HHmm")}.xlsx`
     );
-  }, [saida]);
+  }, [saida, rotuloPremio]);
 
   return {
     nomeArquivo,

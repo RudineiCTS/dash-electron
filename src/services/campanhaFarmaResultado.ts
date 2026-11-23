@@ -131,7 +131,7 @@ function paraScript(s: ScriptApi): ScriptCampanha {
 }
 
 /** Transforma a falha do axios na mensagem da API (errorMessage) ou em um texto amigável. */
-function erroDaApi(e: unknown, padrao: string): Error {
+export function erroDaApi(e: unknown, padrao: string): Error {
   if (axios.isAxiosError(e)) {
     const mensagem = (e.response?.data as { errorMessage?: string } | undefined)?.errorMessage;
     if (mensagem) return new Error(mensagem);
