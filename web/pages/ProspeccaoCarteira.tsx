@@ -20,7 +20,7 @@ interface Props {
 
 /**
  * Carteira de prospecção: todos os clientes que a operadora deve trabalhar no mês atual (inteiro),
- * marcando quem já vendeu no mês e quem ainda está pendente.
+ * marcando quem já está positivado no mês e quem ainda está pendente.
  * Gestor: precisa escolher uma operadora (a carteira de todas junta é grande demais para abrir de uma vez).
  */
 export function ProspeccaoCarteira({ idPessoaTelevendas, operadoras }: Props) {
@@ -76,8 +76,8 @@ export function ProspeccaoCarteira({ idPessoaTelevendas, operadoras }: Props) {
               Situação
               <select className={campo} value={situacao} onChange={(e) => { setSituacao(e.target.value as Situacao); setLimite(PAGE_SIZE) }}>
                 <option value="todos">Todos</option>
-                <option value="pendentes">Ainda não venderam</option>
-                <option value="vendeu">Já venderam</option>
+                <option value="pendentes">Não positivados</option>
+                <option value="vendeu">Positivados</option>
               </select>
             </label>
             <label className="relative flex flex-col gap-1 text-xs text-github-text-muted">
@@ -106,8 +106,8 @@ export function ProspeccaoCarteira({ idPessoaTelevendas, operadoras }: Props) {
         <>
           <p className="text-sm text-github-text-muted">
             <strong className="font-semibold text-github-text">{todos.length.toLocaleString('pt-BR')}</strong> clientes na carteira ·{' '}
-            <strong className="font-semibold text-github-text">{venderam.toLocaleString('pt-BR')}</strong> já venderam ·{' '}
-            <strong className="font-semibold text-github-text">{(todos.length - venderam).toLocaleString('pt-BR')}</strong> ainda não venderam
+            <strong className="font-semibold text-github-text">{venderam.toLocaleString('pt-BR')}</strong> positivados ·{' '}
+            <strong className="font-semibold text-github-text">{(todos.length - venderam).toLocaleString('pt-BR')}</strong> não positivados
           </p>
           <div className="overflow-x-auto rounded-xl border border-github-border bg-github-bg-card">
             <table className="w-full text-left text-sm">
@@ -133,7 +133,7 @@ export function ProspeccaoCarteira({ idPessoaTelevendas, operadoras }: Props) {
                           c.noPainel ? 'bg-[#639922]/15 text-[#639922]' : 'bg-github-bg-hover text-github-text-muted'
                         }`}
                       >
-                        {c.noPainel ? 'Já vendeu' : 'Ainda não vendeu'}
+                        {c.noPainel ? 'Positivado' : 'Não positivado'}
                       </span>
                     </td>
                     <td className="hidden whitespace-nowrap px-2 py-2 text-github-text-muted md:table-cell">
