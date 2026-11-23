@@ -154,6 +154,7 @@ export default function ProspeccaoPage() {
           )}
 
           <div className="flex flex-wrap items-end gap-2">
+            {abaAtiva !== 'carteira' && (
             <label className="flex flex-col gap-1 text-xs text-github-text-muted">
               Competência
               <select
@@ -176,6 +177,7 @@ export default function ProspeccaoPage() {
                 })}
               </select>
             </label>
+            )}
             {abaAtiva === 'clientes' && (
               <>
             <label className="flex flex-col gap-1 text-xs text-github-text-muted">
