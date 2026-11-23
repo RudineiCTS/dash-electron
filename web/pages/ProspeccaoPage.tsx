@@ -5,7 +5,7 @@ import { PERMITIR_TROCA_USUARIO, useUsuario } from '../auth/UsuarioContext'
 import { useGestor } from '../auth/useGestor'
 import { EmptyState, ErrorState } from '../components/StateViews'
 import { formatCurrency } from '../lib/format'
-import { getProspeccaoClientes, getProspeccaoMeses } from '../lib/prospeccao'
+import { getProspeccaoClientes, getProspeccaoMeses, getProspeccaoResumo } from '../lib/prospeccao'
 import { useApiResource } from '../lib/useApiResource'
 
 const PAGE_SIZE = 30
@@ -45,6 +45,7 @@ export default function ProspeccaoPage() {
   const [operadora, setOperadora] = useState(TODOS)
   const [busca, setBusca] = useState('')
   const [limite, setLimite] = useState(PAGE_SIZE)
+  const [aba, setAba] = useState<'resumo' | 'clientes'>('resumo')
 
   /** Mês mais recente que tem clientes. */
   useEffect(() => {
@@ -57,6 +58,23 @@ export default function ProspeccaoPage() {
     (signal) => (pronto && mes ? getProspeccaoClientes(`${mes}-01`, idPessoaFiltro, signal) : Promise.resolve([])),
     [mes, idPessoa, ehGestor, carregandoGestor],
   )
+
+  const resumo = useApiResource(
+    (signal) => (pronto && mes ? getProspeccaoResumo(`${mes}-01`, idPessoaFiltro, signal) : Promise.resolve([])),
+    [mes, idPessoa, ehGestor, carregandoGestor],
+  )
+  const linhasResumo = useMemo(() => resumo.data ?? [], [resumo.data])
+  const totalResumo = useMemo(
+    () => ({
+      positivados: linhasResumo.reduce((s, r) => s + r.totalPositivado, 0),
+      faturado: linhasResumo.reduce((s, r) => s + r.totalFaturado, 0),
+      lojaVirtual: linhasResumo.reduce((s, r) => s + r.totalLojaVirtual, 0),
+      internet: linhasResumo.reduce((s, r) => s + r.totalInternet, 0),
+    }),
+    [linhasResumo],
+  )
+  /** Gestor começa no resumo do time; operadora vai direto aos próprios clientes. */
+  const abaAtiva = ehGestor ? aba : 'clientes'
 
   const todos = useMemo(() => clientes.data ?? [], [clientes.data])
   const tipos = useMemo(() => [...new Set(todos.map((c) => c.tipoProspeccao).filter((t): t is string => !!t))].sort(), [todos])
@@ -104,6 +122,28 @@ export default function ProspeccaoPage() {
         />
       ) : (
         <>
+          {ehGestor && (
+            <div role="tablist" aria-label="Visão" className="flex w-fit gap-0.5 rounded-lg bg-github-bg-hover p-0.5">
+              {(
+                [
+                  { id: 'resumo', label: 'Resumo' },
+                  { id: 'clientes', label: 'Clientes' },
+                ] as const
+              ).map((t) => (
+                <button
+                  key={t.id}
+                  type="button"
+                  role="tab"
+                  aria-selected={aba === t.id}
+                  onClick={() => setAba(t.id)}
+                  className={`h-8 rounded-md px-3 text-sm font-medium ${aba === t.id ? 'bg-github-bg-card shadow-sm' : 'text-github-text-muted'}`}
+                >
+                  {t.label}
+                </button>
+              ))}
+            </div>
+          )}
+
           <div className="flex flex-wrap items-end gap-2">
             <label className="flex flex-col gap-1 text-xs text-github-text-muted">
               Mês
@@ -127,6 +167,8 @@ export default function ProspeccaoPage() {
                 })}
               </select>
             </label>
+            {abaAtiva === 'clientes' && (
+              <>
             <label className="flex flex-col gap-1 text-xs text-github-text-muted">
               Tipo
               <select className={campo} value={tipo} onChange={(e) => { setTipo(e.target.value); setLimite(PAGE_SIZE) }}>
@@ -161,9 +203,58 @@ export default function ProspeccaoPage() {
                 onChange={(e) => { setBusca(e.target.value); setLimite(PAGE_SIZE) }}
               />
             </label>
+              </>
+            )}
           </div>
 
-          {clientes.error ? (
+          {abaAtiva === 'resumo' ? (
+            resumo.error ? (
+              <ErrorState message={resumo.error} onRetry={resumo.reload} />
+            ) : resumo.loading || meses.loading ? (
+              <div className="h-40 animate-pulse rounded-xl border border-github-border bg-github-bg-card" aria-busy="true" />
+            ) : linhasResumo.length === 0 ? (
+              <EmptyState message="Nenhum cliente em prospecção neste mês." />
+            ) : (
+              <section aria-label="Resumo por operadora" className="overflow-x-auto rounded-xl border border-github-border bg-github-bg-card">
+                <table className="w-full text-left text-sm">
+                  <thead className="text-[11px] uppercase tracking-wide text-github-text-muted">
+                    <tr className="border-b border-github-border">
+                      <th className="py-2 pl-3 font-medium">Operadora</th>
+                      <th className="px-2 py-2 text-right font-medium">Positivados</th>
+                      <th className="px-2 py-2 text-right font-medium">Faturado</th>
+                      <th className="px-2 py-2 text-right font-medium">Loja virtual</th>
+                      <th className="py-2 pl-2 pr-3 text-right font-medium">Internet</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {linhasResumo.map((r) => (
+                      <tr
+                        key={r.idPessoaTelevendas ?? r.nomeDigitador}
+                        onClick={() => {
+                          setOperadora(r.nomeDigitador ?? TODOS)
+                          setAba('clientes')
+                        }}
+                        className="cursor-pointer border-b border-github-border hover:bg-github-bg-hover"
+                      >
+                        <td className="py-2 pl-3 font-medium">{r.nomeDigitador ?? `Pessoa ${r.idPessoaTelevendas}`}</td>
+                        <td className="px-2 py-2 text-right">{r.totalPositivado.toLocaleString('pt-BR')}</td>
+                        <td className="whitespace-nowrap px-2 py-2 text-right font-semibold">{formatCurrency(r.totalFaturado)}</td>
+                        <td className="whitespace-nowrap px-2 py-2 text-right">{formatCurrency(r.totalLojaVirtual)}</td>
+                        <td className="whitespace-nowrap py-2 pl-2 pr-3 text-right">{formatCurrency(r.totalInternet)}</td>
+                      </tr>
+                    ))}
+                    <tr className="bg-github-bg-hover font-semibold">
+                      <td className="py-2 pl-3">Total</td>
+                      <td className="px-2 py-2 text-right">{totalResumo.positivados.toLocaleString('pt-BR')}</td>
+                      <td className="whitespace-nowrap px-2 py-2 text-right">{formatCurrency(totalResumo.faturado)}</td>
+                      <td className="whitespace-nowrap px-2 py-2 text-right">{formatCurrency(totalResumo.lojaVirtual)}</td>
+                      <td className="whitespace-nowrap py-2 pl-2 pr-3 text-right">{formatCurrency(totalResumo.internet)}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+            )
+          ) : clientes.error ? (
             <ErrorState message={clientes.error} onRetry={clientes.reload} />
           ) : clientes.loading || meses.loading ? (
             <div className="h-40 animate-pulse rounded-xl border border-github-border bg-github-bg-card" aria-busy="true" />
