@@ -8,6 +8,7 @@ import {
 import { useUsuario } from '../auth/UsuarioContext'
 import { useGestor } from '../auth/useGestor'
 import { OportunidadesCampanha } from '../components/OportunidadesCampanha'
+import { ParametrosCampanha } from '../components/ParametrosCampanha'
 import { ProgressBar } from '../components/ProgressBar'
 import { Stat } from '../components/Stat'
 import { EmptyState, ErrorState } from '../components/StateViews'
@@ -97,6 +98,9 @@ export default function CampaignDetailPage() {
         )}
       </div>
 
+      {/* Parâmetros (o que conta na campanha) à esquerda e o resumo à direita; em telas pequenas, um embaixo do outro */}
+      <div className="grid grid-cols-1 items-start gap-3 lg:grid-cols-2">
+      <ParametrosCampanha idCampaign={idCampaign} competencia={competencia} />
       {resumo && (
         <section
           className="mx-auto flex w-full max-w-2xl flex-col gap-2 rounded-xl border border-github-border bg-github-bg-card p-3"
@@ -116,6 +120,7 @@ export default function CampaignDetailPage() {
           </dl>
         </section>
       )}
+      </div>
 
       <OportunidadesCampanha idCampaign={idCampaign} competencia={competencia} />
 
