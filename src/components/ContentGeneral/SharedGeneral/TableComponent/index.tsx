@@ -5,10 +5,14 @@ export interface TableRow {
     cells: ReactNode[];
     /** Conteúdo mostrado numa linha extra logo abaixo, quando essa linha está expandida. */
     conteudoExpandido?: ReactNode;
+    /** Conteúdo da primeira coluna (a estreita, antes dos dados), ex.: um checkbox de seleção. Cliques nele não disparam `onClickLinha`. */
+    celulaInicial?: ReactNode;
 }
 
 export interface TableComponentProps {
-    listHeaders: { id: number; name: string }[];
+    listHeaders: { id: number; name: ReactNode }[];
+    /** Conteúdo do cabeçalho da primeira coluna (a estreita), ex.: o checkbox de "selecionar todas". */
+    cabecalhoInicial?: ReactNode;
     rows: TableRow[];
     loading?: boolean;
     erro?: string | null;
@@ -21,6 +25,7 @@ export interface TableComponentProps {
 
 export function TableComponent({
     listHeaders,
+    cabecalhoInicial,
     rows,
     loading = false,
     erro = null,
@@ -35,7 +40,7 @@ export function TableComponent({
         <table className="w-full border-collapse text-sm">
           <thead>
             <tr className="bg-indigo-950 text-xs font-bold uppercase tracking-wide text-white">
-              <th className="w-10  py-3 pl-4" />
+              <th className="w-10  py-3 pl-4">{cabecalhoInicial}</th>
               {listHeaders.map((header) => (
                 <th key={header.id} className="px-3 py-3 text-left">
                   {header.name}
@@ -71,7 +76,9 @@ export function TableComponent({
                     } ${linhaExpandidaKey === row.key ? "bg-gray-50" : ""}`}
                     onClick={() => onClickLinha?.(row.key)}
                   >
-                    <td className="w-10 py-2.5 pl-4" />
+                    <td className="w-10 py-2.5 pl-4" onClick={row.celulaInicial ? (e) => e.stopPropagation() : undefined}>
+                      {row.celulaInicial}
+                    </td>
                     {row.cells.map((cell, index) => (
                       <td key={index} className="px-3 py-2.5 text-gray-700">
                         {cell}

@@ -29,24 +29,51 @@ const PESO_STATUS: Record<StatusConferencia, number> = {
 
 type FiltroStatus = "problemas" | "todos" | StatusConferencia;
 
+export type FormatoPremio = "moeda" | "pontos";
+
+/** Pontos: número simples, sem R$. */
+export const numeroPontos = (valor: number | null) =>
+  valor === null ? "-" : valor.toLocaleString("pt-BR", { maximumFractionDigits: 2 });
+
+export const formatadorDoPremio = (formato: FormatoPremio) => (formato === "pontos" ? numeroPontos : moeda);
+
 interface TabelaConferenciaProps {
   resultados: ResultadoConferencia[];
   tolerancia: number;
   onBaixar: () => void;
+  /** Como mostrar a coluna de prêmio: em R$ (padrão) ou em pontos. */
+  formatoPremio?: FormatoPremio;
+  /** Nome do prêmio nos cabeçalhos (padrão "Prêmio"). */
+  rotuloPremio?: string;
 }
 
-function Diferenca({ valor, tolerancia }: { valor: number | null; tolerancia: number }) {
+function Diferenca({
+  valor,
+  tolerancia,
+  formatar = moeda,
+}: {
+  valor: number | null;
+  tolerancia: number;
+  formatar?: (valor: number | null) => string;
+}) {
   if (valor === null) return <span className="text-other-muted">-</span>;
   const fora = Math.abs(valor) > tolerancia;
   return (
     <span className={fora ? "font-bold text-red-600" : "text-other-muted"}>
       {valor > 0 ? "+" : ""}
-      {moeda(valor)}
+      {formatar(valor)}
     </span>
   );
 }
 
-export function TabelaConferencia({ resultados, tolerancia, onBaixar }: TabelaConferenciaProps) {
+export function TabelaConferencia({
+  resultados,
+  tolerancia,
+  onBaixar,
+  formatoPremio = "moeda",
+  rotuloPremio = "Prêmio",
+}: TabelaConferenciaProps) {
+  const formatarPremio = formatadorDoPremio(formatoPremio);
   const [busca, setBusca] = useState("");
   const [status, setStatus] = useState<FiltroStatus>("problemas");
   const [tipo, setTipo] = useState("todos");
@@ -127,8 +154,8 @@ export function TabelaConferencia({ resultados, tolerancia, onBaixar }: TabelaCo
               <th className="px-3 py-3 text-right">Valor sistema</th>
               <th className="px-3 py-3 text-right">Valor base</th>
               <th className="px-3 py-3 text-right">Dif.</th>
-              <th className="px-3 py-3 text-right">Prêmio sistema</th>
-              <th className="px-3 py-3 text-right">Prêmio base</th>
+              <th className="px-3 py-3 text-right">{rotuloPremio} sistema</th>
+              <th className="px-3 py-3 text-right">{rotuloPremio} base</th>
               <th className="px-3 py-3 text-right">Dif.</th>
               <th className="px-4 py-3 text-left">Observação</th>
             </tr>
@@ -156,10 +183,10 @@ export function TabelaConferencia({ resultados, tolerancia, onBaixar }: TabelaCo
                   <td className="px-3 py-2.5 text-right">
                     <Diferenca valor={r.difValor} tolerancia={tolerancia} />
                   </td>
-                  <td className="px-3 py-2.5 text-right">{moeda(r.premioSistema)}</td>
-                  <td className="px-3 py-2.5 text-right">{moeda(r.premioBase)}</td>
+                  <td className="px-3 py-2.5 text-right">{formatarPremio(r.premioSistema)}</td>
+                  <td className="px-3 py-2.5 text-right">{formatarPremio(r.premioBase)}</td>
                   <td className="px-3 py-2.5 text-right">
-                    <Diferenca valor={r.difPremio} tolerancia={tolerancia} />
+                    <Diferenca valor={r.difPremio} tolerancia={tolerancia} formatar={formatarPremio} />
                   </td>
                   <td className="px-4 py-2.5 text-xs text-other-muted">{r.observacao}</td>
                 </tr>

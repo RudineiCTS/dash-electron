@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 import { ChevronRight } from 'lucide-react'
 import type { CampaignSummary } from '@shared/interfaces/CampaignSummary'
 import { formatCurrency, formatPercent, formatSummaryMetric } from '../lib/format'
-import { temMeta } from '../lib/status'
+import { statusDoCard, temMeta } from '../lib/status'
 import { ProgressBar } from './ProgressBar'
 import { Stat } from './Stat'
 

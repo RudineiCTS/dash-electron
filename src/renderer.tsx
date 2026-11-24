@@ -46,6 +46,8 @@ import { ParamTelesales } from './pages/ParamTelesales'
 import { RotaProtegida } from './components/RotaProtegida'
 import { FarmaMenuHub } from './pages/FarmaMenuHub'
 import { FarmaInserirCampanhaDinamica } from './pages/FarmaInserirCampanhaDinamica'
+import { FarmaCampanhasMes } from './pages/FarmaCampanhasMes'
+import { FarmaValidacaoCampanhas } from './pages/FarmaValidacaoCampanhas'
 
 function CampaignsFilterScope() {
   return (
@@ -75,6 +77,8 @@ createRoot(document.getElementById('app')!).render(
               <Route path="menu" element={<MenuHub />} />
               <Route path="farma" element={<FarmaMenuHub />} />
               <Route path="farma/inserir-campanha-dinamica" element={<FarmaInserirCampanhaDinamica />} />
+              <Route path="farma/campanhas-mes" element={<FarmaCampanhasMes />} />
+              <Route path="farma/validacao-campanhas" element={<FarmaValidacaoCampanhas />} />
             </Route>
           </Routes>
         </HashRouter>

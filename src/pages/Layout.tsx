@@ -7,7 +7,7 @@ import { Menu } from 'lucide-react';
 import { TitleBar } from '../components/TitleBarWindow';
 import { CampaignSummary } from '../interfaces/CampaignSummary';
 
-const routesWithoutSideBar = ['/campaigns/details/:id', 'campaigns-advanced', 'params-general', 'farma/inserir-campanha-dinamica']
+const routesWithoutSideBar = ['/campaigns/details/:id', 'campaigns-advanced', 'params-general', 'farma/inserir-campanha-dinamica', 'farma/campanhas-mes', 'farma/validacao-campanhas']
 
 interface CampaignDetailLocationState {
   summary?: CampaignSummary;
@@ -51,6 +51,14 @@ function useContextoAtual(): string | undefined {
 
   if (matchPath('/farma/inserir-campanha-dinamica', location.pathname)) {
     return 'Campanha Farma · Inserir campanha dinâmica';
+  }
+
+  if (matchPath('/farma/campanhas-mes', location.pathname)) {
+    return 'Campanha Farma · Campanhas do mês';
+  }
+
+  if (matchPath('/farma/validacao-campanhas', location.pathname)) {
+    return 'Campanha Farma · Validação de campanhas';
   }
 
   if (matchPath('/farma/*', location.pathname)) {

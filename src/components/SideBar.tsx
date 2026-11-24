@@ -1,7 +1,7 @@
 import { IconType } from 'react-icons'  // ← importa o tipo
 import { LogoApp } from './logoApp'
 import { ReactNode } from 'react'
-import {FiActivity, FiArchive, FiBarChart2, FiBook, FiGrid, FiPlusSquare, FiSettings} from 'react-icons/fi'
+import {FiActivity, FiArchive, FiBarChart2, FiBook, FiCheckSquare, FiGrid, FiList, FiPlusSquare, FiSettings} from 'react-icons/fi'
 import { NavLink } from 'react-router-dom'
 import { ButtonSideBar } from './ButtonSideBar'
 import { ThemeToggle } from './ThemeToggle'
@@ -61,6 +61,20 @@ export function SideBar({options,className,isMenuDefault,children,switchCampaign
                                 >
                                     <FiPlusSquare className="w-[17px] h-[17px] shrink-0"/>
                                         Inserir campanha dinâmica
+                                </NavLink>
+                                <NavLink
+                                    className={({ isActive }) =>`${styleButton}${isActive ?  styleButtonActive : ''}`}
+                                    to={"farma/campanhas-mes"}
+                                >
+                                    <FiList className="w-[17px] h-[17px] shrink-0"/>
+                                        Campanhas do mês
+                                </NavLink>
+                                <NavLink
+                                    className={({ isActive }) =>`${styleButton}${isActive ?  styleButtonActive : ''}`}
+                                    to={"farma/validacao-campanhas"}
+                                >
+                                    <FiCheckSquare className="w-[17px] h-[17px] shrink-0"/>
+                                        Validação de campanhas
                                 </NavLink>
                             </div>
                             ) : (
