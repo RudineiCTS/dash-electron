@@ -1,7 +1,9 @@
 import { useState } from 'react'
 import { Link, useParams, useSearchParams } from 'react-router-dom'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, Download } from 'lucide-react'
+import { apiParams } from '@shared/services/api'
 import { getCampaignParamsClient, getCampaignParamsProducts } from '@shared/services/campaign.teleseler'
+import { exportarExcel } from '../lib/exportarExcel'
 import { incluiRegra } from '../components/ParametrosCampanha'
 import { EmptyState, ErrorState } from '../components/StateViews'
 import { defaultCompetencia } from '../lib/format'
@@ -48,6 +50,49 @@ export default function CampaignParametrosPage() {
     [idCampaign, tipo, pagina, codigo],
   )
 
+  const [exportando, setExportando] = useState(false)
+  const [erroExcel, setErroExcel] = useState<string | null>(null)
+
+  /** Baixa a lista COMPLETA da campanha (não só a página da tela). Sem CPF/CNPJ, de propósito. */
+  async function baixarExcel() {
+    setExportando(true)
+    setErroExcel(null)
+    try {
+      const resposta = await apiParams.get<Array<Record<string, unknown>>>(`${ehProduto ? 'produto' : 'cliente'}/${idCampaign}/todos`)
+      const linhas = resposta.data
+      const regra = (r: Record<string, unknown>) => (incluiRegra(r.isValid) ? 'Conta' : 'Não conta')
+      if (ehProduto) {
+        exportarExcel({
+          arquivo: `produtos-campanha-${idCampaign}`,
+          aba: 'Produtos',
+          linhas,
+          colunas: [
+            { titulo: 'Código', tipo: 'numero', largura: 12, valor: (r) => Number(r.idProduct) },
+            { titulo: 'Produto', largura: 50, valor: (r) => String(r.name ?? '') },
+            { titulo: 'Regra', largura: 12, valor: regra },
+          ],
+        })
+      } else {
+        exportarExcel({
+          arquivo: `clientes-campanha-${idCampaign}`,
+          aba: 'Clientes',
+          linhas,
+          colunas: [
+            { titulo: 'Código', tipo: 'numero', largura: 12, valor: (r) => Number(r.idClients) },
+            { titulo: 'Cliente', largura: 44, valor: (r) => String(r.clientName ?? '') },
+            { titulo: 'Cidade', largura: 24, valor: (r) => String(r.city ?? '') },
+            { titulo: 'UF', largura: 6, valor: (r) => String(r.state ?? '') },
+            { titulo: 'Regra', largura: 12, valor: regra },
+          ],
+        })
+      }
+    } catch {
+      setErroExcel('Não foi possível gerar o Excel agora. Tente de novo.')
+    } finally {
+      setExportando(false)
+    }
+  }
+
   if (!valido) return <NotFoundPage />
 
   const itens = (lista.data?.items ?? []) as Array<Record<string, unknown>>
@@ -68,7 +113,20 @@ export default function CampaignParametrosPage() {
           {ehProduto ? 'Produtos' : 'Clientes'} da campanha #{idCampaign}
         </h1>
         {!lista.loading && <span className="text-xs text-github-text-muted">{total.toLocaleString('pt-BR')} no total</span>}
+        <button
+          type="button"
+          onClick={baixarExcel}
+          disabled={exportando || total === 0}
+          className="ml-auto flex h-9 items-center gap-1.5 rounded-md border border-github-border bg-github-bg-card px-3 text-sm font-medium hover:bg-github-bg-hover disabled:opacity-50"
+        >
+          <Download size={15} aria-hidden /> {exportando ? 'Gerando…' : `Exportar Excel (${total.toLocaleString('pt-BR')})`}
+        </button>
       </div>
+      {erroExcel && (
+        <p role="alert" className="text-sm text-other-redflag">
+          {erroExcel}
+        </p>
+      )}
 
       <input
         type="search"
