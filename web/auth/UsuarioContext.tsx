@@ -5,13 +5,11 @@ import { EVENTO_SESSAO_EXPIRADA, entrar as entrarNaApi, lerSessao, salvarSessao,
 import { useApiResource } from '../lib/useApiResource'
 
 /**
- * SIMULAÇÃO DE USUÁRIO (só para desenvolvimento): quem usa o site escolhe uma pessoa no header e passa a
- * ver o sistema "como" ela, sem senha. Ligada em dev e DESLIGADA em build de produção, a menos que
- * VITE_PERMITIR_TROCA_USUARIO=true. Desligada, o site exige o login real (usuário e senha do Windows).
- * Com login real feito, ele vale mais do que a simulação.
+ * O site exige login real (usuário e senha do Windows). A simulação de usuário (sem senha) só existe
+ * se VITE_PERMITIR_TROCA_USUARIO=true; o seletor do header foi retirado, então hoje ela não tem interface.
  */
 const flag = import.meta.env.VITE_PERMITIR_TROCA_USUARIO as string | undefined
-export const PERMITIR_TROCA_USUARIO = flag === 'true' || (flag !== 'false' && import.meta.env.DEV)
+export const PERMITIR_TROCA_USUARIO = flag === 'true'
 
 const CHAVE = 'compass-web:usuario-simulado'
 
