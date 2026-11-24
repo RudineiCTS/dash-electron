@@ -4,6 +4,7 @@ import { ArrowLeft, ChevronDown, ChevronRight } from 'lucide-react'
 import dayjs from 'dayjs'
 import { getCampaignSummaryDetailsById, getCampaignSummaryPerPeriod } from '@shared/services/campaign.teleseler'
 import { PERMITIR_TROCA_USUARIO, useUsuario } from '../auth/UsuarioContext'
+import { useGestor } from '../auth/useGestor'
 import { PainelDesempenho } from '../components/PainelDesempenho'
 import { Stat } from '../components/Stat'
 import { EmptyState, ErrorState } from '../components/StateViews'
@@ -27,6 +28,11 @@ export default function CampaignOrdersPage() {
   const [params] = useSearchParams()
   const competencia = params.get('competencia') ?? defaultCompetencia()
   const { idPessoa, usuario } = useUsuario()
+  // Supervisão e administrador abrem os pedidos de qualquer pessoa do ranking (?pessoa=ID); os demais, só os próprios.
+  const { ehGestor, carregando: carregandoGestor } = useGestor(idPessoa)
+  const pessoaParam = Number(params.get('pessoa')) || null
+  const idAlvo = pessoaParam ? (ehGestor ? pessoaParam : carregandoGestor ? null : idPessoa) : idPessoa
+  const deOutraPessoa = !!idAlvo && idAlvo !== idPessoa
   const [limite, setLimite] = useState(PAGE_SIZE)
   const [abertos, setAbertos] = useState<ReadonlySet<string>>(new Set())
 
@@ -34,8 +40,8 @@ export default function CampaignOrdersPage() {
   // O ranking tem uma linha por pessoa: a do usuário logado dá o realizado e o percentual dele.
   const ranking = useApiResource((signal) => getCampaignSummaryDetailsById(idCampaign, signal), [idCampaign])
   const pedidos = useApiResource(
-    (signal) => (idPessoa ? getPedidosDaPessoa(idCampaign, idPessoa, signal) : Promise.resolve(null)),
-    [idCampaign, idPessoa],
+    (signal) => (idAlvo ? getPedidosDaPessoa(idCampaign, idAlvo, signal) : Promise.resolve(null)),
+    [idCampaign, idAlvo],
   )
 
   const agrupados = useMemo(() => agruparPedidos(pedidos.data?.orders ?? []), [pedidos.data])
@@ -43,7 +49,7 @@ export default function CampaignOrdersPage() {
   if (!Number.isInteger(idCampaign) || idCampaign <= 0) return <NotFoundPage />
 
   const resumo = resumos.data?.find((s) => s.idCampaign === idCampaign)
-  const meu = idPessoa ? ranking.data?.find((r) => r.idPersonSales === idPessoa) : undefined
+  const meu = idAlvo ? ranking.data?.find((r) => r.idPersonSales === idAlvo) : undefined
   const totalItens = pedidos.data?.orders.length ?? 0
   const dataApuracao = pedidos.data?.appraisalDate ? dayjs(pedidos.data.appraisalDate).format('DD/MM/YYYY HH:mm') : '—'
 
@@ -53,7 +59,7 @@ export default function CampaignOrdersPage() {
 
   // Painel "Meu desempenho": meta/prazo e posição, só com o que a tela já carregou
   const desempenho = montarDesempenho(resumo, meu, ranking.data?.length ?? 0)
-  const carregandoPainel = !!idPessoa && (ranking.loading || resumos.loading)
+  const carregandoPainel = !!idAlvo && (ranking.loading || resumos.loading)
   // Sem meta e sem ranking (e sem carregar) não há painel: nem o contêiner entra, para não sobrar espaço vazio
   const temPainel = carregandoPainel || !!desempenho.meta || !!desempenho.posicao
   const painel = <PainelDesempenho desempenho={desempenho} carregando={carregandoPainel} />
@@ -78,7 +84,9 @@ export default function CampaignOrdersPage() {
           >
             <ArrowLeft size={16} /> Campanha
           </Link>
-          <h1 className="min-w-0 text-lg font-extrabold">Meus pedidos</h1>
+          <h1 className="min-w-0 text-lg font-extrabold">
+            {deOutraPessoa ? `Pedidos de ${meu?.operatorName ?? 'pessoa ' + idAlvo}` : 'Meus pedidos'}
+          </h1>
         </div>
 
         {/* Tudo que fica acima da tabela */}
@@ -95,17 +103,17 @@ export default function CampaignOrdersPage() {
           </div>
           <dl className="grid grid-cols-2 gap-x-3 gap-y-2 sm:grid-cols-4">
             <Stat
-              label="Meu realizado"
+              label={deOutraPessoa ? 'Realizado' : 'Meu realizado'}
               value={meu ? formatDetailMetric(meu.campaignTypeDescription, meu.assessedValue) : semDadosDoUsuario}
             />
             <Stat
-              label="Meu percentual"
+              label={deOutraPessoa ? 'Percentual' : 'Meu percentual'}
               value={meu ? (temPercentual ? formatPercent(meu.percentageAchieved) : 'Sem meta') : semDadosDoUsuario}
             />
             <Stat label="Data da apuração" value={dataApuracao} />
             <Stat
-              label="Usuário"
-              value={usuario?.operatorName ?? '—'}
+              label={deOutraPessoa ? 'Pessoa' : 'Usuário'}
+              value={(deOutraPessoa ? meu?.operatorName : usuario?.operatorName) ?? '—'}
               className="col-span-2 sm:col-span-1 [&_dd]:whitespace-normal [&_dd]:break-words"
             />
           </dl>
@@ -114,7 +122,7 @@ export default function CampaignOrdersPage() {
         {/* Celular/tablet: entre o cartão e a tabela */}
         {temPainel && <div className="w-full max-w-3xl xl:hidden">{painel}</div>}
 
-        {!idPessoa && (
+        {!idAlvo && !carregandoGestor && (
           <EmptyState
             message={
               PERMITIR_TROCA_USUARIO
@@ -124,12 +132,12 @@ export default function CampaignOrdersPage() {
           />
         )}
 
-        {idPessoa && pedidos.loading && (
+        {(idAlvo ? pedidos.loading : carregandoGestor) && (
           <div className="h-40 animate-pulse rounded-xl border border-github-border bg-github-bg-card" aria-busy="true" />
         )}
-        {idPessoa && pedidos.error && <ErrorState message={pedidos.error} onRetry={pedidos.reload} />}
+        {idAlvo && pedidos.error && <ErrorState message={pedidos.error} onRetry={pedidos.reload} />}
 
-        {idPessoa && pedidos.data && !pedidos.error &&
+        {idAlvo && pedidos.data && !pedidos.error &&
           (agrupados.length === 0 ? (
             <EmptyState message="Nenhum pedido apurado para este usuário nesta campanha." />
           ) : (

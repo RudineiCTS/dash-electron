@@ -6,6 +6,7 @@ import {
   getCampaignSummaryPerPeriod,
 } from '@shared/services/campaign.teleseler'
 import { useUsuario } from '../auth/UsuarioContext'
+import { useGestor } from '../auth/useGestor'
 import { OportunidadesCampanha } from '../components/OportunidadesCampanha'
 import { ProgressBar } from '../components/ProgressBar'
 import { Stat } from '../components/Stat'
@@ -31,6 +32,7 @@ export default function CampaignDetailPage() {
   const [params] = useSearchParams()
   const competencia = params.get('competencia') ?? defaultCompetencia()
   const { idPessoa } = useUsuario()
+  const { ehGestor } = useGestor(idPessoa)
   const [busca, setBusca] = useState('')
   const [limite, setLimite] = useState(PAGE_SIZE)
 
@@ -174,7 +176,17 @@ export default function CampaignDetailPage() {
                         <tr key={r.idPersonSales} className="border-t border-github-border hover:bg-github-bg-hover">
                           <td className="py-1.5 pl-3 text-xs font-bold text-github-text-muted">{r.ranking || '–'}</td>
                           <td className="max-w-[16rem] px-2 py-1.5">
-                            <p className="truncate font-semibold">{r.operatorName}</p>
+                            {ehGestor || r.idPersonSales === idPessoa ? (
+                              <Link
+                                to={`/campaigns/details/${idCampaign}/pedidos?competencia=${competencia}&pessoa=${r.idPersonSales}`}
+                                title={`Ver os pedidos de ${r.operatorName}`}
+                                className="block truncate font-semibold hover:underline"
+                              >
+                                {r.operatorName}
+                              </Link>
+                            ) : (
+                              <p className="truncate font-semibold">{r.operatorName}</p>
+                            )}
                             {(() => {
                               const g = etiquetaGrupo(r.personGroup, r.personSubGroup)
                               return (
