@@ -25,7 +25,11 @@ function statusDe(percent: number, comMeta: boolean) {
 const VERDE = { faixa: 'border-l-[#3B6D11]', barra: 'bg-[#3B6D11]', texto: 'text-[#3B6D11]' }
 
 const numero = (n: number) => n.toLocaleString('pt-BR', { maximumFractionDigits: 2 })
-const percentual = (n: number) => `${numero(n)}%`
+/** Percentual sempre com duas casas (69,00%, 57,70%, 111,51%), para os cards ficarem iguais. */
+const percentual = (n: number) => `${n.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%`
+
+/** Meta e realizado do card com as mesmas casas: se algum tem centavos, os dois mostram duas casas. */
+const numeroComCasas = (n: number, casas: number) => n.toLocaleString('pt-BR', { minimumFractionDigits: casas, maximumFractionDigits: casas })
 const nomeDoKpi = (l: FidelizacaoLinha) => l.nomeKpi?.trim() || l.descricaoKpi?.trim() || l.codigoKpi || 'KPI'
 
 interface PessoaResumo {
@@ -60,6 +64,7 @@ function resumirPessoas(linhas: FidelizacaoLinha[]): PessoaResumo[] {
 function CardKpi({ l, ativo, onAbrir }: { l: FidelizacaoLinha; ativo: boolean; onAbrir: (l: FidelizacaoLinha) => void }) {
   const comMeta = l.valorMeta > 0
   const st = comMeta ? statusDe(l.realizado, true) : VERDE
+  const casas = [l.valorMeta, l.valorApurado].some((v) => !Number.isInteger(v)) ? 2 : 0
   return (
     <li className={`rounded-xl border border-l-4 border-github-border bg-github-bg-card p-3 ${st.faixa}`}>
       <p className="text-sm font-semibold leading-snug">{nomeDoKpi(l)}</p>
@@ -69,11 +74,11 @@ function CardKpi({ l, ativo, onAbrir }: { l: FidelizacaoLinha; ativo: boolean; o
       <dl className="mt-2 grid grid-cols-3 gap-2">
         <div>
           <dt className="text-[10px] uppercase tracking-wide text-github-text-muted">Meta</dt>
-          <dd className="text-sm font-semibold">{comMeta ? numero(l.valorMeta) : 'Sem meta'}</dd>
+          <dd className="text-sm font-semibold">{comMeta ? numeroComCasas(l.valorMeta, casas) : 'Sem meta'}</dd>
         </div>
         <div>
           <dt className="text-[10px] uppercase tracking-wide text-github-text-muted">Realizado</dt>
-          <dd className="text-sm font-semibold">{numero(l.valorApurado)}</dd>
+          <dd className="text-sm font-semibold">{numeroComCasas(l.valorApurado, casas)}</dd>
         </div>
         <div>
           <dt className="text-[10px] uppercase tracking-wide text-github-text-muted">Percentual</dt>
