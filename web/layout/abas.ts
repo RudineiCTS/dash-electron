@@ -7,4 +7,5 @@ export const ABAS = [
   { to: '/exclusivas', label: 'Exclusivas' },
   { to: '/oportunidades', label: 'Oportunidades' },
   { to: '/parametros', label: 'Parâmetros' },
+  { to: '/usuarios', label: 'Usuários' },
 ] as const

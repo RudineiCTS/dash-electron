@@ -1,10 +1,8 @@
+import { EVENTO_SESSAO_EXPIRADA, lerSessao, salvarSessao, tokenAtual } from '../lib/sessao'
+
 /**
- * Ponto de extensão da autenticação do app web.
- *
- * A estratégia (OIDC/SSO, login próprio, etc.) ainda não foi definida. Quando for,
- * basta implementar este contrato e passar a implementação para `configureHttp()`
- * em `web/main.tsx`: o token passa a ir em todas as chamadas e um 401 dispara
- * `onUnauthorized` (ex: redirecionar para o login).
+ * Ponto de extensão da autenticação do app web: `configureHttp()` (web/lib/http.ts) usa este contrato
+ * para mandar o token em todas as chamadas e reagir a um 401.
  */
 export interface AuthAdapter {
   /** Devolve o access token atual, ou null se não houver sessão. */
@@ -13,7 +11,17 @@ export interface AuthAdapter {
   onUnauthorized?(): void
 }
 
-/** Placeholder enquanto não há autenticação: não envia token. */
+/** Sem autenticação: não envia token. */
 export const anonymousAuth: AuthAdapter = {
   getAccessToken: () => null,
+}
+
+/** Login do Compass: o token guardado nesta aba vai em todas as chamadas; 401 com sessão = expirou. */
+export const sessaoAuth: AuthAdapter = {
+  getAccessToken: () => tokenAtual(),
+  onUnauthorized: () => {
+    if (!lerSessao()) return // 401 sem sessão (ex.: senha errada no login) não é expiração
+    salvarSessao(null)
+    window.dispatchEvent(new Event(EVENTO_SESSAO_EXPIRADA))
+  },
 }

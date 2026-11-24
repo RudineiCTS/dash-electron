@@ -1,4 +1,5 @@
-import { Link, NavLink, Outlet } from 'react-router-dom'
+import { LogOut } from 'lucide-react'
+import { Link, Navigate, NavLink, Outlet, useLocation } from 'react-router-dom'
 import { PERMITIR_TROCA_USUARIO, useUsuario } from '../auth/UsuarioContext'
 import { DigitadoraCombobox } from '../components/DigitadoraCombobox'
 import { LogoCompass } from '../components/LogoCompass'
@@ -20,9 +21,15 @@ function classeAba(isActive: boolean, vertical: boolean) {
  * uma faixa horizontal rolável logo abaixo do header.
  */
 export function WebLayout() {
-  const { idPessoa, entrarComo, abasPermitidas, primeiraAba } = useUsuario()
+  const { idPessoa, entrarComo, abasPermitidas, primeiraAba, sessao, exigeLogin, sair } = useUsuario()
+  const location = useLocation()
   /** Só as abas liberadas para o perfil de quem está logado. */
   const abas = ABAS.filter((a) => abasPermitidas.includes(a.to))
+
+  // sem a simulação de desenvolvimento, nada aparece antes do login
+  if (exigeLogin && !sessao) {
+    return <Navigate to="/login" replace state={{ de: location.pathname }} />
+  }
 
   return (
     <div className="min-h-dvh bg-github-bg text-github-text">
@@ -46,6 +53,28 @@ export function WebLayout() {
               placeholder="Entrar como…"
               className="ml-auto min-w-0 flex-1 sm:max-w-xs sm:flex-none sm:basis-72"
             />
+          )}
+          {sessao ? (
+            <div className={`flex min-w-0 items-center gap-2 ${PERMITIR_TROCA_USUARIO ? '' : 'ml-auto'}`}>
+              <span className="hidden max-w-40 truncate text-sm sm:inline" title={sessao.usuario.nome}>
+                {sessao.usuario.nome}
+              </span>
+              <button
+                type="button"
+                onClick={sair}
+                aria-label="Sair"
+                className="flex h-9 items-center gap-1.5 rounded-md px-2 text-sm text-white/90 hover:bg-white/10"
+              >
+                <LogOut size={16} aria-hidden />
+                <span className="hidden sm:inline">Sair</span>
+              </button>
+            </div>
+          ) : (
+            PERMITIR_TROCA_USUARIO && (
+              <Link to="/login" className="flex h-9 shrink-0 items-center rounded-md px-2 text-sm text-white/90 hover:bg-white/10">
+                Entrar
+              </Link>
+            )
           )}
           <ThemeButton />
         </div>

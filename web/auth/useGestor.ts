@@ -11,7 +11,7 @@ import { useApiResource } from '../lib/useApiResource'
  */
 export function useGestor(idPessoa: number | null) {
   const base = useApiResource((signal) => getDigitadoras(signal), [])
-  const { acesso, carregandoAcesso } = useUsuario()
-  const ehGestor = !!idPessoa && (!!acesso?.gestao || !!base.data?.some((p) => p.idSupervisor === idPessoa))
+  const { acesso, carregandoAcesso, administrador } = useUsuario()
+  const ehGestor = !!idPessoa && (administrador || !!acesso?.gestao || !!base.data?.some((p) => p.idSupervisor === idPessoa))
   return { ehGestor, carregando: !!idPessoa && (base.loading || carregandoAcesso) }
 }
