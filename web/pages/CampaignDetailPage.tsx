@@ -6,6 +6,7 @@ import {
   getCampaignSummaryPerPeriod,
 } from '@shared/services/campaign.teleseler'
 import { useUsuario } from '../auth/UsuarioContext'
+import { OportunidadesCampanha } from '../components/OportunidadesCampanha'
 import { ProgressBar } from '../components/ProgressBar'
 import { Stat } from '../components/Stat'
 import { EmptyState, ErrorState } from '../components/StateViews'
@@ -113,6 +114,8 @@ export default function CampaignDetailPage() {
           </dl>
         </section>
       )}
+
+      <OportunidadesCampanha idCampaign={idCampaign} competencia={competencia} />
 
       <section aria-label="Ranking" className="flex flex-col gap-2">
         <div className="flex flex-wrap items-center justify-between gap-2">

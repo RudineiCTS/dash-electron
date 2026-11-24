@@ -3,6 +3,7 @@ import { WebLayout } from './layout/WebLayout'
 import CampaignsPage from './pages/CampaignsPage'
 import CampaignDetailPage from './pages/CampaignDetailPage'
 import CampaignOrdersPage from './pages/CampaignOrdersPage'
+import CampaignOportunidadesPage from './pages/CampaignOportunidadesPage'
 import NotFoundPage from './pages/NotFoundPage'
 import SecaoPage from './pages/SecaoPage'
 import ParametrosPage from './pages/ParametrosPage'
@@ -36,6 +37,7 @@ export default function App() {
           <Route path="campaigns" element={<RotaProtegida aba="/campaigns"><CampaignsPage /></RotaProtegida>} />
           <Route path="campaigns/details/:id" element={<RotaProtegida aba="/campaigns"><CampaignDetailPage /></RotaProtegida>} />
           <Route path="campaigns/details/:id/pedidos" element={<RotaProtegida aba="/campaigns"><CampaignOrdersPage /></RotaProtegida>} />
+          <Route path="campaigns/details/:id/oportunidades" element={<RotaProtegida aba="/campaigns"><CampaignOportunidadesPage /></RotaProtegida>} />
           <Route path="prospeccao" element={<RotaProtegida aba="/prospeccao"><ProspeccaoPage /></RotaProtegida>} />
           <Route path="fidelizacao" element={<RotaProtegida aba="/fidelizacao"><FidelizacaoPage /></RotaProtegida>} />
           <Route path="sac" element={<RotaProtegida aba="/sac"><SecaoPage titulo="SAC" /></RotaProtegida>} />
