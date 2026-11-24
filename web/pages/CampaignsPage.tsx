@@ -173,8 +173,11 @@ export default function CampaignsPage() {
           </div>
           <p className="col-span-3 text-xs text-github-text-muted">
             {totais.vendasComMeta} campanhas de vendas com meta
-            {totais.semMeta > 0 && ` · fora da conta: ${totais.semMeta} sem meta`}
-            {totais.outrasUnidades > 0 && ` e ${totais.outrasUnidades} medidas em unidades (positivação/quantidade)`}
+            {(totais.semMeta > 0 || totais.outrasUnidades > 0) && (
+              <span title="Ficam fora do cálculo: campanhas sem meta e as medidas em unidades (positivação e quantidade vendida)">
+                {' · '}fora: {totais.semMeta} sem meta, {totais.outrasUnidades} em unidades
+              </span>
+            )}
           </p>
         </section>
       )}
