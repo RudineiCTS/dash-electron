@@ -104,7 +104,7 @@ export function FidelizacaoDetalhe({ linha, onFechar }: { linha: FidelizacaoLinh
         <>
           {tipo === 'hits' && linha.hitsClientes > 0 && linha.hitsProdutos > 0 && (
             <p className="rounded-lg bg-github-bg-hover px-3 py-2 text-sm">
-              <span className="text-github-text-muted">Conta dos Hits: </span>
+              <span className="text-github-text-muted">Cálculo dos Hits: </span>
               <strong className="font-semibold">{linha.hitsClientes.toLocaleString('pt-BR')}</strong> clientes ×{' '}
               <strong className="font-semibold">{linha.hitsProdutos.toLocaleString('pt-BR')}</strong> produtos distintos ={' '}
               <strong className="font-semibold">{(linha.hitsClientes * linha.hitsProdutos).toLocaleString('pt-BR')}</strong> hits

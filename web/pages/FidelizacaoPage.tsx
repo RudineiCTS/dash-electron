@@ -82,7 +82,7 @@ function CardKpi({ l, ativo, onAbrir }: { l: FidelizacaoLinha; ativo: boolean; o
       </dl>
       {l.tipoDetalhe === 'hits' && l.hitsClientes > 0 && l.hitsProdutos > 0 && (
         <p className="mt-2 rounded-md bg-github-bg-hover px-2 py-1.5 text-xs">
-          <span className="text-github-text-muted">Conta: </span>
+          <span className="text-github-text-muted">Cálculo: </span>
           <strong className="font-semibold">{l.hitsClientes.toLocaleString('pt-BR')}</strong> clientes ×{' '}
           <strong className="font-semibold">{l.hitsProdutos.toLocaleString('pt-BR')}</strong> produtos ={' '}
           <strong className="font-semibold">{(l.hitsClientes * l.hitsProdutos).toLocaleString('pt-BR')}</strong>
