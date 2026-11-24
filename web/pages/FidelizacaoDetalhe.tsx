@@ -102,6 +102,14 @@ export function FidelizacaoDetalhe({ linha, onFechar }: { linha: FidelizacaoLinh
         <EmptyState message="Este KPI ainda não tem clientes calculados. Eles aparecem depois do próximo cálculo do período." />
       ) : (
         <>
+          {tipo === 'hits' && linha.hitsClientes > 0 && linha.hitsProdutos > 0 && (
+            <p className="rounded-lg bg-github-bg-hover px-3 py-2 text-sm">
+              <span className="text-github-text-muted">Conta dos Hits: </span>
+              <strong className="font-semibold">{linha.hitsClientes.toLocaleString('pt-BR')}</strong> clientes ×{' '}
+              <strong className="font-semibold">{linha.hitsProdutos.toLocaleString('pt-BR')}</strong> produtos distintos ={' '}
+              <strong className="font-semibold">{(linha.hitsClientes * linha.hitsProdutos).toLocaleString('pt-BR')}</strong> hits
+            </p>
+          )}
           <div className="flex flex-wrap items-center justify-between gap-2">
             <label className="relative">
               <Search size={14} className="pointer-events-none absolute left-2.5 top-2.5 text-github-text-muted" />
@@ -207,8 +215,9 @@ export function FidelizacaoDetalhe({ linha, onFechar }: { linha: FidelizacaoLinh
           )}
           {tipo === 'hits' && (
             <p className="text-xs text-github-text-muted">
-              Os Hits do KPI são os produtos distintos de todos os clientes vezes o número de clientes. A coluna “Produtos comprados” mostra
-              o que cada cliente comprou, e um mesmo produto pode aparecer em mais de um cliente.
+              Como o Hits é calculado: <strong className="font-semibold text-github-text">clientes × produtos distintos</strong>. Cada produto conta
+              uma vez, mesmo que mais de um cliente o tenha comprado. A coluna “Produtos comprados” mostra o que cada cliente comprou, por isso a soma
+              dela é maior que os produtos distintos.
             </p>
           )}
         </>

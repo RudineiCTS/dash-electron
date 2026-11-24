@@ -80,6 +80,14 @@ function CardKpi({ l, ativo, onAbrir }: { l: FidelizacaoLinha; ativo: boolean; o
           <dd className={`text-sm font-semibold ${st.texto}`}>{comMeta ? percentual(l.realizado) : '-'}</dd>
         </div>
       </dl>
+      {l.tipoDetalhe === 'hits' && l.hitsClientes > 0 && l.hitsProdutos > 0 && (
+        <p className="mt-2 rounded-md bg-github-bg-hover px-2 py-1.5 text-xs">
+          <span className="text-github-text-muted">Conta: </span>
+          <strong className="font-semibold">{l.hitsClientes.toLocaleString('pt-BR')}</strong> clientes ×{' '}
+          <strong className="font-semibold">{l.hitsProdutos.toLocaleString('pt-BR')}</strong> produtos ={' '}
+          <strong className="font-semibold">{(l.hitsClientes * l.hitsProdutos).toLocaleString('pt-BR')}</strong>
+        </p>
+      )}
       <p className="mt-2 text-xs text-github-text-muted">
         Prêmio: <strong className={`font-semibold ${l.valorPremio > 0 ? 'text-[#3B6D11]' : 'text-github-text'}`}>{formatCurrency(l.valorPremio)}</strong>
       </p>

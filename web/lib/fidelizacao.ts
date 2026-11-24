@@ -17,6 +17,9 @@ export interface FidelizacaoLinha {
   tipoPessoa: string | null
   idKpi: number | null
   idFormulaCalculo: number | null
+  /** KPI de Hits: clientes e produtos distintos da conta (Hits = clientes x produtos); 0 se não houver. */
+  hitsClientes: number
+  hitsProdutos: number
   /** Como o KPI abre os clientes (definido pela fórmula de cálculo do KPI); null = sem abertura. */
   tipoDetalhe: 'valor' | 'cobertura' | 'hits' | null
   codigoKpi: string | null
