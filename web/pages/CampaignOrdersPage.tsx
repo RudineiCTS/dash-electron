@@ -3,7 +3,7 @@ import { Link, useParams, useSearchParams } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
 import dayjs from 'dayjs'
 import { getCampaignSummaryPerPeriod } from '@shared/services/campaign.teleseler'
-import { PERMITIR_TROCA_USUARIO, useUsuario } from '../auth/UsuarioContext'
+import { useUsuario } from '../auth/UsuarioContext'
 import { Stat } from '../components/Stat'
 import { EmptyState, ErrorState } from '../components/StateViews'
 import { defaultCompetencia, formatCurrency, formatPercent, formatSummaryMetric } from '../lib/format'
@@ -79,13 +79,7 @@ export default function CampaignOrdersPage() {
       </section>
 
       {!idPessoa && (
-        <EmptyState
-          message={
-            PERMITIR_TROCA_USUARIO
-              ? 'Escolha um usuário em “Entrar como…” no topo para ver os pedidos.'
-              : 'Você precisa estar logado para ver os seus pedidos.'
-          }
-        />
+        <EmptyState message="Seu usuário não está cadastrado como digitadora, então não há pedidos para mostrar." />
       )}
 
       {idPessoa && pedidos.loading && (

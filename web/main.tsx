@@ -1,18 +1,21 @@
 import { createRoot } from 'react-dom/client'
 import { ThemeProvider } from '@shared/context/ThemeContext'
 import App from './App'
-import { anonymousAuth } from './auth/authAdapter'
+import { sessionAuth } from './auth/authAdapter'
+import { AuthProvider } from './auth/AuthContext'
 import { UsuarioProvider } from './auth/UsuarioContext'
 import { configureHttp } from './lib/http'
 import './styles.css'
 
-// TODO(auth): trocar `anonymousAuth` pela implementação real quando a autenticação for definida.
-configureHttp(anonymousAuth)
+// O token da sessão vai em todas as chamadas à API e um 401 encerra a sessão (volta para /login).
+configureHttp(sessionAuth)
 
 createRoot(document.getElementById('root')!).render(
   <ThemeProvider>
-    <UsuarioProvider>
-      <App />
-    </UsuarioProvider>
+    <AuthProvider>
+      <UsuarioProvider>
+        <App />
+      </UsuarioProvider>
+    </AuthProvider>
   </ThemeProvider>,
 )

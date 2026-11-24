@@ -1,10 +1,8 @@
+import { definirSessao, sessaoVigente } from './sessao'
+
 /**
- * Ponto de extensão da autenticação do app web.
- *
- * A estratégia (OIDC/SSO, login próprio, etc.) ainda não foi definida. Quando for,
- * basta implementar este contrato e passar a implementação para `configureHttp()`
- * em `web/main.tsx`: o token passa a ir em todas as chamadas e um 401 dispara
- * `onUnauthorized` (ex: redirecionar para o login).
+ * Ponto de extensão da autenticação do app web: `configureHttp()` (web/lib/http.ts) manda o token em todas as
+ * chamadas e, quando a API responde 401, chama `onUnauthorized`.
  */
 export interface AuthAdapter {
   /** Devolve o access token atual, ou null se não houver sessão. */
@@ -13,7 +11,16 @@ export interface AuthAdapter {
   onUnauthorized?(): void
 }
 
-/** Placeholder enquanto não há autenticação: não envia token. */
+/** Sem autenticação: não envia token. Só para testes/ambientes sem login. */
 export const anonymousAuth: AuthAdapter = {
   getAccessToken: () => null,
+}
+
+/**
+ * Login real: o token vem da sessão (sessionStorage) e um 401 da API encerra a sessão, o que faz o `RequireAuth`
+ * mandar o usuário de volta para a tela de login.
+ */
+export const sessionAuth: AuthAdapter = {
+  getAccessToken: () => sessaoVigente()?.accessToken ?? null,
+  onUnauthorized: () => definirSessao(null),
 }

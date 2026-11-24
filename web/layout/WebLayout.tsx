@@ -1,6 +1,6 @@
+import { LogOut } from 'lucide-react'
 import { Link, NavLink, Outlet } from 'react-router-dom'
-import { PERMITIR_TROCA_USUARIO, useUsuario } from '../auth/UsuarioContext'
-import { DigitadoraCombobox } from '../components/DigitadoraCombobox'
+import { useAuth } from '../auth/AuthContext'
 import { ThemeButton } from '../components/ThemeButton'
 import { ABAS } from './abas'
 
@@ -19,7 +19,7 @@ function classeAba(isActive: boolean, vertical: boolean) {
  * uma faixa horizontal rolável logo abaixo do header.
  */
 export function WebLayout() {
-  const { idPessoa, entrarComo } = useUsuario()
+  const { usuario, sair } = useAuth()
 
   return (
     <div className="min-h-dvh bg-github-bg text-github-text">
@@ -32,16 +32,23 @@ export function WebLayout() {
             <span className="hidden truncate text-sm font-semibold sm:inline">Solfarma Comercial</span>
           </Link>
 
-          {/* Simulação de login: quem for escolhido aqui é "o usuário logado" em todas as telas */}
-          {PERMITIR_TROCA_USUARIO && (
-            <DigitadoraCombobox
-              value={idPessoa}
-              onChange={entrarComo}
-              ariaLabel="Entrar como (simulação de login)"
-              placeholder="Entrar como…"
-              className="ml-auto min-w-0 flex-1 sm:max-w-xs sm:flex-none sm:basis-72"
-            />
-          )}
+          {/* Quem está logado e o botão de sair */}
+          <div className="ml-auto flex min-w-0 items-center gap-1">
+            {usuario && (
+              <span className="hidden max-w-48 truncate text-xs text-white/80 sm:inline" title={usuario.userName}>
+                {usuario.userName}
+              </span>
+            )}
+            <button
+              type="button"
+              onClick={sair}
+              aria-label="Sair"
+              title="Sair"
+              className="flex h-11 w-11 items-center justify-center rounded-lg text-white/80 hover:bg-white/10 hover:text-white"
+            >
+              <LogOut size={18} />
+            </button>
+          </div>
           <ThemeButton />
         </div>
       </header>
