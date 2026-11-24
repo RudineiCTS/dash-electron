@@ -21,6 +21,9 @@ function statusDe(percent: number, comMeta: boolean) {
   return { faixa: 'border-l-[#E24B4A]', barra: 'bg-[#E24B4A]', texto: 'text-[#E24B4A]' }
 }
 
+/** KPI sem meta (ex.: Hits): não há o que cobrar, então o card já aparece verde. */
+const VERDE = { faixa: 'border-l-[#3B6D11]', barra: 'bg-[#3B6D11]', texto: 'text-[#3B6D11]' }
+
 const numero = (n: number) => n.toLocaleString('pt-BR', { maximumFractionDigits: 2 })
 const percentual = (n: number) => `${numero(n)}%`
 const nomeDoKpi = (l: FidelizacaoLinha) => l.nomeKpi?.trim() || l.descricaoKpi?.trim() || l.codigoKpi || 'KPI'
@@ -56,20 +59,29 @@ function resumirPessoas(linhas: FidelizacaoLinha[]): PessoaResumo[] {
 
 function CardKpi({ l, ativo, onAbrir }: { l: FidelizacaoLinha; ativo: boolean; onAbrir: (l: FidelizacaoLinha) => void }) {
   const comMeta = l.valorMeta > 0
-  const st = statusDe(l.realizado, comMeta)
+  const st = comMeta ? statusDe(l.realizado, true) : VERDE
   return (
     <li className={`rounded-xl border border-l-4 border-github-border bg-github-bg-card p-3 ${st.faixa}`}>
       <p className="text-sm font-semibold leading-snug">{nomeDoKpi(l)}</p>
       <div className="mt-2">
-        <ProgressBar percent={comMeta ? l.realizado : 0} colorClass={st.barra} />
+        <ProgressBar percent={comMeta ? l.realizado : 100} colorClass={st.barra} />
       </div>
-      <p className={`mt-1 text-lg font-semibold leading-none ${st.texto}`}>{comMeta ? percentual(l.realizado) : 'Sem meta'}</p>
-      <p className="mt-1.5 text-xs text-github-text-muted">
-        {numero(l.valorApurado)}
-        {comMeta && <> de {numero(l.valorMeta)}</>}
-      </p>
-      <p className="mt-1 text-xs text-github-text-muted">
-        Prêmio: <strong className="font-semibold text-github-text">{formatCurrency(l.valorPremio)}</strong>
+      <dl className="mt-2 grid grid-cols-3 gap-2">
+        <div>
+          <dt className="text-[10px] uppercase tracking-wide text-github-text-muted">Meta</dt>
+          <dd className="text-sm font-semibold">{comMeta ? numero(l.valorMeta) : 'Sem meta'}</dd>
+        </div>
+        <div>
+          <dt className="text-[10px] uppercase tracking-wide text-github-text-muted">Realizado</dt>
+          <dd className="text-sm font-semibold">{numero(l.valorApurado)}</dd>
+        </div>
+        <div>
+          <dt className="text-[10px] uppercase tracking-wide text-github-text-muted">Percentual</dt>
+          <dd className={`text-sm font-semibold ${st.texto}`}>{comMeta ? percentual(l.realizado) : '-'}</dd>
+        </div>
+      </dl>
+      <p className="mt-2 text-xs text-github-text-muted">
+        Prêmio: <strong className={`font-semibold ${l.valorPremio > 0 ? 'text-[#3B6D11]' : 'text-github-text'}`}>{formatCurrency(l.valorPremio)}</strong>
       </p>
       {l.idMeta != null && l.idKpi != null && l.tipoDetalhe != null && (
         <button
