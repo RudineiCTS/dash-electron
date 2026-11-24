@@ -2,7 +2,7 @@ import { useRef } from "react";
 import { FiAlertTriangle, FiUpload, FiX } from "react-icons/fi";
 import { ConferenciaCampanha } from "../../../hook/useConferenciaCampanha";
 import { MapeamentoColunas } from "./MapeamentoColunas";
-import { TabelaConferencia } from "./TabelaConferencia";
+import { FormatoPremio, formatadorDoPremio, TabelaConferencia } from "./TabelaConferencia";
 import { ModalAvisosConferencia } from "./ModalAvisosConferencia";
 
 const moeda = (valor: number) => valor.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -23,17 +23,31 @@ interface PainelConferenciaProps {
   temRetorno: boolean;
   /** O script foi editado depois da execução: o retorno na tela não é mais o deste texto. */
   retornoDesatualizado: boolean;
+  /** Como mostrar o prêmio: em R$ (padrão) ou em pontos. */
+  formatoPremio?: FormatoPremio;
+  /** Nome do prêmio nos cabeçalhos (padrão "Prêmio"). */
+  rotuloPremio?: string;
+  /** Texto quando não há retorno do sistema (padrão: o da tela de campanhas dinâmicas). */
+  textoSemRetorno?: string;
 }
 
 /** Conteúdo da aba "Conferir com planilha": sobe a base, aponta as colunas e compara com o retorno do script. */
-export function PainelConferencia({ conferencia: c, temRetorno, retornoDesatualizado }: PainelConferenciaProps) {
+export function PainelConferencia({
+  conferencia: c,
+  temRetorno,
+  retornoDesatualizado,
+  formatoPremio = "moeda",
+  rotuloPremio = "Prêmio",
+  textoSemRetorno = "Execute o script (ou abra um script salvo com retorno) para ter o retorno do sistema e poder conferir.",
+}: PainelConferenciaProps) {
   const inputRef = useRef<HTMLInputElement>(null);
+  const formatarPremio = formatadorDoPremio(formatoPremio);
 
   return (
     <>
       {!temRetorno && (
         <p className="rounded-lg border border-other-orange/40 bg-other-orange/10 px-4 py-2 text-sm text-other-text">
-          Execute o script (ou abra um script salvo com retorno) para ter o retorno do sistema e poder conferir.
+          {textoSemRetorno}
         </p>
       )}
 
@@ -117,10 +131,19 @@ export function PainelConferencia({ conferencia: c, temRetorno, retornoDesatuali
             />
             <Indicador rotulo="Sem informação na base" valor={String(c.resumo.soSistema)} />
             <Indicador rotulo="Só na planilha" valor={String(c.resumo.soPlanilha + c.resumo.ambiguos)} />
-            <Indicador rotulo="Dif. valor / prêmio" valor={`${moeda(c.resumo.somaDifValor)} / ${moeda(c.resumo.somaDifPremio)}`} />
+            <Indicador
+              rotulo={`Dif. valor / ${rotuloPremio.charAt(0).toLowerCase()}${rotuloPremio.slice(1)}`}
+              valor={`${moeda(c.resumo.somaDifValor)} / ${formatarPremio(c.resumo.somaDifPremio)}`}
+            />
           </div>
 
-          <TabelaConferencia resultados={c.resultados} tolerancia={c.tolerancia} onBaixar={c.baixarDivergencias} />
+          <TabelaConferencia
+            resultados={c.resultados}
+            tolerancia={c.tolerancia}
+            onBaixar={c.baixarDivergencias}
+            formatoPremio={formatoPremio}
+            rotuloPremio={rotuloPremio}
+          />
         </>
       )}
     </>

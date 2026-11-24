@@ -2,6 +2,56 @@ import * as XLSX from "xlsx";
 import { CampaignResult } from "../interfaces/CampaignResultTelesales";
 import { CampaignPersonRow } from "../interfaces/CampaignPersonRow";
 import { CampaignSalesRow } from "../interfaces/CampaignSalesRow";
+import { CampanhaComercialResultadoLinha } from "../interfaces/CampanhaComercial";
+import { TIPO_PESSOA_ROTULO } from "../interfaces/CampanhaFarmaResultado";
+import dayjs from "dayjs";
+
+/** Resultado calculado de uma campanha comercial (tblCampanhaComercialResultado), uma linha por pessoa. */
+export function exportCampanhaComercialResultadoToExcel(rows: CampanhaComercialResultadoLinha[], filename: string) {
+  const headers = [
+    "ID Campanha",
+    "Campanha",
+    "Data Competência",
+    "Tipo",
+    "ID Gerente",
+    "Gerente",
+    "ID Supervisor",
+    "Supervisor",
+    "ID Pessoa",
+    "Nome",
+    "Objetivo",
+    "Valor Apurado",
+    "% Realizado",
+    "Colocação",
+    "Premiação Pontos",
+    "Premiação Valor",
+    "Log do Cálculo",
+    "Data Cálculo",
+  ];
+
+  const data = rows.map((row) => [
+    row.idCampanhaComercial,
+    row.descricaoCampanha,
+    row.dataCompetencia ? dayjs(row.dataCompetencia).format("DD/MM/YYYY") : null,
+    row.tipoPessoa == null ? null : TIPO_PESSOA_ROTULO[row.tipoPessoa] ?? row.tipoPessoa,
+    row.idGerente,
+    row.nomeGerente,
+    row.idSupervisor,
+    row.nomeSupervisor,
+    row.idPessoa,
+    row.nomeVendedor,
+    row.objetivo,
+    row.valorApurado,
+    row.percentualRealizado,
+    row.colocacao,
+    row.premiacaoPontos,
+    row.premiacaoValor,
+    row.logCalculo,
+    row.dataCalculo ? dayjs(row.dataCalculo).format("DD/MM/YYYY HH:mm") : null,
+  ]);
+
+  downloadExcel(headers, data, filename, "Resultado");
+}
 
 export function downloadExcel(
   headers: string[],

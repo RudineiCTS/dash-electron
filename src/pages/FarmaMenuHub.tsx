@@ -1,4 +1,4 @@
-import { FiPlusSquare } from "react-icons/fi";
+import { FiCheckSquare, FiList, FiPlusSquare } from "react-icons/fi";
 import { NavCard } from "../components/shared/CardNavigation";
 
 export function FarmaMenuHub() {
@@ -16,6 +16,8 @@ export function FarmaMenuHub() {
                 </div>
                 <div className="grid grid-cols-4 gap-4">
                     <NavCard to="/farma/inserir-campanha-dinamica" icon={FiPlusSquare} titulo="Inserir campanha dinâmica" categoria="Campanha Farma" descricao="Execute o script de apuração, confira o retorno e gere o INSERT do resultado" rodape="Acesse agora" />
+                    <NavCard to="/farma/campanhas-mes" icon={FiList} titulo="Campanhas do mês" categoria="Campanha Farma" descricao="Veja as campanhas da competência e altere os dados direto na grid" rodape="Acesse agora" />
+                    <NavCard to="/farma/validacao-campanhas" icon={FiCheckSquare} titulo="Validação de campanhas" categoria="Campanha Farma" descricao="Confira o resultado calculado de cada campanha e os pedidos que formaram o valor de cada vendedor" rodape="Acesse agora" />
                 </div>
             </div>
         </div>
