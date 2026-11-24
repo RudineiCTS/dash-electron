@@ -1,6 +1,7 @@
 import { Link, NavLink, Outlet } from 'react-router-dom'
 import { PERMITIR_TROCA_USUARIO, useUsuario } from '../auth/UsuarioContext'
 import { DigitadoraCombobox } from '../components/DigitadoraCombobox'
+import { LogoCompass } from '../components/LogoCompass'
 import { ThemeButton } from '../components/ThemeButton'
 import { ABAS } from './abas'
 
@@ -28,10 +29,12 @@ export function WebLayout() {
       <header className="sticky top-0 z-10 bg-[#32307B] pt-[env(safe-area-inset-top)] text-white shadow-sm">
         <div className="flex h-14 w-full items-center gap-2 pl-[max(1rem,env(safe-area-inset-left))] pr-[max(0.5rem,env(safe-area-inset-right))] sm:px-6">
           <Link to={primeiraAba} className="flex shrink-0 items-center gap-2">
-            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-[#DD8100] text-xs font-semibold">
-              S
+            <span className="sm:hidden">
+              <LogoCompass claro mostrarNome={false} />
             </span>
-            <span className="hidden truncate text-sm font-semibold sm:inline">Solfarma Comercial</span>
+            <span className="hidden sm:inline">
+              <LogoCompass claro />
+            </span>
           </Link>
 
           {/* Simulação de login: quem for escolhido aqui é "o usuário logado" em todas as telas */}
