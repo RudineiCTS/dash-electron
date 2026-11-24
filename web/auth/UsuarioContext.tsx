@@ -1,4 +1,5 @@
 import { createContext, ReactNode, useCallback, useContext, useMemo, useState } from 'react'
+import { getAcesso, type Acesso } from '../lib/acesso'
 import { getDigitadora, type Digitadora } from '../lib/digitadoras'
 import { useApiResource } from '../lib/useApiResource'
 
@@ -42,6 +43,13 @@ interface UsuarioContextValue {
   usuario: Digitadora | null
   carregando: boolean
   erro: string | null
+  /** Perfil de acesso (abas liberadas) de quem está logado; null sem usuário ou se a API não respondeu. */
+  acesso: Acesso | null
+  carregandoAcesso: boolean
+  /** Caminhos das abas liberadas. Sem usuário (ou sem perfil), só Campanhas. */
+  abasPermitidas: string[]
+  /** Primeira aba liberada (onde a pessoa "cai" ao entrar). */
+  primeiraAba: string
   /** Passa a ver o sistema como essa pessoa (null = sair). */
   entrarComo: (idPessoa: number | null) => void
 }
@@ -56,6 +64,11 @@ export function UsuarioProvider({ children }: { children: ReactNode }) {
     [idPessoa],
   )
 
+  const acesso = useApiResource(
+    (signal) => (idPessoa ? getAcesso(idPessoa, signal) : Promise.resolve(null)),
+    [idPessoa],
+  )
+
   const entrarComo = useCallback((id: number | null) => {
     if (!PERMITIR_TROCA_USUARIO) return
     setIdPessoa(id)
@@ -63,8 +76,21 @@ export function UsuarioProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const value = useMemo<UsuarioContextValue>(
-    () => ({ idPessoa, usuario: pessoa.data, carregando: pessoa.loading, erro: pessoa.error, entrarComo }),
-    [idPessoa, pessoa.data, pessoa.loading, pessoa.error, entrarComo],
+    () => {
+      const abas = acesso.data?.abas?.length ? acesso.data.abas : ['/campaigns']
+      return {
+        idPessoa,
+        usuario: pessoa.data,
+        carregando: pessoa.loading,
+        erro: pessoa.error,
+        acesso: acesso.data,
+        carregandoAcesso: !!idPessoa && acesso.loading,
+        abasPermitidas: abas,
+        primeiraAba: abas[0],
+        entrarComo,
+      }
+    },
+    [idPessoa, pessoa.data, pessoa.loading, pessoa.error, acesso.data, acesso.loading, entrarComo],
   )
 
   return <UsuarioContext.Provider value={value}>{children}</UsuarioContext.Provider>

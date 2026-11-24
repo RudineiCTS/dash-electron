@@ -19,13 +19,15 @@ function classeAba(isActive: boolean, vertical: boolean) {
  * uma faixa horizontal rolável logo abaixo do header.
  */
 export function WebLayout() {
-  const { idPessoa, entrarComo } = useUsuario()
+  const { idPessoa, entrarComo, abasPermitidas, primeiraAba } = useUsuario()
+  /** Só as abas liberadas para o perfil de quem está logado. */
+  const abas = ABAS.filter((a) => abasPermitidas.includes(a.to))
 
   return (
     <div className="min-h-dvh bg-github-bg text-github-text">
       <header className="sticky top-0 z-10 bg-[#32307B] pt-[env(safe-area-inset-top)] text-white shadow-sm">
         <div className="flex h-14 w-full items-center gap-2 pl-[max(1rem,env(safe-area-inset-left))] pr-[max(0.5rem,env(safe-area-inset-right))] sm:px-6">
-          <Link to="/campaigns" className="flex shrink-0 items-center gap-2">
+          <Link to={primeiraAba} className="flex shrink-0 items-center gap-2">
             <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-[#DD8100] text-xs font-semibold">
               S
             </span>
@@ -52,7 +54,7 @@ export function WebLayout() {
           aria-label="Seções"
           className="flex gap-1 overflow-x-auto border-b border-github-border px-4 py-2 md:hidden"
         >
-          {ABAS.map((aba) => (
+          {abas.map((aba) => (
             <NavLink key={aba.to} to={aba.to} className={({ isActive }) => classeAba(isActive, false)}>
               {aba.label}
             </NavLink>
@@ -64,7 +66,7 @@ export function WebLayout() {
           aria-label="Seções"
           className="sticky top-14 hidden h-[calc(100dvh-3.5rem)] w-52 shrink-0 flex-col gap-1 border-r border-github-border p-3 md:flex"
         >
-          {ABAS.map((aba) => (
+          {abas.map((aba) => (
             <NavLink key={aba.to} to={aba.to} className={({ isActive }) => classeAba(isActive, true)}>
               {aba.label}
             </NavLink>
