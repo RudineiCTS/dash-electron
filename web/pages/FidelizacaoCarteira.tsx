@@ -48,7 +48,7 @@ export function FidelizacaoCarteira({ idPeriodo, idPessoa, nomePessoa }: Props) 
       colunas: [
         { titulo: 'Código', tipo: 'numero', largura: 10, valor: (c) => c.idPessoaCliente },
         { titulo: 'Cliente', largura: 40, valor: (c) => c.nomeCliente },
-        { titulo: 'Situação', largura: 14, valor: (c) => (c.comCompra ? 'Com compra' : 'Sem compra') },
+        { titulo: 'Situação', largura: 16, valor: (c) => (c.comCompra ? 'Positivado' : 'Não positivado') },
         { titulo: 'Cadastro', largura: 12, valor: (c) => (c.dataCadastroCliente ? dayjs(c.dataCadastroCliente).format('DD/MM/YYYY') : '') },
         { titulo: 'Limite disponível', tipo: 'moeda', largura: 16, valor: (c) => c.limiteDisponivel },
         { titulo: 'Telefone', largura: 16, valor: (c) => c.telefone },
@@ -76,8 +76,8 @@ export function FidelizacaoCarteira({ idPeriodo, idPessoa, nomePessoa }: Props) 
               }}
             >
               <option value="todos">Todos</option>
-              <option value="com">Com compra</option>
-              <option value="sem">Sem compra</option>
+              <option value="com">Positivados</option>
+              <option value="sem">Não positivados</option>
             </select>
           </label>
           <label className="relative flex flex-col gap-1 text-xs text-github-text-muted">
@@ -106,8 +106,8 @@ export function FidelizacaoCarteira({ idPeriodo, idPessoa, nomePessoa }: Props) 
 
       <p className="text-sm text-github-text-muted">
         <strong className="font-semibold text-github-text">{todos.length.toLocaleString('pt-BR')}</strong> clientes na carteira ·{' '}
-        <strong className="font-semibold text-github-text">{comCompra.toLocaleString('pt-BR')}</strong> com compra ·{' '}
-        <strong className="font-semibold text-github-text">{(todos.length - comCompra).toLocaleString('pt-BR')}</strong> sem compra
+        <strong className="font-semibold text-github-text">{comCompra.toLocaleString('pt-BR')}</strong> positivados ·{' '}
+        <strong className="font-semibold text-github-text">{(todos.length - comCompra).toLocaleString('pt-BR')}</strong> não positivados
       </p>
 
       <div className="overflow-x-auto rounded-xl border border-github-border bg-github-bg-card">
@@ -134,7 +134,7 @@ export function FidelizacaoCarteira({ idPeriodo, idPessoa, nomePessoa }: Props) 
                       c.comCompra ? 'bg-[#639922]/15 text-[#639922]' : 'bg-github-bg-hover text-github-text-muted'
                     }`}
                   >
-                    {c.comCompra ? 'Com compra' : 'Sem compra'}
+                    {c.comCompra ? 'Positivado' : 'Não positivado'}
                   </span>
                 </td>
                 <td className="hidden whitespace-nowrap px-2 py-2 text-github-text-muted md:table-cell">
@@ -167,7 +167,7 @@ export function FidelizacaoCarteira({ idPeriodo, idPessoa, nomePessoa }: Props) 
         </button>
       )}
       <p className="text-xs text-github-text-muted">
-        “Com compra” é o cliente que aparece nos clientes calculados dos KPIs desta pessoa no período.
+        “Positivado” é o cliente que aparece nos clientes calculados dos KPIs desta pessoa no período.
       </p>
     </section>
   )

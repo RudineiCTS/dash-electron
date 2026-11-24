@@ -13,9 +13,9 @@ const TAMANHO = 50
 const campo = 'h-9 rounded-md border border-github-border bg-github-bg-card px-2.5 text-sm text-github-text'
 
 const SITUACOES: { id: SituacaoCarteira; label: string }[] = [
-  { id: 'pendentes', label: 'A positivar' },
-  { id: 'positivados', label: 'Positivados' },
   { id: 'todos', label: 'Todos' },
+  { id: 'positivados', label: 'Positivados' },
+  { id: 'pendentes', label: 'Não positivados' },
 ]
 
 /** "POSITIVAÇÃO BOTICÁRIO EXCLUSIVO" -> "BOTICÁRIO EXCLUSIVO" (só para exibir). */
@@ -123,7 +123,7 @@ export function ExclusivasCarteira({ mes, onMes, idPessoaFiltro, ehGestor }: Exc
         colunas: [
           { titulo: 'Código', tipo: 'numero', largura: 10, valor: (c) => c.idPessoaCliente },
           { titulo: 'Cliente', largura: 40, valor: (c) => c.nomeCliente },
-          { titulo: 'Situação', largura: 14, valor: (c) => (c.positivou ? 'Positivado' : 'A positivar') },
+          { titulo: 'Situação', largura: 14, valor: (c) => (c.positivou ? 'Positivado' : 'Não positivado') },
           ...(ehGestor ? [{ titulo: 'Operador', largura: 32, valor: (c: (typeof todos)[number]) => c.digitador }] : []),
           { titulo: 'Pedidos', tipo: 'numero', largura: 9, valor: (c) => c.pedidos },
           { titulo: 'Venda líquida', tipo: 'moeda', largura: 14, valor: (c) => c.totalVenda },
@@ -159,26 +159,24 @@ export function ExclusivasCarteira({ mes, onMes, idPessoaFiltro, ehGestor }: Exc
         />
         {industriaAtiva && (
           <>
-            <div role="tablist" aria-label="Situação" className="flex gap-0.5 rounded-lg bg-github-bg-hover p-0.5">
-              {SITUACOES.map((s) => (
-                <button
-                  key={s.id}
-                  role="tab"
-                  type="button"
-                  aria-selected={situacao === s.id}
-                  onClick={() => {
-                    setSituacao(s.id)
-                    setPagina(1)
-                    setAberto(null)
-                  }}
-                  className={`h-8 rounded-md px-3 text-sm font-medium ${
-                    situacao === s.id ? 'bg-github-bg-card text-github-text shadow-sm' : 'text-github-text-muted'
-                  }`}
-                >
-                  {s.label}
-                </button>
-              ))}
-            </div>
+            <label className="flex flex-col gap-1 text-xs text-github-text-muted">
+              Situação
+              <select
+                className={campo}
+                value={situacao}
+                onChange={(e) => {
+                  setSituacao(e.target.value as SituacaoCarteira)
+                  setPagina(1)
+                  setAberto(null)
+                }}
+              >
+                {SITUACOES.map((x) => (
+                  <option key={x.id} value={x.id}>
+                    {x.label}
+                  </option>
+                ))}
+              </select>
+            </label>
             <label className="relative block w-full sm:w-64">
               <span className="sr-only">Buscar cliente</span>
               <Search size={16} className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-github-text-muted" />
@@ -230,7 +228,7 @@ export function ExclusivasCarteira({ mes, onMes, idPessoaFiltro, ehGestor }: Exc
                     <div className="h-full rounded-full bg-[#639922]" style={{ width: `${Math.max(pct, pct > 0 ? 2 : 0)}%` }} />
                   </div>
                   <p className="mt-2 text-xs text-github-text-muted">
-                    <strong className="font-semibold text-github-text">{r.pendentes.toLocaleString('pt-BR')}</strong> a positivar
+                    <strong className="font-semibold text-github-text">{r.pendentes.toLocaleString('pt-BR')}</strong> não positivados
                   </p>
                 </button>
               </li>
@@ -264,12 +262,17 @@ export function ExclusivasCarteira({ mes, onMes, idPessoaFiltro, ehGestor }: Exc
                 <Download size={15} /> {exportando ?? `Exportar Excel (${total.toLocaleString('pt-BR')})`}
               </button>
             </div>
-            <p className="text-sm text-github-text-muted">
-              <strong className="font-semibold text-github-text">{total.toLocaleString('pt-BR')}</strong> clientes em{' '}
-              {nomeIndustria(industriaAtiva)}
-              {situacao === 'positivados' && ' · positivados no mês'}
-              {situacao === 'pendentes' && ' · ainda sem positivação no mês'}
-            </p>
+            {(() => {
+              const r = resumo.data?.find((x) => (x.industria ?? '') === industriaAtiva)
+              return r ? (
+                <p className="text-sm text-github-text-muted">
+                  <strong className="font-semibold text-github-text">{r.carteira.toLocaleString('pt-BR')}</strong> clientes na carteira de{' '}
+                  {nomeIndustria(industriaAtiva)} ·{' '}
+                  <strong className="font-semibold text-github-text">{r.positivados.toLocaleString('pt-BR')}</strong> positivados ·{' '}
+                  <strong className="font-semibold text-github-text">{r.pendentes.toLocaleString('pt-BR')}</strong> não positivados
+                </p>
+              ) : null
+            })()}
             <div className="overflow-x-auto rounded-xl border border-github-border bg-github-bg-card">
               <table className="w-full text-left text-sm">
                 <thead className="bg-github-bg-hover text-[10px] uppercase tracking-wide text-github-text-muted">
@@ -311,7 +314,7 @@ export function ExclusivasCarteira({ mes, onMes, idPessoaFiltro, ehGestor }: Exc
                                 c.positivou ? 'bg-[#639922]/15 text-[#639922]' : 'bg-github-bg-hover text-github-text-muted'
                               }`}
                             >
-                              {c.positivou ? 'Positivado' : 'A positivar'}
+                              {c.positivou ? 'Positivado' : 'Não positivado'}
                             </span>
                           </td>
                           {ehGestor && <td className="max-w-[12rem] truncate px-2 py-1.5">{c.digitador ?? '-'}</td>}
