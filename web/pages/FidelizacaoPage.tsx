@@ -113,14 +113,14 @@ function CardKpi({ l, ativo, onAbrir }: { l: FidelizacaoLinha; ativo: boolean; o
 }
 
 /**
- * Fidelização por usuário logado ("Entrar como…"), com o resultado já calculado da comissão do Televendas.
+ * Fidelização por usuário logado (login), com o resultado já calculado da comissão do Televendas.
  *  - Gestor: vê o time e, ao escolher uma pessoa, os KPIs dela.
  *  - Demais: só os próprios KPIs.
  */
 export default function FidelizacaoPage() {
   const { idPessoa, usuario } = useUsuario()
   const { ehGestor, carregando: carregandoGestor } = useGestor(idPessoa)
-  const pronto = !!idPessoa && !carregandoGestor
+  const pronto = (!!idPessoa || ehGestor) && !carregandoGestor
   const idPessoaFiltro = ehGestor ? null : idPessoa
 
   const periodos = useApiResource((signal) => getFidelizacaoPeriodos(signal), [])
@@ -212,7 +212,7 @@ export default function FidelizacaoPage() {
         <EmptyState
           message={
             PERMITIR_TROCA_USUARIO
-              ? 'Escolha um usuário em “Entrar como…” no topo para ver a fidelização.'
+              ? 'Seu usuário não está ligado a uma pessoa do televendas, então não há fidelização para mostrar.'
               : 'Faça login para ver a fidelização.'
           }
         />

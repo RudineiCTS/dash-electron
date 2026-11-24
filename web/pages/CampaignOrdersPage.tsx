@@ -82,7 +82,7 @@ export default function CampaignOrdersPage() {
         <EmptyState
           message={
             PERMITIR_TROCA_USUARIO
-              ? 'Escolha um usuário em “Entrar como…” no topo para ver os pedidos.'
+              ? 'Seu usuário não está ligado a uma pessoa do televendas, então não há pedidos para mostrar.'
               : 'Você precisa estar logado para ver os seus pedidos.'
           }
         />

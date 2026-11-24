@@ -34,7 +34,7 @@ function data(valor: string | null) {
 }
 
 /**
- * Exclusivas por usuário logado ("Entrar como…").
+ * Exclusivas por usuário logado (login).
  *  - Gestor (supervisiona alguém da base): vê todas as indústrias; ao escolher uma, os clientes aparecem embaixo.
  *  - Demais: só as exclusivas e os clientes da própria pessoa.
  * Clicar em um cliente abre os pedidos dele. Sem usuário, a tela pede para entrar (como em "Meus pedidos").
@@ -42,7 +42,7 @@ function data(valor: string | null) {
 export default function ExclusivasPage() {
   const { idPessoa, usuario } = useUsuario()
   const { ehGestor, carregando: carregandoGestor } = useGestor(idPessoa)
-  const pronto = !!idPessoa && !carregandoGestor
+  const pronto = (!!idPessoa || ehGestor) && !carregandoGestor
   /** null = de todos (gestor). */
   const idPessoaFiltro = ehGestor ? null : idPessoa
 
@@ -167,11 +167,11 @@ export default function ExclusivasPage() {
         <ExclusivasCarteira mes={mes} onMes={setMes} idPessoaFiltro={idPessoaFiltro} ehGestor={ehGestor} />
       ) : (
         <>
-      {!idPessoa && (
+      {!idPessoa && !ehGestor && (
         <EmptyState
           message={
             PERMITIR_TROCA_USUARIO
-              ? 'Escolha um usuário em “Entrar como…” no topo para ver as exclusivas.'
+              ? 'Seu usuário não está ligado a uma pessoa do televendas, então não há exclusivas para mostrar.'
               : 'Entre no sistema para ver as suas exclusivas.'
           }
         />
@@ -231,7 +231,7 @@ export default function ExclusivasPage() {
         </section>
       )}
 
-      {idPessoa && (carregandoGestor || resumo.loading) && (
+      {(idPessoa || ehGestor) && (carregandoGestor || resumo.loading) && (
         <div className="h-24 animate-pulse rounded-xl border border-github-border bg-github-bg-card" aria-busy="true" />
       )}
       {pronto && resumo.error && <ErrorState message={resumo.error} onRetry={resumo.reload} />}

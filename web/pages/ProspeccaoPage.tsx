@@ -32,14 +32,14 @@ function corDoTipo(tipo: string | null) {
 }
 
 /**
- * Prospecção por usuário logado ("Entrar como…"): painel de clientes do mês.
+ * Prospecção por usuário logado (login): painel de clientes do mês.
  *  - Gestor: vê os clientes de todas as operadoras e pode filtrar por uma.
  *  - Demais: só os próprios clientes.
  */
 export default function ProspeccaoPage() {
   const { idPessoa, usuario } = useUsuario()
   const { ehGestor, carregando: carregandoGestor } = useGestor(idPessoa)
-  const pronto = !!idPessoa && !carregandoGestor
+  const pronto = (!!idPessoa || ehGestor) && !carregandoGestor
   const idPessoaFiltro = ehGestor ? null : idPessoa
 
   const meses = useApiResource((signal) => getProspeccaoMeses(signal), [])
@@ -145,7 +145,7 @@ export default function ProspeccaoPage() {
         <EmptyState
           message={
             PERMITIR_TROCA_USUARIO
-              ? 'Escolha um usuário em “Entrar como…” no topo para ver a prospecção.'
+              ? 'Seu usuário não está ligado a uma pessoa do televendas, então não há prospecção para mostrar.'
               : 'Faça login para ver a prospecção.'
           }
         />

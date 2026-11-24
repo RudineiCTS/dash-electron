@@ -74,7 +74,7 @@ export default function CampaignDetailPage() {
           {tipo && ` · ${tipo}`}
         </span>
 
-        {/* Pedidos só do usuário logado (no header, "Entrar como…") */}
+        {/* Pedidos só do usuário logado (precisa estar ligado a uma pessoa do televendas) */}
         {idPessoa ? (
           <Link
             to={`/campaigns/details/${idCampaign}/pedidos?competencia=${competencia}`}
@@ -86,7 +86,7 @@ export default function CampaignDetailPage() {
           <button
             type="button"
             disabled
-            title="Escolha um usuário em “Entrar como…” no topo"
+            title="Seu usuário não está ligado a uma pessoa do televendas"
             className="flex h-8 cursor-not-allowed items-center gap-1.5 rounded-md bg-github-btn-green px-3 text-sm font-medium text-white opacity-50 sm:ml-auto"
           >
             <ClipboardList size={15} /> Ver meus pedidos
