@@ -141,6 +141,17 @@ export default function FidelizacaoPage() {
 
   const linhas = useMemo(() => resultado.data ?? [], [resultado.data])
   const pessoas = useMemo(() => resumirPessoas(linhas), [linhas])
+  /** Somatório do time (linha de total da tabela). */
+  const totalTime = useMemo(() => {
+    const comMeta = linhas.filter((l) => l.valorMeta > 0)
+    return {
+      pessoas: pessoas.length,
+      kpis: pessoas.reduce((s, p) => s + p.kpis, 0),
+      batidos: pessoas.reduce((s, p) => s + p.batidos, 0),
+      premio: pessoas.reduce((s, p) => s + p.premio, 0),
+      media: comMeta.length ? comMeta.reduce((s, l) => s + l.realizado, 0) / comMeta.length : 0,
+    }
+  }, [linhas, pessoas])
   const periodoAtual = periodos.data?.find((p) => p.idPeriodo === idPeriodo)
   const calculadoEm = linhas.map((l) => l.dataCalculo).filter((d): d is string => !!d).sort().at(-1)
 
@@ -242,6 +253,20 @@ export default function FidelizacaoPage() {
                 )
               })}
             </tbody>
+            <tfoot>
+              <tr className="border-t-2 border-github-border bg-github-bg-hover font-semibold">
+                <td className="py-2 pl-3">Somatório do time</td>
+                <td className="px-2 py-2 text-xs font-normal text-github-text-muted">
+                  {totalTime.pessoas} {totalTime.pessoas === 1 ? 'pessoa' : 'pessoas'}
+                </td>
+                <td className="px-2 py-2 text-right">
+                  {totalTime.batidos}/{totalTime.kpis}
+                </td>
+                <td className="px-2 py-2 text-right">{percentual(totalTime.media)}</td>
+                <td className="px-2 py-2 text-right">{formatCurrency(totalTime.premio)}</td>
+                <td />
+              </tr>
+            </tfoot>
           </table>
         </section>
       ) : (
