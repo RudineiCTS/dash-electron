@@ -143,6 +143,9 @@ export interface FidelizacaoPedidoNaoFaturado {
 export interface FidelizacaoPedidosNaoFaturados {
   /** Período que a tabela guarda (um só: o da última carga). Null se nunca foi carregada. */
   idPeriodo: number | null
+  /** Início e fim do período que a tabela guarda. */
+  periodoInicio: string | null
+  periodoFim: string | null
   geradoEm: string | null
   itens: FidelizacaoPedidoNaoFaturado[]
 }

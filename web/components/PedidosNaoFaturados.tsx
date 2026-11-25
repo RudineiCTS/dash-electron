@@ -1,8 +1,8 @@
 import { useMemo, useState } from 'react'
 import dayjs from 'dayjs'
 import { Download, Search } from 'lucide-react'
-import { EmptyState, ErrorState } from '../components/StateViews'
-import { ThOrdenavel } from '../components/ThOrdenavel'
+import { EmptyState, ErrorState } from './StateViews'
+import { ThOrdenavel } from './ThOrdenavel'
 import { exportarExcel } from '../lib/exportarExcel'
 import { getFidelizacaoPedidosNaoFaturados, type FidelizacaoPedidoNaoFaturado } from '../lib/fidelizacao'
 import { formatCurrency } from '../lib/format'
@@ -13,7 +13,6 @@ const PAGE_SIZE = 40
 const campo = 'h-9 rounded-md border border-github-border bg-github-bg-card px-2.5 text-sm text-github-text'
 
 type GrupoSituacao = 'todas' | 'afaturar' | 'excluidas' | 'devolucoes'
-type Origem = 'todas' | 'CARTEIRA' | 'DIGITOU' | 'AMBOS'
 type TipoCarteira = 'todas' | 'LOJA VIRTUAL' | 'SETOR'
 
 /** Situação do pedido (operação 4): 1 Aberto, 2 Liberado, 3 Estoque, 4 A Faturar; 6 Excluída; 7 Devolução Parcial; 8 Devolução Total. */
@@ -23,8 +22,6 @@ function grupoDe(idSituacao: number): Exclude<GrupoSituacao, 'todas'> {
   return 'afaturar'
 }
 
-const ROTULO_ORIGEM: Record<string, string> = { CARTEIRA: 'Carteira', DIGITOU: 'Digitou', AMBOS: 'Carteira e digitou' }
-
 function corDaSituacao(idSituacao: number) {
   const g = grupoDe(idSituacao)
   if (g === 'excluidas') return 'bg-other-redflag/10 text-other-redflag'
@@ -33,33 +30,32 @@ function corDaSituacao(idSituacao: number) {
 }
 
 interface Props {
-  /** Período que está aberto na tela. */
-  idPeriodo: number
   idPessoa: number
+  /** Mês aberto na tela ("YYYY-MM"). */
+  mes: string
   nomePessoa: string
 }
 
 /**
- * Pedidos que ainda não entraram na apuração (a apuração só vê pedido faturado): não faturados, excluídos e devoluções,
- * da carteira da pessoa ou digitados por ela. Vem da tabela gravada pela procedure
- * uspUsuComissaoVendasPedidoNaoFaturadoCarga, que guarda um período só (o da última carga).
+ * Pedidos DIGITADOS pela pessoa que ainda não entraram na apuração (a apuração só vê pedido faturado): não faturados,
+ * excluídos e devoluções. Vem da tabela gravada pela procedure uspUsuComissaoVendasPedidoNaoFaturadoCarga, que guarda
+ * um período só (o da última carga). Aqui só vale quem digitou: pedido só da carteira fica de fora.
  */
-export function FidelizacaoPedidosNaoFaturados({ idPeriodo, idPessoa, nomePessoa }: Props) {
+export function PedidosNaoFaturados({ idPessoa, mes, nomePessoa }: Props) {
   const resposta = useApiResource((signal) => getFidelizacaoPedidosNaoFaturados(idPessoa, signal), [idPessoa])
   const [grupo, setGrupo] = useState<GrupoSituacao>('todas')
-  const [origem, setOrigem] = useState<Origem>('todas')
   const [tipoCarteira, setTipoCarteira] = useState<TipoCarteira>('todas')
   const [busca, setBusca] = useState('')
   const [limite, setLimite] = useState(PAGE_SIZE)
 
-  const todos = useMemo(() => resposta.data?.itens ?? [], [resposta.data])
+  // só o que a pessoa digitou (DIGITOU ou AMBOS); o que é só da carteira não conta aqui
+  const todos = useMemo(() => (resposta.data?.itens ?? []).filter((p) => p.origem !== 'CARTEIRA'), [resposta.data])
 
   const visiveis = useMemo(() => {
     const termo = busca.trim().toLowerCase()
     return todos.filter(
       (p) =>
         (grupo === 'todas' || grupoDe(p.idSituacao) === grupo) &&
-        (origem === 'todas' || p.origem === origem) &&
         (tipoCarteira === 'todas' || p.tipoCarteira === tipoCarteira) &&
         (!termo ||
           (p.nomeCliente ?? '').toLowerCase().includes(termo) ||
@@ -67,13 +63,12 @@ export function FidelizacaoPedidosNaoFaturados({ idPeriodo, idPessoa, nomePessoa
           String(p.idPedido).includes(termo) ||
           String(p.idPrePedido ?? '').includes(termo)),
     )
-  }, [todos, grupo, origem, tipoCarteira, busca])
+  }, [todos, grupo, tipoCarteira, busca])
 
   const { ordenadas, ord, alternar } = useOrdenacao(visiveis, {
     pedido: (p) => p.idPedido,
     cliente: (p) => p.nomeCliente,
     situacao: (p) => p.situacao,
-    origem: (p) => p.origem,
     carteira: (p) => p.tipoCarteira,
     origemPedido: (p) => p.origemDoPedido,
     data: (p) => p.dataPedido,
@@ -85,7 +80,6 @@ export function FidelizacaoPedidosNaoFaturados({ idPeriodo, idPessoa, nomePessoa
     const termo = busca.trim().toLowerCase()
     const base = todos.filter(
       (p) =>
-        (origem === 'todas' || p.origem === origem) &&
         (tipoCarteira === 'todas' || p.tipoCarteira === tipoCarteira) &&
         (!termo ||
           (p.nomeCliente ?? '').toLowerCase().includes(termo) ||
@@ -98,11 +92,11 @@ export function FidelizacaoPedidosNaoFaturados({ idPeriodo, idPessoa, nomePessoa
       return { qtd: l.length, valor: l.reduce((s, p) => s + p.valorTotal, 0) }
     }
     return { afaturar: soma('afaturar'), excluidas: soma('excluidas'), devolucoes: soma('devolucoes') }
-  }, [todos, origem, tipoCarteira, busca])
+  }, [todos, tipoCarteira, busca])
 
   function baixarExcel() {
     exportarExcel<FidelizacaoPedidoNaoFaturado>({
-      arquivo: `pedidos-nao-faturados-${nomePessoa}-${idPeriodo}`.replace(/\s+/g, '-'),
+      arquivo: `pedidos-nao-faturados-${nomePessoa}-${mes}`.replace(/\s+/g, '-'),
       aba: 'Pedidos',
       linhas: ordenadas,
       colunas: [
@@ -111,7 +105,6 @@ export function FidelizacaoPedidosNaoFaturados({ idPeriodo, idPessoa, nomePessoa
         { titulo: 'Cód. cliente', tipo: 'numero', largura: 12, valor: (p) => p.idCliente },
         { titulo: 'Cliente', largura: 40, valor: (p) => p.nomeCliente },
         { titulo: 'Situação', largura: 18, valor: (p) => p.situacao },
-        { titulo: 'Origem', largura: 18, valor: (p) => ROTULO_ORIGEM[p.origem] ?? p.origem },
         { titulo: 'Carteira', largura: 14, valor: (p) => (p.tipoCarteira === 'LOJA VIRTUAL' ? 'Loja Virtual' : 'Setor') },
         { titulo: 'Origem do pedido', largura: 26, valor: (p) => p.origemDoPedido },
         { titulo: 'Data do pedido', largura: 14, valor: (p) => dayjs(p.dataPedido).format('DD/MM/YYYY') },
@@ -127,10 +120,10 @@ export function FidelizacaoPedidosNaoFaturados({ idPeriodo, idPessoa, nomePessoa
   if (!dados || dados.idPeriodo == null) {
     return <EmptyState message="Os pedidos não faturados ainda não foram carregados." />
   }
-  if (dados.idPeriodo !== idPeriodo) {
-    return <EmptyState message="Os pedidos não faturados estão carregados para outro período. Escolha o período mais recente para ver." />
+  if (!dados.periodoInicio || dayjs(dados.periodoInicio).format('YYYY-MM') !== mes) {
+    return <EmptyState message="Os pedidos não faturados estão carregados para outro mês. Escolha o mês mais recente para ver." />
   }
-  if (todos.length === 0) return <EmptyState message="Esta pessoa não tem pedidos não faturados, excluídos ou com devolução neste período." />
+  if (todos.length === 0) return <EmptyState message="Esta pessoa não digitou pedidos não faturados, excluídos ou com devolução neste mês." />
 
   const cartao = (id: Exclude<GrupoSituacao, 'todas'>, titulo: string, ajuda: string, t: { qtd: number; valor: number }) => (
     <button
@@ -161,22 +154,6 @@ export function FidelizacaoPedidosNaoFaturados({ idPeriodo, idPessoa, nomePessoa
 
       <div className="flex flex-wrap items-end justify-between gap-2">
         <div className="flex flex-wrap items-end gap-2">
-          <label className="flex flex-col gap-1 text-xs text-github-text-muted">
-            Origem
-            <select
-              className={campo}
-              value={origem}
-              onChange={(e) => {
-                setOrigem(e.target.value as Origem)
-                setLimite(PAGE_SIZE)
-              }}
-            >
-              <option value="todas">Todas</option>
-              <option value="CARTEIRA">Carteira</option>
-              <option value="DIGITOU">Digitou</option>
-              <option value="AMBOS">Carteira e digitou</option>
-            </select>
-          </label>
           <label className="flex flex-col gap-1 text-xs text-github-text-muted">
             Carteira
             <select
@@ -217,7 +194,7 @@ export function FidelizacaoPedidosNaoFaturados({ idPeriodo, idPessoa, nomePessoa
       </div>
 
       <p className="text-xs text-github-text-muted">
-        Pedidos da carteira ou digitados por {nomePessoa}. O valor é o total da nota (na devolução parcial, não é só o que foi devolvido).
+        Pedidos digitados por {nomePessoa}. O valor é o total da nota (na devolução parcial, não é só o que foi devolvido).
         {dados.geradoEm && <> Atualizado em {dayjs(dados.geradoEm).format('DD/MM HH:mm')}.</>}
       </p>
 
@@ -228,7 +205,6 @@ export function FidelizacaoPedidosNaoFaturados({ idPeriodo, idPessoa, nomePessoa
               <ThOrdenavel rotulo="Pedido" chave="pedido" ord={ord} onAlternar={alternar} className="py-2 pl-3 font-medium" />
               <ThOrdenavel rotulo="Cliente" chave="cliente" ord={ord} onAlternar={alternar} className="px-2 py-2 font-medium" />
               <ThOrdenavel rotulo="Situação" chave="situacao" ord={ord} onAlternar={alternar} className="px-2 py-2 font-medium" />
-              <ThOrdenavel rotulo="Origem" chave="origem" ord={ord} onAlternar={alternar} className="hidden px-2 py-2 font-medium md:table-cell" />
               <ThOrdenavel rotulo="Carteira" chave="carteira" ord={ord} onAlternar={alternar} className="hidden px-2 py-2 font-medium sm:table-cell" />
               <ThOrdenavel rotulo="Origem do pedido" chave="origemPedido" ord={ord} onAlternar={alternar} className="hidden px-2 py-2 font-medium lg:table-cell" />
               <ThOrdenavel rotulo="Data" chave="data" ord={ord} onAlternar={alternar} className="hidden px-2 py-2 font-medium md:table-cell" />
@@ -248,7 +224,6 @@ export function FidelizacaoPedidosNaoFaturados({ idPeriodo, idPessoa, nomePessoa
                 <td className="px-2 py-2">
                   <span className={`inline-block whitespace-nowrap rounded px-1.5 text-[11px] font-medium ${corDaSituacao(p.idSituacao)}`}>{p.situacao}</span>
                 </td>
-                <td className="hidden whitespace-nowrap px-2 py-2 text-github-text-muted md:table-cell">{ROTULO_ORIGEM[p.origem] ?? p.origem}</td>
                 <td className="hidden whitespace-nowrap px-2 py-2 sm:table-cell">
                   <span
                     className={`inline-block rounded px-1.5 text-[11px] font-medium ${
