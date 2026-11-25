@@ -8,6 +8,7 @@ import { useGestor } from '../auth/useGestor'
 import { ProgressBar } from '../components/ProgressBar'
 import { EmptyState, ErrorState } from '../components/StateViews'
 import { FidelizacaoCarteira } from './FidelizacaoCarteira'
+import { FidelizacaoPedidosNaoFaturados } from './FidelizacaoPedidosNaoFaturados'
 import { FidelizacaoDetalhe } from './FidelizacaoDetalhe'
 import { getFidelizacaoPeriodos, getFidelizacaoResultado, type FidelizacaoLinha } from '../lib/fidelizacao'
 import { formatCurrency } from '../lib/format'
@@ -131,7 +132,7 @@ export default function FidelizacaoPage() {
   /** KPI aberto (clientes). */
   const [kpiAberto, setKpiAberto] = useState<FidelizacaoLinha | null>(null)
   /** Dentro da pessoa: os KPIs ou a carteira dela. */
-  const [visao, setVisao] = useState<'kpis' | 'carteira'>('kpis')
+  const [visao, setVisao] = useState<'kpis' | 'carteira' | 'pedidos'>('kpis')
 
   /** Período de hoje; se nenhum contém hoje, o mais recente. */
   useEffect(() => {
@@ -313,6 +314,7 @@ export default function FidelizacaoPage() {
               [
                 { id: 'kpis', label: 'KPIs' },
                 { id: 'carteira', label: 'Carteira' },
+                { id: 'pedidos', label: 'Pedidos não faturados' },
               ] as const
             ).map((t) => (
               <button
@@ -329,6 +331,8 @@ export default function FidelizacaoPage() {
           </div>
           {visao === 'carteira' && pessoaAberta != null && idPeriodo != null ? (
             <FidelizacaoCarteira idPeriodo={idPeriodo} idPessoa={pessoaAberta} nomePessoa={dadosPessoa?.pessoa ?? usuario?.operatorName ?? 'pessoa'} />
+          ) : visao === 'pedidos' && pessoaAberta != null && idPeriodo != null ? (
+            <FidelizacaoPedidosNaoFaturados idPeriodo={idPeriodo} idPessoa={pessoaAberta} nomePessoa={dadosPessoa?.pessoa ?? usuario?.operatorName ?? 'pessoa'} />
           ) : kpis.length === 0 ? (
             <EmptyState message="Nenhum KPI calculado para esta pessoa no período." />
           ) : (
