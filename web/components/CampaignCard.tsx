@@ -2,30 +2,32 @@ import { Link } from 'react-router-dom'
 import { ChevronRight } from 'lucide-react'
 import type { CampaignSummary } from '@shared/interfaces/CampaignSummary'
 import { formatCurrency, formatPercent, formatSummaryMetric } from '../lib/format'
-import {  temMeta } from '../lib/status'
+import type { PosicaoCampanha } from '../lib/posicoes'
+import { statusDoCard, temMeta } from '../lib/status'
+import type { VisibilidadeCampanha } from '../lib/visibilidade'
+import { AvisoOcultoAdmin } from './AvisoOcultoAdmin'
+import { PosicaoBadge } from './PosicaoBadge'
 import { ProgressBar } from './ProgressBar'
 import { Stat } from './Stat'
+import { ValorOculto } from './ValorOculto'
 
 interface CampaignCardProps {
   campaign: CampaignSummary
   /** Competência (YYYY-MM-DD) para o link de detalhe manter o mesmo mês. */
   competencia: string
+  /** Posição do usuário logado no ranking desta campanha; sem ela (campanha sem ranking) não há selo. */
+  posicao?: PosicaoCampanha
+  /** Só para o administrador: o que desta campanha está escondido dos usuários comuns. */
+  regraOculta?: VisibilidadeCampanha
 }
 
-/**
- * Cor por status: verde = bateu a meta (>= 100%), laranja = em andamento (50% a 99%),
- * vermelho = abaixo de 50%. Usada na faixa lateral, na barra e no percentual.
- */
-function statusDoCard(percent: number, comMeta: boolean) {
-  if (!comMeta) return { faixa: 'border-l-[#888780]', barra: 'bg-[#888780]', texto: 'text-github-text-muted' }
-  if (percent >= 100) return { faixa: 'border-l-[#3B6D11]', barra: 'bg-[#3B6D11]', texto: 'text-[#3B6D11]' }
-  if (percent >= 50) return { faixa: 'border-l-[#EF9F27]', barra: 'bg-[#EF9F27]', texto: 'text-github-text' }
-  return { faixa: 'border-l-[#E24B4A]', barra: 'bg-[#E24B4A]', texto: 'text-[#E24B4A]' }
-}
-
-export function CampaignCard({ campaign: c, competencia }: CampaignCardProps) {
-  const comMeta = temMeta(c)
-  const status = statusDoCard(c.percentageAchieved, comMeta)
+export function CampaignCard({ campaign: c, competencia, posicao, regraOculta }: CampaignCardProps) {
+  // Escondidos pelo administrador (usuário comum): os valores chegam null e não entram em nenhuma conta
+  const apuradoOculto = !!c.assessedHidden
+  const premioOculto = !!c.prizeHidden
+  const comMeta = temMeta(c) && !apuradoOculto
+  const percentual = c.percentageAchieved ?? 0
+  const status = statusDoCard(percentual, comMeta)
 
   return (
     <Link
@@ -39,21 +41,29 @@ export function CampaignCard({ campaign: c, competencia }: CampaignCardProps) {
           </p>
           <h2 className="mt-0.5 line-clamp-2 text-base font-semibold text-github-text">{c.campaignDescription}</h2>
         </div>
-        <ChevronRight size={20} className="mt-1 shrink-0 text-github-text-muted" aria-hidden />
+        <div className="mt-0.5 flex shrink-0 items-center gap-1.5">
+          {posicao && <PosicaoBadge posicao={posicao} />}
+          <ChevronRight size={20} className="text-github-text-muted" aria-hidden />
+        </div>
       </div>
 
       <div className="mt-2 flex items-center gap-2">
-        <ProgressBar percent={comMeta ? c.percentageAchieved : 0} colorClass={status.barra} />
+        <ProgressBar percent={comMeta ? percentual : 0} colorClass={status.barra} />
         <span className={`shrink-0 text-xs font-semibold ${status.texto}`}>
-          {comMeta ? formatPercent(c.percentageAchieved) : 'Sem meta'}
+          {apuradoOculto ? <ValorOculto /> : comMeta ? formatPercent(percentual) : 'Sem meta'}
         </span>
       </div>
 
       <dl className="mt-2 grid grid-cols-3 gap-x-2">
         <Stat label="Meta" value={formatSummaryMetric(c.campaignTypeDescription, c.goalValue)} />
-        <Stat label="Realizado" value={formatSummaryMetric(c.campaignTypeDescription, c.assessedValue)} />
-        <Stat label="Premiação" value={formatCurrency(c.totalAward)} />
+        <Stat
+          label="Realizado"
+          value={apuradoOculto ? <ValorOculto /> : formatSummaryMetric(c.campaignTypeDescription, c.assessedValue)}
+        />
+        <Stat label="Premiação" value={premioOculto ? <ValorOculto /> : formatCurrency(c.totalAward)} />
       </dl>
+
+      {regraOculta && <AvisoOcultoAdmin regra={regraOculta} className="mt-2" />}
     </Link>
   )
 }

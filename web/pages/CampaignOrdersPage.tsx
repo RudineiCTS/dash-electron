@@ -9,6 +9,7 @@ import { PERMITIR_TROCA_USUARIO, useUsuario } from '../auth/UsuarioContext'
 import { useGestor } from '../auth/useGestor'
 import { PainelDesempenho } from '../components/PainelDesempenho'
 import { Stat } from '../components/Stat'
+import { ValorOculto } from '../components/ValorOculto'
 import { EmptyState, ErrorState } from '../components/StateViews'
 import { montarDesempenho } from '../lib/desempenho'
 import { defaultCompetencia, formatCurrency, formatDetailMetric, formatPercent } from '../lib/format'
@@ -63,11 +64,14 @@ export default function CampaignOrdersPage() {
   const dataApuracao = pedidos.data?.appraisalDate ? dayjs(pedidos.data.appraisalDate).format('DD/MM/YYYY HH:mm') : '—'
 
   const semDadosDoUsuario = ranking.loading ? 'Carregando…' : '—'
+  // O administrador escondeu o apurado desta campanha: realizado, percentual e valores dos pedidos não existem para este usuário
+  const apuradoOculto = !!(resumo?.assessedHidden || meu?.assessedHidden || pedidos.data?.assessedHidden)
   // Sem meta individual não há percentual a mostrar (o ranking devolve 0,00%, que enganaria).
   const temPercentual = !!meu && (meu.individualTarget > 0 || meu.percentageAchieved > 0)
 
   // Painel "Meu desempenho": meta/prazo e posição, só com o que a tela já carregou
-  const desempenho = montarDesempenho(resumo, meu, ranking.data?.length ?? 0)
+  // "de N" conta só quem tem ranking (> 0): o mesmo critério do selo nos cards da lista de campanhas
+  const desempenho = montarDesempenho(resumo, meu, ranking.data?.filter((r) => r.ranking > 0).length ?? 0)
   const carregandoPainel = !!idAlvo && (ranking.loading || resumos.loading)
   // Sem meta e sem ranking (e sem carregar) não há painel: nem o contêiner entra, para não sobrar espaço vazio
   const temPainel = carregandoPainel || !!desempenho.meta || !!desempenho.posicao
@@ -113,11 +117,27 @@ export default function CampaignOrdersPage() {
           <dl className="grid grid-cols-2 gap-x-3 gap-y-2 sm:grid-cols-4">
             <Stat
               label={deOutraPessoa ? 'Realizado' : 'Meu realizado'}
-              value={meu ? formatDetailMetric(meu.campaignTypeDescription, meu.assessedValue) : semDadosDoUsuario}
+              value={
+                apuradoOculto ? (
+                  <ValorOculto />
+                ) : meu ? (
+                  formatDetailMetric(meu.campaignTypeDescription, meu.assessedValue)
+                ) : (
+                  semDadosDoUsuario
+                )
+              }
             />
             <Stat
               label={deOutraPessoa ? 'Percentual' : 'Meu percentual'}
-              value={meu ? (temPercentual ? formatPercent(meu.percentageAchieved) : 'Sem meta') : semDadosDoUsuario}
+              value={
+                apuradoOculto ? (
+                  <ValorOculto />
+                ) : meu ? (
+                  temPercentual ? formatPercent(meu.percentageAchieved) : 'Sem meta'
+                ) : (
+                  semDadosDoUsuario
+                )
+              }
             />
             <Stat label="Data da apuração" value={dataApuracao} />
             <Stat
@@ -196,14 +216,14 @@ export default function CampaignOrdersPage() {
                             <td className="whitespace-nowrap px-1 py-1.5 sm:px-2">{p.idClient ?? '—'}</td>
                             <td className="px-1 py-1.5 text-github-text-muted sm:px-2">{p.origin}</td>
                             <td className="whitespace-nowrap px-1 py-1.5 text-right font-semibold sm:px-2">
-                              {formatCurrency(p.total)}
+                              {apuradoOculto ? <ValorOculto /> : formatCurrency(p.total)}
                             </td>
                             <td
                               className={`whitespace-nowrap py-1.5 pl-1 pr-1.5 text-right sm:pl-2 sm:pr-3 ${
                                 p.returnValue > 0 ? 'text-other-redflag' : 'text-github-text-muted'
                               }`}
                             >
-                              {formatCurrency(p.returnValue)}
+                              {apuradoOculto ? <ValorOculto /> : formatCurrency(p.returnValue)}
                             </td>
                           </tr>
 
@@ -226,14 +246,14 @@ export default function CampaignOrdersPage() {
                                       <tr key={`${item.idProduct}-${i}`} className="border-t border-github-border/60">
                                         <td className="whitespace-nowrap py-1">{item.idProduct}</td>
                                         <td className="whitespace-nowrap px-1 py-1 text-right font-semibold">
-                                          {formatCurrency(item.total)}
+                                          {apuradoOculto ? <ValorOculto /> : formatCurrency(item.total)}
                                         </td>
                                         <td
                                           className={`whitespace-nowrap py-1 pl-1 text-right ${
-                                            item.returnValue > 0 ? 'text-other-redflag' : 'text-github-text-muted'
+                                            (item.returnValue ?? 0) > 0 ? 'text-other-redflag' : 'text-github-text-muted'
                                           }`}
                                         >
-                                          {formatCurrency(item.returnValue)}
+                                          {apuradoOculto ? <ValorOculto /> : formatCurrency(item.returnValue)}
                                         </td>
                                       </tr>
                                     ))}

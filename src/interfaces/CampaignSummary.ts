@@ -23,4 +23,13 @@ export interface CampaignSummary {
   valueType: number;
   earlyEndDate: string | null;
   considersExclusives: boolean;
+
+  /**
+   * Só no site web, para usuário comum logado: o administrador escondeu o apurado desta campanha. Os valores
+   * (assessedValue, assessedValueBees e percentageAchieved) chegam null e não devem ser usados em conta.
+   * O app desktop (sem login do site) e o administrador nunca recebem true.
+   */
+  assessedHidden?: boolean;
+  /** Idem para o prêmio: totalAward e totalPot chegam null. */
+  prizeHidden?: boolean;
 }

@@ -1,6 +1,8 @@
+import type { ReactNode } from 'react'
+
 interface StatProps {
   label: string
-  value: string | number
+  value: ReactNode
   className?: string
 }
 
