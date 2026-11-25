@@ -34,17 +34,21 @@ export function FidelizacaoCarteira({ idPeriodo, idPessoa, nomePessoa }: Props) 
   const [limite, setLimite] = useState(PAGE_SIZE)
 
   const todos = useMemo(() => carteira.data ?? [], [carteira.data])
-  const comCompra = todos.filter((c) => c.comCompra).length
   const qtdLojaVirtual = todos.filter((c) => c.tipoCarteira === 'LOJA VIRTUAL').length
-  const visiveis = useMemo(() => {
+  // base = filtros de carteira e de busca; é ela que a legenda conta (a Situação só separa positivados de não positivados)
+  const base = useMemo(() => {
     const termo = busca.trim().toLowerCase()
     return todos.filter(
       (c) =>
-        (situacao === 'todos' || (situacao === 'com' ? c.comCompra : !c.comCompra)) &&
         (tipoCarteira === 'todas' || c.tipoCarteira === tipoCarteira) &&
         (!termo || (c.nomeCliente ?? '').toLowerCase().includes(termo) || String(c.idPessoaCliente).includes(termo)),
     )
-  }, [todos, situacao, tipoCarteira, busca])
+  }, [todos, tipoCarteira, busca])
+  const comCompra = base.filter((c) => c.comCompra).length
+  const visiveis = useMemo(
+    () => base.filter((c) => situacao === 'todos' || (situacao === 'com' ? c.comCompra : !c.comCompra)),
+    [base, situacao],
+  )
 
   const { ordenadas, ord, alternar } = useOrdenacao(visiveis, {
     cliente: (c) => c.nomeCliente,
@@ -136,9 +140,11 @@ export function FidelizacaoCarteira({ idPeriodo, idPessoa, nomePessoa }: Props) 
       </div>
 
       <p className="text-sm text-github-text-muted">
-        <strong className="font-semibold text-github-text">{todos.length.toLocaleString('pt-BR')}</strong> clientes na carteira ·{' '}
+        <strong className="font-semibold text-github-text">{base.length.toLocaleString('pt-BR')}</strong> clientes na carteira
+        {tipoCarteira !== 'todas' && <> ({tipoCarteira === 'LOJA VIRTUAL' ? 'Loja Virtual' : 'Setor'})</>} ·{' '}
         <strong className="font-semibold text-github-text">{comCompra.toLocaleString('pt-BR')}</strong> positivados ·{' '}
-        <strong className="font-semibold text-github-text">{(todos.length - comCompra).toLocaleString('pt-BR')}</strong> não positivados
+        <strong className="font-semibold text-github-text">{(base.length - comCompra).toLocaleString('pt-BR')}</strong> não positivados
+        {situacao !== 'todos' && <> · mostrando <strong className="font-semibold text-github-text">{visiveis.length.toLocaleString('pt-BR')}</strong></>}
       </p>
 
       <div className="overflow-x-auto rounded-xl border border-github-border bg-github-bg-card">
