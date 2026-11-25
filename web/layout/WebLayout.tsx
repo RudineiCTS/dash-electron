@@ -1,4 +1,4 @@
-import { LogOut } from 'lucide-react'
+import { LogOut, Settings } from 'lucide-react'
 import { Link, Navigate, NavLink, Outlet, useLocation } from 'react-router-dom'
 import { useUsuario } from '../auth/UsuarioContext'
 import { LogoCompass } from '../components/LogoCompass'
@@ -20,7 +20,7 @@ function classeAba(isActive: boolean, vertical: boolean) {
  * uma faixa horizontal rolável logo abaixo do header.
  */
 export function WebLayout() {
-  const { abasPermitidas, primeiraAba, sessao, exigeLogin, sair } = useUsuario()
+  const { abasPermitidas, primeiraAba, sessao, exigeLogin, sair, administrador } = useUsuario()
   const location = useLocation()
   /** Só as abas liberadas para o perfil de quem está logado. */
   const abas = ABAS.filter((a) => abasPermitidas.includes(a.to))
@@ -58,6 +58,17 @@ export function WebLayout() {
                 <span className="hidden sm:inline">Sair</span>
               </button>
             </div>
+          )}
+          {/* Configurações: só administrador. Só o ícone (o nome aparece como dica e para leitor de tela). */}
+          {administrador && (
+            <Link
+              to="/configuracoes"
+              aria-label="Configurações"
+              title="Configurações"
+              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-white/80 hover:bg-white/10 active:bg-white/10"
+            >
+              <Settings size={20} aria-hidden />
+            </Link>
           )}
           <ThemeButton />
         </div>

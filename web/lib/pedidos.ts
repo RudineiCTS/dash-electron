@@ -7,15 +7,17 @@ export interface PedidoCampanha {
   /** IDCliente; null se o pedido não tiver cliente. */
   idClient: number | null
   origin: number
-  /** Coluna ValorCampanha. */
-  total: number
-  /** Coluna ValorDevolucao. */
-  returnValue: number
+  /** Coluna ValorCampanha. null quando o administrador escondeu o apurado da campanha. */
+  total: number | null
+  /** Coluna ValorDevolucao. null quando o administrador escondeu o apurado da campanha. */
+  returnValue: number | null
 }
 
 export interface PedidosCampanha {
   /** Data da apuração (igual para todas as linhas); null se a pessoa não tem pedidos. */
   appraisalDate: string | null
+  /** O administrador escondeu o apurado desta campanha: total e devolução dos pedidos chegam null. */
+  assessedHidden?: boolean
   orders: PedidoCampanha[]
 }
 
@@ -58,8 +60,8 @@ export function agruparPedidos(linhas: PedidoCampanha[]): PedidoAgrupado[] {
       }
       grupos.set(chave, grupo)
     }
-    grupo.centavosTotal += Math.round(linha.total * 100)
-    grupo.centavosDevolucao += Math.round(linha.returnValue * 100)
+    grupo.centavosTotal += Math.round((linha.total ?? 0) * 100)
+    grupo.centavosDevolucao += Math.round((linha.returnValue ?? 0) * 100)
     grupo.itens.push(linha)
   }
 

@@ -28,8 +28,8 @@ export interface MetaPrazo {
 export interface Posicao {
   posicao: number
   de: number
-  /** Prêmio que o ranking já apurou para a pessoa. */
-  premio: number
+  /** Prêmio que o ranking já apurou para a pessoa; null quando o administrador escondeu o prêmio desta campanha. */
+  premio: number | null
 }
 
 export interface Desempenho {
@@ -81,6 +81,9 @@ export function montarDesempenho(
     }
   }
 
+  // Apurado escondido pelo administrador: meta/realizado/falta não existem para este usuário, então não há bloco de meta
+  if (resumo?.assessedHidden || meu?.assessedHidden) base = null
+
   let meta: MetaPrazo | null = null
   if (base) {
     const falta = Math.max(base.meta - base.realizado, 0)
@@ -103,7 +106,7 @@ export function montarDesempenho(
   const ranking = meu?.ranking ?? 0
   const posicao: Posicao | null =
     meu && ranking > 0 && totalParticipantes > 0
-      ? { posicao: ranking, de: totalParticipantes, premio: meu.award }
+      ? { posicao: ranking, de: totalParticipantes, premio: meu.prizeHidden ? null : meu.award }
       : null
 
   return { meta, posicao }

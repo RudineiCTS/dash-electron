@@ -14,6 +14,8 @@ import FidelizacaoPage from './pages/FidelizacaoPage'
 import ProspeccaoPage from './pages/ProspeccaoPage'
 import LoginPage from './pages/LoginPage'
 import UsuariosPage from './pages/UsuariosPage'
+import ConfiguracoesPage from './pages/ConfiguracoesPage'
+import { SomenteAdministrador } from './components/SomenteAdministrador'
 
 /**
  * Rotas do app web (somente leitura). As URLs seguem as do app desktop:
@@ -43,6 +45,7 @@ export default function App() {
           <Route path="oportunidades" element={<RotaProtegida aba="/oportunidades"><OportunidadesPage /></RotaProtegida>} />
           <Route path="parametros" element={<RotaProtegida aba="/parametros"><ParametrosPage /></RotaProtegida>} />
           <Route path="usuarios" element={<RotaProtegida aba="/usuarios"><UsuariosPage /></RotaProtegida>} />
+          <Route path="configuracoes" element={<SomenteAdministrador><ConfiguracoesPage /></SomenteAdministrador>} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>
       </Routes>

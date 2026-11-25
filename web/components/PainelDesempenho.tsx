@@ -4,6 +4,7 @@ import { formatCurrency, formatDetailMetric, formatPercent } from '../lib/format
 import { statusDoCard } from '../lib/status'
 import { ProgressBar } from './ProgressBar'
 import { Stat } from './Stat'
+import { ValorOculto } from './ValorOculto'
 
 interface PainelDesempenhoProps {
   desempenho: Desempenho
@@ -93,7 +94,7 @@ export function PainelDesempenho({ desempenho, carregando }: PainelDesempenhoPro
             <span className="text-sm text-github-text-muted">de {posicao.de}</span>
           </p>
           <dl className="mt-2 border-t border-github-border pt-2">
-            <Stat label="Prêmio apurado" value={formatCurrency(posicao.premio)} />
+            <Stat label="Prêmio apurado" value={posicao.premio === null ? <ValorOculto /> : formatCurrency(posicao.premio)} />
           </dl>
         </div>
       )}
