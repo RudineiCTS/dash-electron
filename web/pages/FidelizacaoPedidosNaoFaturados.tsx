@@ -240,7 +240,6 @@ export function FidelizacaoPedidosNaoFaturados({ idPeriodo, idPessoa, nomePessoa
               <tr key={`${p.idPedido}-${p.idPrePedido ?? ''}`} className="border-b border-github-border last:border-0">
                 <td className="whitespace-nowrap py-2 pl-3">
                   <span className="font-medium">{p.idPedido}</span>
-                  {p.idPrePedido != null && <span className="ml-1.5 text-xs text-github-text-muted">pré {p.idPrePedido}</span>}
                 </td>
                 <td className="px-2 py-2">
                   <span className="font-medium">{p.nomeCliente ?? `Cliente ${p.idCliente}`}</span>
