@@ -140,11 +140,10 @@ export function FidelizacaoCarteira({ idPeriodo, idPessoa, nomePessoa }: Props) 
       </div>
 
       <p className="text-sm text-github-text-muted">
-        <strong className="font-semibold text-github-text">{base.length.toLocaleString('pt-BR')}</strong> clientes na carteira
-        {tipoCarteira !== 'todas' && <> ({tipoCarteira === 'LOJA VIRTUAL' ? 'Loja Virtual' : 'Setor'})</>} ·{' '}
+        <strong className="font-semibold text-github-text">{base.length.toLocaleString('pt-BR')}</strong> clientes{' '}
+        {tipoCarteira === 'SETOR' ? 'no Setor' : tipoCarteira === 'LOJA VIRTUAL' ? 'na Loja Virtual' : 'na carteira'} ·{' '}
         <strong className="font-semibold text-github-text">{comCompra.toLocaleString('pt-BR')}</strong> positivados ·{' '}
         <strong className="font-semibold text-github-text">{(base.length - comCompra).toLocaleString('pt-BR')}</strong> não positivados
-        {situacao !== 'todos' && <> · mostrando <strong className="font-semibold text-github-text">{visiveis.length.toLocaleString('pt-BR')}</strong></>}
       </p>
 
       <div className="overflow-x-auto rounded-xl border border-github-border bg-github-bg-card">
