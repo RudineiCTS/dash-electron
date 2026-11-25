@@ -83,6 +83,8 @@ export default function ExclusivasPage() {
         (!termo || (c.razaoSocial ?? '').toLowerCase().includes(termo) || String(c.idPessoaCliente ?? '').includes(termo)),
     )
   }, [clientes.data, industria, operador, busca])
+  // a lista tem uma linha por cliente E operador: o mesmo cliente atendido por dois operadores aparece duas vezes
+  const clientesDistintos = useMemo(() => new Set(visiveis.map((c) => c.idPessoaCliente)).size, [visiveis])
 
   const { ordenadas, ord, alternar } = useOrdenacao(visiveis, {
     cliente: (c) => c.razaoSocial,
@@ -311,8 +313,12 @@ export default function ExclusivasPage() {
               </button>
             </div>
                         <p className="text-sm text-github-text-muted">
-              <strong className="font-semibold text-github-text">{visiveis.length.toLocaleString('pt-BR')}</strong> clientes
-              {industria && <> em {nomeIndustria(industria)}</>} · clique em um cliente para ver os pedidos
+              <strong className="font-semibold text-github-text">{clientesDistintos.toLocaleString('pt-BR')}</strong> clientes
+              {industria && <> em {nomeIndustria(industria)}</>}
+              {visiveis.length > clientesDistintos && (
+                <> ({visiveis.length.toLocaleString('pt-BR')} linhas: {(visiveis.length - clientesDistintos).toLocaleString('pt-BR')} cliente(s) atendido(s) por mais de um operador)</>
+              )}{' '}
+              · clique em um cliente para ver os pedidos
             </p>
             <div className="overflow-x-auto rounded-xl border border-github-border bg-github-bg-card">
               <table className="w-full text-left text-sm">
