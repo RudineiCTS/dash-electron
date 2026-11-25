@@ -13,6 +13,7 @@ const PAGE_SIZE = 40
 const campo = 'h-9 rounded-md border border-github-border bg-github-bg-card px-2.5 text-sm text-github-text'
 
 type Situacao = 'todos' | 'com' | 'sem'
+type TipoCarteira = 'todas' | 'LOJA VIRTUAL' | 'SETOR'
 
 interface Props {
   idPeriodo: number
@@ -28,19 +29,22 @@ interface Props {
 export function FidelizacaoCarteira({ idPeriodo, idPessoa, nomePessoa }: Props) {
   const carteira = useApiResource((signal) => getFidelizacaoCarteira(idPeriodo, idPessoa, signal), [idPeriodo, idPessoa])
   const [situacao, setSituacao] = useState<Situacao>('todos')
+  const [tipoCarteira, setTipoCarteira] = useState<TipoCarteira>('todas')
   const [busca, setBusca] = useState('')
   const [limite, setLimite] = useState(PAGE_SIZE)
 
   const todos = useMemo(() => carteira.data ?? [], [carteira.data])
   const comCompra = todos.filter((c) => c.comCompra).length
+  const qtdLojaVirtual = todos.filter((c) => c.tipoCarteira === 'LOJA VIRTUAL').length
   const visiveis = useMemo(() => {
     const termo = busca.trim().toLowerCase()
     return todos.filter(
       (c) =>
         (situacao === 'todos' || (situacao === 'com' ? c.comCompra : !c.comCompra)) &&
+        (tipoCarteira === 'todas' || c.tipoCarteira === tipoCarteira) &&
         (!termo || (c.nomeCliente ?? '').toLowerCase().includes(termo) || String(c.idPessoaCliente).includes(termo)),
     )
-  }, [todos, situacao, busca])
+  }, [todos, situacao, tipoCarteira, busca])
 
   const { ordenadas, ord, alternar } = useOrdenacao(visiveis, {
     cliente: (c) => c.nomeCliente,
@@ -90,6 +94,21 @@ export function FidelizacaoCarteira({ idPeriodo, idPessoa, nomePessoa }: Props) 
               <option value="todos">Todos</option>
               <option value="com">Positivados</option>
               <option value="sem">Não positivados</option>
+            </select>
+          </label>
+          <label className="flex flex-col gap-1 text-xs text-github-text-muted">
+            Carteira
+            <select
+              className={campo}
+              value={tipoCarteira}
+              onChange={(e) => {
+                setTipoCarteira(e.target.value as TipoCarteira)
+                setLimite(PAGE_SIZE)
+              }}
+            >
+              <option value="todas">Todas</option>
+              <option value="LOJA VIRTUAL">Loja Virtual ({qtdLojaVirtual.toLocaleString('pt-BR')})</option>
+              <option value="SETOR">Setor ({(todos.length - qtdLojaVirtual).toLocaleString('pt-BR')})</option>
             </select>
           </label>
           <label className="relative flex flex-col gap-1 text-xs text-github-text-muted">
