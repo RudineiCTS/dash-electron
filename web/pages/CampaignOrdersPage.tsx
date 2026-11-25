@@ -21,9 +21,8 @@ const PAGE_SIZE = 50
 
 /**
  * "Meus pedidos": pedidos apurados do usuário logado na campanha.
- * Acima da tabela: dados da campanha, o realizado e o percentual DO USUÁRIO (não os da campanha
- * inteira) e a data da apuração. A tabela agrupa por pedido + cliente + origem, somando total e
- * devolução; os produtos de cada pedido aparecem ao clicar nele.
+ * Acima da tabela ficam os dados da campanha (nome, ID, realizado total, percentual total) e a
+ * data da apuração; a tabela traz só as linhas dele.
  */
 export default function CampaignOrdersPage() {
   const { id } = useParams<{ id: string }>()
@@ -72,7 +71,7 @@ export default function CampaignOrdersPage() {
   // Painel "Meu desempenho": meta/prazo e posição, só com o que a tela já carregou
   // "de N" conta só quem tem ranking (> 0): o mesmo critério do selo nos cards da lista de campanhas
   const desempenho = montarDesempenho(resumo, meu, ranking.data?.filter((r) => r.ranking > 0).length ?? 0)
-  const carregandoPainel = !!idAlvo && (ranking.loading || resumos.loading)
+  const carregandoPainel = !!idPessoa && (ranking.loading || resumos.loading)
   // Sem meta e sem ranking (e sem carregar) não há painel: nem o contêiner entra, para não sobrar espaço vazio
   const temPainel = carregandoPainel || !!desempenho.meta || !!desempenho.posicao
   const painel = <PainelDesempenho desempenho={desempenho} carregando={carregandoPainel} />
@@ -116,28 +115,28 @@ export default function CampaignOrdersPage() {
           </div>
           <dl className="grid grid-cols-2 gap-x-3 gap-y-2 sm:grid-cols-4">
             <Stat
-              label={deOutraPessoa ? 'Realizado' : 'Meu realizado'}
+              label="Meu realizado"
               value={
-                apuradoOculto ? (
-                  <ValorOculto />
-                ) : meu ? (
-                  formatDetailMetric(meu.campaignTypeDescription, meu.assessedValue)
-                ) : (
-                  semDadosDoUsuario
-                )
-              }
+              apuradoOculto ? (
+                <ValorOculto />
+              ) : meu ? (
+                formatDetailMetric(meu.campaignTypeDescription, meu.assessedValue)
+              ) : (
+                semDadosDoUsuario
+              )
+            }
             />
             <Stat
-              label={deOutraPessoa ? 'Percentual' : 'Meu percentual'}
+              label="Meu percentual"
               value={
-                apuradoOculto ? (
-                  <ValorOculto />
-                ) : meu ? (
-                  temPercentual ? formatPercent(meu.percentageAchieved) : 'Sem meta'
-                ) : (
-                  semDadosDoUsuario
-                )
-              }
+              apuradoOculto ? (
+                <ValorOculto />
+              ) : meu ? (
+                temPercentual ? formatPercent(meu.percentageAchieved) : 'Sem meta'
+              ) : (
+                semDadosDoUsuario
+              )
+            }
             />
             <Stat label="Data da apuração" value={dataApuracao} />
             <Stat

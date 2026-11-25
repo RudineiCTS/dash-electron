@@ -36,7 +36,6 @@ export default function CampaignDetailPage() {
   const [params] = useSearchParams()
   const competencia = params.get('competencia') ?? defaultCompetencia()
   const { idPessoa, administrador } = useUsuario()
-  const { ehGestor } = useGestor(idPessoa)
   const [busca, setBusca] = useState('')
   const [limite, setLimite] = useState(PAGE_SIZE)
 
@@ -212,7 +211,7 @@ export default function CampaignDetailPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {ordenadas.slice(0, limite).map((r) => {
+                    {linhas.slice(0, limite).map((r) => {
                       const bateu = !r.assessedHidden && r.percentageAchieved >= 100
                       // a linha da própria pessoa logada: é a única com o prêmio à vista quando ele está escondido
                       const souEu = !!idPessoa && r.idPersonSales === idPessoa
@@ -226,17 +225,7 @@ export default function CampaignDetailPage() {
                           <td className="py-1.5 pl-3 text-xs font-bold text-github-text-muted">{r.ranking || '–'}</td>
                           <td className="max-w-[16rem] px-2 py-1.5">
                             <p className="truncate font-semibold">
-                              {ehGestor || souEu ? (
-                                <Link
-                                  to={`/campaigns/details/${idCampaign}/pedidos?competencia=${competencia}&pessoa=${r.idPersonSales}`}
-                                  title={`Ver os pedidos de ${r.operatorName}`}
-                                  className="hover:underline"
-                                >
-                                  {r.operatorName}
-                                </Link>
-                              ) : (
-                                r.operatorName
-                              )}
+                              {r.operatorName}
                               {souEu && (
                                 <span className="ml-1.5 rounded bg-github-btn-green px-1.5 py-px align-middle text-[10px] font-medium text-white">
                                   Você
