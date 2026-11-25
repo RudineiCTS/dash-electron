@@ -6,6 +6,8 @@
 export function temMeta(c: { goalValue: number | null }): boolean {
   return (c.goalValue ?? 0) > 0
 }
+<<<<<<< HEAD
+=======
 
 /**
  * Cor por status: verde = bateu a meta (>= 100%), laranja = em andamento (50% a 99%),
@@ -18,3 +20,4 @@ export function statusDoCard(percent: number, comMeta: boolean) {
   if (percent >= 50) return { faixa: 'border-l-[#EF9F27]', barra: 'bg-[#EF9F27]', texto: 'text-github-text' }
   return { faixa: 'border-l-[#E24B4A]', barra: 'bg-[#E24B4A]', texto: 'text-[#E24B4A]' }
 }
+>>>>>>> 036b81e90b2237347426328a5e13289badc207e6
