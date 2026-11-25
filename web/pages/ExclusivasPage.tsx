@@ -1,4 +1,6 @@
 import { Fragment, useMemo, useState } from 'react'
+import { useOrdenacao } from '../lib/ordenar'
+import { ThOrdenavel } from '../components/ThOrdenavel'
 import dayjs from 'dayjs'
 import { ChevronDown, ChevronRight, Download, Search } from 'lucide-react'
 import { PERMITIR_TROCA_USUARIO, useUsuario } from '../auth/UsuarioContext'
@@ -10,6 +12,7 @@ import { exportarExcel } from '../lib/exportarExcel'
 import { formatCurrency } from '../lib/format'
 import { useApiResource } from '../lib/useApiResource'
 import { ExclusivasCarteira } from './ExclusivasCarteira'
+import { ExclusivasPedidosNaoFaturados } from './ExclusivasPedidosNaoFaturados'
 
 const PAGE_SIZE = 30
 const TODAS = ''
@@ -54,7 +57,7 @@ export default function ExclusivasPage() {
   const [busca, setBusca] = useState('')
   const [limite, setLimite] = useState(PAGE_SIZE)
   const [aberto, setAberto] = useState<string | null>(null)
-  const [aba, setAba] = useState<'resultado' | 'carteira'>('resultado')
+  const [aba, setAba] = useState<'resultado' | 'carteira' | 'pedidos'>('resultado')
 
   const resumo = useApiResource(
     (signal) => (pronto ? getExclusivasResumo(referencia, idPessoaFiltro, signal) : Promise.resolve([])),
@@ -81,6 +84,19 @@ export default function ExclusivasPage() {
         (!termo || (c.razaoSocial ?? '').toLowerCase().includes(termo) || String(c.idPessoaCliente ?? '').includes(termo)),
     )
   }, [clientes.data, industria, operador, busca])
+  // a lista tem uma linha por cliente E operador: o mesmo cliente atendido por dois operadores aparece duas vezes
+  const clientesDistintos = useMemo(() => new Set(visiveis.map((c) => c.idPessoaCliente)).size, [visiveis])
+
+  const { ordenadas, ord, alternar } = useOrdenacao(visiveis, {
+    cliente: (c) => c.razaoSocial,
+    industria: (c) => c.industria,
+    operador: (c) => c.digitador,
+    pedidos: (c) => c.pedidos,
+    venda: (c) => c.totalVenda,
+    primeira: (c) => c.primeiraCompra,
+    ultima: (c) => c.ultimaCompra,
+    situacao: (c) => c.positivou,
+  })
 
   const geradoEm = resumo.data?.find((r) => r.geradoEm)?.geradoEm
   const totalPositivados = (resumo.data ?? []).reduce((s, r) => s + r.positivados, 0)
@@ -145,6 +161,7 @@ export default function ExclusivasPage() {
             [
               { id: 'resultado', label: 'Resultado' },
               { id: 'carteira', label: 'Carteira' },
+              { id: 'pedidos', label: 'Pedidos não faturados' },
             ] as const
           ).map((a) => (
             <button
@@ -163,7 +180,9 @@ export default function ExclusivasPage() {
         </div>
       )}
 
-      {pronto && aba === 'carteira' ? (
+      {pronto && aba === 'pedidos' ? (
+        <ExclusivasPedidosNaoFaturados mes={mes} onMes={setMes} idPessoa={idPessoa} ehGestor={ehGestor} />
+      ) : pronto && aba === 'carteira' ? (
         <ExclusivasCarteira mes={mes} onMes={setMes} idPessoaFiltro={idPessoaFiltro} ehGestor={ehGestor} />
       ) : (
         <>
@@ -298,25 +317,27 @@ export default function ExclusivasPage() {
               </button>
             </div>
                         <p className="text-sm text-github-text-muted">
-              <strong className="font-semibold text-github-text">{visiveis.length.toLocaleString('pt-BR')}</strong> clientes
-              {industria && <> em {nomeIndustria(industria)}</>} · clique em um cliente para ver os pedidos
+              <strong className="font-semibold text-github-text">{clientesDistintos.toLocaleString('pt-BR')}</strong> clientes
+              {industria && <> em {nomeIndustria(industria)}</>}
+              {' '}
+              · clique em um cliente para ver os pedidos
             </p>
             <div className="overflow-x-auto rounded-xl border border-github-border bg-github-bg-card">
               <table className="w-full text-left text-sm">
                 <thead className="bg-github-bg-hover text-[10px] uppercase tracking-wide text-github-text-muted">
                   <tr>
-                    <th className="py-2 pl-3 font-medium">Cliente</th>
-                    {varias && !industria && <th className="px-2 py-2 font-medium">Indústria</th>}
-                    {ehGestor && <th className="px-2 py-2 font-medium">Operador</th>}
-                    <th className="px-2 py-2 text-right font-medium">Pedidos</th>
-                    <th className="px-2 py-2 text-right font-medium">Venda líquida</th>
-                    <th className="hidden px-2 py-2 font-medium md:table-cell">1ª compra</th>
-                    <th className="hidden px-2 py-2 font-medium md:table-cell">Última</th>
-                    <th className="py-2 pl-2 pr-3 font-medium">Situação</th>
+                    <ThOrdenavel rotulo="Cliente" chave="cliente" ord={ord} onAlternar={alternar} className="py-2 pl-3 font-medium" />
+                    {varias && !industria && <ThOrdenavel rotulo="Indústria" chave="industria" ord={ord} onAlternar={alternar} className="px-2 py-2 font-medium" />}
+                    {ehGestor && <ThOrdenavel rotulo="Operador" chave="operador" ord={ord} onAlternar={alternar} className="px-2 py-2 font-medium" />}
+                    <ThOrdenavel rotulo="Pedidos" chave="pedidos" ord={ord} onAlternar={alternar} direita className="px-2 py-2 text-right font-medium" />
+                    <ThOrdenavel rotulo="Venda líquida" chave="venda" ord={ord} onAlternar={alternar} direita className="px-2 py-2 text-right font-medium" />
+                    <ThOrdenavel rotulo="1ª compra" chave="primeira" ord={ord} onAlternar={alternar} className="hidden px-2 py-2 font-medium md:table-cell" />
+                    <ThOrdenavel rotulo="Última" chave="ultima" ord={ord} onAlternar={alternar} className="hidden px-2 py-2 font-medium md:table-cell" />
+                    <ThOrdenavel rotulo="Situação" chave="situacao" ord={ord} onAlternar={alternar} className="py-2 pl-2 pr-3 font-medium" />
                   </tr>
                 </thead>
                 <tbody>
-                  {visiveis.slice(0, limite).map((c) => {
+                  {ordenadas.slice(0, limite).map((c) => {
                     const chave = `${c.industria}-${c.idPessoaTelevendas}-${c.idPessoaCliente}`
                     const aberta = aberto === chave
                     return (

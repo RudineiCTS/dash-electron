@@ -1,6 +1,8 @@
 import { useState } from "react";
 import dayjs from "dayjs";
+import { FiDownload } from "react-icons/fi";
 import { PedidosCarregados, ResultadoValidacao } from "../../../interfaces/ValidacaoCampanha";
+import { exportPedidosValidacaoToExcel } from "../../../utils/excelExport";
 import { formatCurrency } from "../../../utils/formateCurrency";
 import {
   conferirValor,
@@ -24,6 +26,18 @@ const CABECALHOS = [
   { id: 8, name: "Crédito" },
   { id: 9, name: "No apurado" },
 ];
+
+/** pedidos_campanha_713_pessoa_153639_camila_azzi_pereira.xlsx */
+function nomeDoArquivo(linha: ResultadoValidacao): string {
+  const nome = (linha.nomePessoa ?? "")
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "")
+    .slice(0, 40);
+  return `pedidos_campanha_${linha.idCampanha}_pessoa_${linha.idPessoa ?? "sem_id"}${nome ? `_${nome}` : ""}.xlsx`;
+}
 
 interface DetalhePessoaValidacaoProps {
   linha: ResultadoValidacao;
@@ -146,6 +160,16 @@ export function DetalhePessoaValidacao({ linha, carregado, onTentarDeNovo }: Det
                 {resumo.linhasPorExclusivo} por exclusivo
               </Pilula>
             )}
+
+            <button
+              type="button"
+              onClick={() => exportPedidosValidacaoToExcel(linha, pedidos, nomeDoArquivo(linha))}
+              title="Baixa todos os pedidos desta pessoa na campanha (não só os que estão na tela)"
+              className="ml-auto flex h-9 items-center gap-2 rounded-lg bg-[#32307B] px-4 text-sm font-semibold text-white transition-[filter] hover:brightness-110 active:brightness-95 cursor-pointer"
+            >
+              <FiDownload size={15} />
+              Extrair para Excel
+            </button>
           </div>
 
           <div className="overflow-x-auto rounded-lg border border-gray-100 bg-white">

@@ -106,6 +106,8 @@ export interface FidelizacaoCarteiraCliente {
   limiteDisponivel: number
   telefone: string | null
   telefone2: string | null
+  /** "LOJA VIRTUAL" ou "SETOR" (pelo gerente atual do cliente). */
+  tipoCarteira: string
   /** Aparece nos clientes calculados dos KPIs da pessoa no período. */
   comCompra: boolean
 }
@@ -116,5 +118,39 @@ export async function getFidelizacaoCarteira(
   signal?: AbortSignal,
 ): Promise<FidelizacaoCarteiraCliente[]> {
   const response = await api.get<FidelizacaoCarteiraCliente[]>('fidelizacao/carteira', { params: { idPeriodo, idPessoa }, signal })
+  return response.data
+}
+
+/** Pedido não faturado, excluído ou com devolução (GET /api/fidelizacao/pedidos-nao-faturados). */
+export interface FidelizacaoPedidoNaoFaturado {
+  idPedido: number
+  idPrePedido: number | null
+  idCliente: number
+  nomeCliente: string | null
+  /** CARTEIRA, DIGITOU ou AMBOS. */
+  origem: string
+  /** "LOJA VIRTUAL" ou "SETOR". */
+  tipoCarteira: string
+  origemDoPedido: string | null
+  dataPedido: string
+  idSituacao: number
+  situacao: string
+  dataSituacao: string | null
+  /** Valor total da nota (na devolução parcial, não é só o valor devolvido). */
+  valorTotal: number
+}
+
+export interface FidelizacaoPedidosNaoFaturados {
+  /** Período que a tabela guarda (um só: o da última carga). Null se nunca foi carregada. */
+  idPeriodo: number | null
+  /** Início e fim do período que a tabela guarda. */
+  periodoInicio: string | null
+  periodoFim: string | null
+  geradoEm: string | null
+  itens: FidelizacaoPedidoNaoFaturado[]
+}
+
+export async function getFidelizacaoPedidosNaoFaturados(idPessoa: number, signal?: AbortSignal): Promise<FidelizacaoPedidosNaoFaturados> {
+  const response = await api.get<FidelizacaoPedidosNaoFaturados>('fidelizacao/pedidos-nao-faturados', { params: { idPessoa }, signal })
   return response.data
 }

@@ -1,12 +1,18 @@
 import { useMemo } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { getCampaignSummaryPerPeriod } from '@shared/services/campaign.teleseler'
+import { useUsuario } from '../auth/UsuarioContext'
 import { CampaignCard } from '../components/CampaignCard'
+import { CampaignTable } from '../components/CampaignTable'
 import { CardListSkeleton, EmptyState, ErrorState } from '../components/StateViews'
+import { VisaoToggle } from '../components/VisaoToggle'
 import { calcularTotaisCampanhas } from '@shared/utils/totaisCampanhas'
 import { defaultCompetencia, formatCurrency, formatPercent, monthToCompetencia } from '../lib/format'
+import { getMinhasPosicoes, indexarPosicoes } from '../lib/posicoes'
+import { getVisibilidades, indexarVisibilidades } from '../lib/visibilidade'
 import { temMeta } from '../lib/status'
 import { useApiResource } from '../lib/useApiResource'
+import { ehVisao, lerVisaoSalva, salvarVisao, type Visao } from '../lib/visao'
 
 type Aba = 'valor' | 'pontos'
 
@@ -26,6 +32,9 @@ export default function CampaignsPage() {
   const aba: Aba = params.get('aba') === 'pontos' ? 'pontos' : 'valor'
   const tipo = params.get('tipo') ?? ''
   const somenteBateram = params.get('bateram') === '1'
+  // Cards ou lista: vale o ?visao= da URL (link compartilhável); sem ele, a última escolha deste navegador.
+  const visaoUrl = params.get('visao')
+  const visao: Visao = ehVisao(visaoUrl) ? visaoUrl : lerVisaoSalva()
 
   function updateParams(changes: Record<string, string | null>) {
     setParams(
@@ -41,10 +50,31 @@ export default function CampaignsPage() {
     )
   }
 
+  function mudarVisao(nova: Visao) {
+    salvarVisao(nova)
+    updateParams({ visao: nova === 'cards' ? null : nova })
+  }
+
   const { data, loading, error, reload } = useApiResource(
     (signal) => getCampaignSummaryPerPeriod(competencia, signal),
     [competencia],
   )
+
+  // Minhas posições nos rankings (selo nos cards). A API identifica a pessoa pelo token, então só com login.
+  // É um complemento: se falhar (ou não houver sessão) os cards aparecem normais, sem selo e sem aviso de erro.
+  const { sessao, administrador } = useUsuario()
+  const posicoesApi = useApiResource(
+    (signal) => (sessao ? getMinhasPosicoes(competencia, signal) : Promise.resolve([])),
+    [competencia, !!sessao],
+  )
+  const posicoes = useMemo(() => indexarPosicoes(posicoesApi.data ?? []), [posicoesApi.data])
+
+  // Só o administrador vê tudo; para ele, marca as campanhas que estão escondidas dos usuários comuns.
+  const regrasApi = useApiResource(
+    (signal) => (administrador ? getVisibilidades(signal) : Promise.resolve([])),
+    [administrador],
+  )
+  const regrasOcultas = useMemo(() => indexarVisibilidades(regrasApi.data ?? []), [regrasApi.data])
 
   const daAba = useMemo(() => (data ?? []).filter((c) => c.typeCampaign === aba), [data, aba])
   const tipos = useMemo(() => [...new Set(daAba.map((c) => c.campaignTypeDescription))].sort(), [daAba])
@@ -55,23 +85,26 @@ export default function CampaignsPage() {
         .filter((c) => !somenteBateram || c.percentageAchieved >= 100),
     [daAba, tipo, somenteBateram],
   )
-  const premiacaoTotal = visiveis.reduce((acc, c) => acc + c.totalAward, 0)
+  // Campanha com apurado escondido (usuário comum) chega sem valores: fica fora de totais e contagens por status
+  const comApurado = useMemo(() => visiveis.filter((c) => !c.assessedHidden), [visiveis])
+  const ocultas = visiveis.length - comApurado.length
+  const premiacaoTotal = visiveis.reduce((acc, c) => acc + (c.totalAward ?? 0), 0)
   // Totais de vendas (R$) só das campanhas com meta; sem meta e positivação ficam fora (utils/totaisCampanhas)
-  const totais = useMemo(() => calcularTotaisCampanhas(visiveis), [visiveis])
+  const totais = useMemo(() => calcularTotaisCampanhas(comApurado), [comApurado])
 
   // Resumo por status (mesmas cores e cortes dos cards).
   const resumoStatus = useMemo(() => {
     const conta = (min: number, max: number) =>
-      visiveis.filter((c) => temMeta(c) && c.percentageAchieved >= min && c.percentageAchieved < max).length
+      comApurado.filter((c) => temMeta(c) && c.percentageAchieved >= min && c.percentageAchieved < max).length
     return [
       { label: 'Batidas', qtd: conta(100, Infinity), cor: 'bg-[#3B6D11]' },
       { label: 'Em andamento', qtd: conta(50, 100), cor: 'bg-[#EF9F27]' },
       { label: 'Abaixo de 50%', qtd: conta(-Infinity, 50), cor: 'bg-[#E24B4A]' },
     ]
-  }, [visiveis])
+  }, [comApurado])
   // Sem meta (ex: quantidade vendida) fica fora dos percentuais: o atingimento não se aplica
-  const semMeta = visiveis.filter((c) => !temMeta(c)).length
-  const comMeta = visiveis.length - semMeta
+  const semMeta = comApurado.filter((c) => !temMeta(c)).length
+  const comMeta = comApurado.length - semMeta
   const pctDeComMeta = (qtd: number) => (comMeta > 0 ? Math.round((qtd / comMeta) * 100) : 0)
 
   const campo =
@@ -149,6 +182,8 @@ export default function CampaignsPage() {
         >
           Somente bateram
         </button>
+
+        <VisaoToggle visao={visao} onChange={mudarVisao} className="ml-auto" />
       </section>
 
 
@@ -173,9 +208,10 @@ export default function CampaignsPage() {
           </div>
           <p className="col-span-3 text-xs text-github-text-muted">
             {totais.vendasComMeta} campanhas de vendas com meta
-            {(totais.semMeta > 0 || totais.outrasUnidades > 0) && (
+            {(totais.semMeta > 0 || totais.outrasUnidades > 0 || ocultas > 0) && (
               <span title="Ficam fora do cálculo: campanhas sem meta e as medidas em unidades (positivação e quantidade vendida)">
                 {' · '}fora: {totais.semMeta} sem meta, {totais.outrasUnidades} em unidades
+                {ocultas > 0 && `, ${ocultas} com apurado oculto`}
               </span>
             )}
           </p>
@@ -189,11 +225,18 @@ export default function CampaignsPage() {
         <>
           {visiveis.length === 0 ? (
             <EmptyState message="Nenhuma campanha encontrada para esses filtros." />
+          ) : visao === 'lista' ? (
+            <CampaignTable campanhas={visiveis} competencia={competencia} posicoes={posicoes} regrasOcultas={regrasOcultas} />
           ) : (
             <ul className="grid grid-cols-[repeat(auto-fill,minmax(19rem,1fr))] gap-2.5">
               {visiveis.map((c) => (
                 <li key={c.idCampaign}>
-                  <CampaignCard campaign={c} competencia={competencia} />
+                  <CampaignCard
+                    campaign={c}
+                    competencia={competencia}
+                    posicao={posicoes.get(c.idCampaign)}
+                    regraOculta={regrasOcultas.get(c.idCampaign)}
+                  />
                 </li>
               ))}
             </ul>
@@ -216,6 +259,15 @@ export default function CampaignsPage() {
                     <span className="text-xs">({pctDeComMeta(s.qtd)}%)</span>
                   </span>
                 ))}
+                {ocultas > 0 && (
+                  <span
+                    className="flex items-center gap-1.5 border-l border-github-border pl-6 text-github-text-muted"
+                    title="O administrador escondeu o apurado destas campanhas: ficam fora das contas"
+                  >
+                    <span className="h-2.5 w-2.5 rounded-full border border-github-border" aria-hidden />
+                    Apurado oculto <strong className="text-base font-semibold text-github-text">{ocultas}</strong>
+                  </span>
+                )}
                 {semMeta > 0 && (
                   <span className="flex items-center gap-1.5 border-l border-github-border pl-6 text-github-text-muted">
                     <span className="h-2.5 w-2.5 rounded-full bg-[#888780]" aria-hidden />

@@ -3,6 +3,8 @@ import { WebLayout } from './layout/WebLayout'
 import CampaignsPage from './pages/CampaignsPage'
 import CampaignDetailPage from './pages/CampaignDetailPage'
 import CampaignOrdersPage from './pages/CampaignOrdersPage'
+import CampaignOportunidadesPage from './pages/CampaignOportunidadesPage'
+import CampaignParametrosPage from './pages/CampaignParametrosPage'
 import NotFoundPage from './pages/NotFoundPage'
 import SecaoPage from './pages/SecaoPage'
 import ParametrosPage from './pages/ParametrosPage'
@@ -14,6 +16,8 @@ import FidelizacaoPage from './pages/FidelizacaoPage'
 import ProspeccaoPage from './pages/ProspeccaoPage'
 import LoginPage from './pages/LoginPage'
 import UsuariosPage from './pages/UsuariosPage'
+import ConfiguracoesPage from './pages/ConfiguracoesPage'
+import { SomenteAdministrador } from './components/SomenteAdministrador'
 
 /**
  * Rotas do app web (somente leitura). As URLs seguem as do app desktop:
@@ -36,6 +40,8 @@ export default function App() {
           <Route path="campaigns" element={<RotaProtegida aba="/campaigns"><CampaignsPage /></RotaProtegida>} />
           <Route path="campaigns/details/:id" element={<RotaProtegida aba="/campaigns"><CampaignDetailPage /></RotaProtegida>} />
           <Route path="campaigns/details/:id/pedidos" element={<RotaProtegida aba="/campaigns"><CampaignOrdersPage /></RotaProtegida>} />
+          <Route path="campaigns/details/:id/oportunidades" element={<RotaProtegida aba="/campaigns"><CampaignOportunidadesPage /></RotaProtegida>} />
+          <Route path="campaigns/details/:id/parametros/:tipo" element={<RotaProtegida aba="/campaigns"><CampaignParametrosPage /></RotaProtegida>} />
           <Route path="prospeccao" element={<RotaProtegida aba="/prospeccao"><ProspeccaoPage /></RotaProtegida>} />
           <Route path="fidelizacao" element={<RotaProtegida aba="/fidelizacao"><FidelizacaoPage /></RotaProtegida>} />
           <Route path="sac" element={<RotaProtegida aba="/sac"><SecaoPage titulo="SAC" /></RotaProtegida>} />
@@ -43,6 +49,7 @@ export default function App() {
           <Route path="oportunidades" element={<RotaProtegida aba="/oportunidades"><OportunidadesPage /></RotaProtegida>} />
           <Route path="parametros" element={<RotaProtegida aba="/parametros"><ParametrosPage /></RotaProtegida>} />
           <Route path="usuarios" element={<RotaProtegida aba="/usuarios"><UsuariosPage /></RotaProtegida>} />
+          <Route path="configuracoes" element={<SomenteAdministrador><ConfiguracoesPage /></SomenteAdministrador>} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>
       </Routes>

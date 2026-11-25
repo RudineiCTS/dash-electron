@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
+import { useOrdenacao } from '../lib/ordenar'
+import { ThOrdenavel } from '../components/ThOrdenavel'
 import { isAxiosError } from 'axios'
 import { Pencil, Plus, Trash2, UserPlus } from 'lucide-react'
 import {
@@ -174,6 +176,14 @@ export default function ParametrosPage() {
     )
   }, [lista, grupoFiltro, subFiltro, busca])
 
+  const { ordenadas, ord, alternar } = useOrdenacao(visiveis, {
+    id: (d) => d.idPessoa,
+    nome: (d) => d.nomeUsuario,
+    usuario: (d) => d.idUsuario,
+    grupo: (d) => d.grupo,
+    subgrupo: (d) => d.subGrupo,
+  })
+
   async function salvar(idPessoa: number, grupo: string, subGrupo: string) {
     setSalvandoId(idPessoa)
     setErroSalvar(null)
@@ -312,16 +322,16 @@ export default function ParametrosPage() {
             <table className="w-full text-left text-sm">
               <thead className="bg-github-bg-hover text-[10px] uppercase tracking-wide text-github-text-muted">
                 <tr>
-                  <th className="py-2 pl-3 font-medium">ID</th>
-                  <th className="px-2 py-2 font-medium">Nome</th>
-                  <th className="hidden px-2 py-2 font-medium lg:table-cell">Usuário</th>
-                  <th className="px-2 py-2 font-medium">Grupo</th>
-                  <th className="px-2 py-2 font-medium">Subgrupo</th>
+                  <ThOrdenavel rotulo="ID" chave="id" ord={ord} onAlternar={alternar} className="py-2 pl-3 font-medium" />
+                  <ThOrdenavel rotulo="Nome" chave="nome" ord={ord} onAlternar={alternar} className="px-2 py-2 font-medium" />
+                  <ThOrdenavel rotulo="Usuário" chave="usuario" ord={ord} onAlternar={alternar} className="hidden px-2 py-2 font-medium lg:table-cell" />
+                  <ThOrdenavel rotulo="Grupo" chave="grupo" ord={ord} onAlternar={alternar} className="px-2 py-2 font-medium" />
+                  <ThOrdenavel rotulo="Subgrupo" chave="subgrupo" ord={ord} onAlternar={alternar} className="px-2 py-2 font-medium" />
                   {EDICAO && <th className="py-2 pl-2 pr-3 text-right font-medium">Ações</th>}
                 </tr>
               </thead>
               <tbody>
-                {visiveis.map((d) => {
+                {ordenadas.map((d) => {
                   const tag = etiquetaGrupo(d.grupo, null)
                   const emEdicao = editando === d.idPessoa
                   const confirmando = removendo === d.idPessoa

@@ -1,8 +1,11 @@
+import { useMemo } from 'react'
 import dayjs from 'dayjs'
 import { ErrorState } from './StateViews'
 import { getExclusivasPedidos } from '../lib/exclusivas'
 import { formatCurrency } from '../lib/format'
+import { useOrdenacao } from '../lib/ordenar'
 import { useApiResource } from '../lib/useApiResource'
+import { ThOrdenavel } from './ThOrdenavel'
 
 interface PedidosDoClienteExclusivaProps {
   referencia: string
@@ -23,6 +26,17 @@ export function PedidosDoClienteExclusiva({ referencia, idPessoaCliente, industr
     [referencia, idPessoaCliente, industria, idPessoa],
   )
 
+  const linhas = useMemo(() => pedidos.data ?? [], [pedidos.data])
+  const { ordenadas, ord, alternar } = useOrdenacao(linhas, {
+    prePedido: (p) => p.idPrePedido,
+    pedidos: (p) => p.idPedido,
+    faturamento: (p) => p.dataFaturamento,
+    venda: (p) => p.venda,
+    devolucao: (p) => p.devolucao,
+    liquido: (p) => p.totalVenda,
+    situacao: (p) => p.positivou,
+  })
+
   if (pedidos.loading) return <div className="h-12 animate-pulse rounded-lg bg-github-bg-hover" aria-busy="true" />
   if (pedidos.error) return <ErrorState message={pedidos.error} onRetry={pedidos.reload} />
   if (!pedidos.data || pedidos.data.length === 0) {
@@ -34,17 +48,17 @@ export function PedidosDoClienteExclusiva({ referencia, idPessoaCliente, industr
       <table className="w-full text-left text-xs">
         <thead className="bg-github-bg-hover text-[10px] uppercase tracking-wide text-github-text-muted">
           <tr>
-            <th className="py-1.5 pl-3 font-medium">Pré-pedido</th>
-            <th className="px-2 py-1.5 font-medium">Pedidos</th>
-            <th className="px-2 py-1.5 font-medium">Faturamento</th>
-            <th className="px-2 py-1.5 text-right font-medium">Venda</th>
-            <th className="px-2 py-1.5 text-right font-medium">Devolução</th>
-            <th className="px-2 py-1.5 text-right font-medium">Líquido</th>
-            <th className="py-1.5 pl-2 pr-3 font-medium">Situação</th>
+            <ThOrdenavel rotulo="Pré-pedido" chave="prePedido" ord={ord} onAlternar={alternar} className="py-1.5 pl-3 font-medium" />
+            <ThOrdenavel rotulo="Pedidos" chave="pedidos" ord={ord} onAlternar={alternar} className="px-2 py-1.5 font-medium" />
+            <ThOrdenavel rotulo="Faturamento" chave="faturamento" ord={ord} onAlternar={alternar} className="px-2 py-1.5 font-medium" />
+            <ThOrdenavel rotulo="Venda" chave="venda" ord={ord} onAlternar={alternar} direita className="px-2 py-1.5 text-right font-medium" />
+            <ThOrdenavel rotulo="Devolução" chave="devolucao" ord={ord} onAlternar={alternar} direita className="px-2 py-1.5 text-right font-medium" />
+            <ThOrdenavel rotulo="Líquido" chave="liquido" ord={ord} onAlternar={alternar} direita className="px-2 py-1.5 text-right font-medium" />
+            <ThOrdenavel rotulo="Situação" chave="situacao" ord={ord} onAlternar={alternar} className="py-1.5 pl-2 pr-3 font-medium" />
           </tr>
         </thead>
         <tbody>
-          {pedidos.data.map((p) => (
+          {ordenadas.map((p) => (
             <tr key={`${p.idPrePedido}-${p.idPedido}`} className="border-t border-github-border">
               <td className="py-1.5 pl-3 font-medium">{p.idPrePedido ?? '-'}</td>
               <td className="max-w-[14rem] truncate px-2 py-1.5" title={p.idPedido ?? ''}>
