@@ -315,9 +315,7 @@ export default function ExclusivasPage() {
                         <p className="text-sm text-github-text-muted">
               <strong className="font-semibold text-github-text">{clientesDistintos.toLocaleString('pt-BR')}</strong> clientes
               {industria && <> em {nomeIndustria(industria)}</>}
-              {visiveis.length > clientesDistintos && (
-                <> ({visiveis.length.toLocaleString('pt-BR')} linhas: {(visiveis.length - clientesDistintos).toLocaleString('pt-BR')} cliente(s) atendido(s) por mais de um operador)</>
-              )}{' '}
+              {' '}
               · clique em um cliente para ver os pedidos
             </p>
             <div className="overflow-x-auto rounded-xl border border-github-border bg-github-bg-card">
