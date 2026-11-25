@@ -106,6 +106,8 @@ export interface FidelizacaoCarteiraCliente {
   limiteDisponivel: number
   telefone: string | null
   telefone2: string | null
+  /** "LOJA VIRTUAL" ou "SETOR" (pelo gerente atual do cliente). */
+  tipoCarteira: string
   /** Aparece nos clientes calculados dos KPIs da pessoa no período. */
   comCompra: boolean
 }

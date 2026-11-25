@@ -49,6 +49,7 @@ export function FidelizacaoCarteira({ idPeriodo, idPessoa, nomePessoa }: Props) 
         { titulo: 'Código', tipo: 'numero', largura: 10, valor: (c) => c.idPessoaCliente },
         { titulo: 'Cliente', largura: 40, valor: (c) => c.nomeCliente },
         { titulo: 'Situação', largura: 16, valor: (c) => (c.comCompra ? 'Positivado' : 'Não positivado') },
+        { titulo: 'Tipo de carteira', largura: 16, valor: (c) => c.tipoCarteira },
         { titulo: 'Cadastro', largura: 12, valor: (c) => (c.dataCadastroCliente ? dayjs(c.dataCadastroCliente).format('DD/MM/YYYY') : '') },
         { titulo: 'Limite disponível', tipo: 'moeda', largura: 16, valor: (c) => c.limiteDisponivel },
         { titulo: 'Telefone', largura: 16, valor: (c) => c.telefone },
@@ -116,6 +117,7 @@ export function FidelizacaoCarteira({ idPeriodo, idPessoa, nomePessoa }: Props) 
             <tr className="border-b border-github-border">
               <th className="py-2 pl-3 font-medium">Cliente</th>
               <th className="px-2 py-2 font-medium">Situação</th>
+              <th className="hidden px-2 py-2 font-medium sm:table-cell">Carteira</th>
               <th className="hidden px-2 py-2 font-medium md:table-cell">Cadastro</th>
               <th className="hidden px-2 py-2 text-right font-medium md:table-cell">Limite disponível</th>
               <th className="py-2 pl-2 pr-3 font-medium">Telefone</th>
@@ -137,6 +139,15 @@ export function FidelizacaoCarteira({ idPeriodo, idPessoa, nomePessoa }: Props) 
                     {c.comCompra ? 'Positivado' : 'Não positivado'}
                   </span>
                 </td>
+                <td className="hidden whitespace-nowrap px-2 py-2 sm:table-cell">
+                  <span
+                    className={`inline-block rounded px-1.5 text-[11px] font-medium ${
+                      c.tipoCarteira === 'LOJA VIRTUAL' ? 'bg-[#32307B]/10 text-[#32307B] dark:text-[#a5a2e6]' : 'bg-github-bg-hover text-github-text-muted'
+                    }`}
+                  >
+                    {c.tipoCarteira === 'LOJA VIRTUAL' ? 'Loja Virtual' : 'Setor'}
+                  </span>
+                </td>
                 <td className="hidden whitespace-nowrap px-2 py-2 text-github-text-muted md:table-cell">
                   {c.dataCadastroCliente ? dayjs(c.dataCadastroCliente).format('DD/MM/YYYY') : '-'}
                 </td>
@@ -148,7 +159,7 @@ export function FidelizacaoCarteira({ idPeriodo, idPessoa, nomePessoa }: Props) 
             ))}
             {visiveis.length === 0 && (
               <tr>
-                <td colSpan={5} className="py-6 text-center text-sm text-github-text-muted">
+                <td colSpan={6} className="py-6 text-center text-sm text-github-text-muted">
                   Nenhum cliente com esses filtros.
                 </td>
               </tr>
