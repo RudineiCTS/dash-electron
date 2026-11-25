@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
+import { useOrdenacao } from '../lib/ordenar'
+import { ThOrdenavel } from '../components/ThOrdenavel'
 import dayjs from 'dayjs'
 import { ArrowLeft, ChevronRight } from 'lucide-react'
 import { PERMITIR_TROCA_USUARIO, useUsuario } from '../auth/UsuarioContext'
@@ -146,6 +148,13 @@ export default function FidelizacaoPage() {
 
   const linhas = useMemo(() => resultado.data ?? [], [resultado.data])
   const pessoas = useMemo(() => resumirPessoas(linhas), [linhas])
+  const { ordenadas: pessoasOrdenadas, ord: ordPessoas, alternar: alternarPessoas } = useOrdenacao(pessoas, {
+    pessoa: (p) => p.pessoa,
+    tipo: (p) => p.tipoPessoa,
+    batidos: (p) => p.batidos,
+    media: (p) => p.mediaRealizado,
+    premio: (p) => p.premio,
+  })
   /** Somatório do time (linha de total da tabela). */
   const totalTime = useMemo(() => {
     const comMeta = linhas.filter((l) => l.valorMeta > 0)
@@ -227,16 +236,16 @@ export default function FidelizacaoPage() {
           <table className="w-full text-left text-sm">
             <thead className="text-[11px] uppercase tracking-wide text-github-text-muted">
               <tr className="border-b border-github-border">
-                <th className="py-2 pl-3 font-medium">Pessoa</th>
-                <th className="px-2 py-2 font-medium">Tipo</th>
-                <th className="px-2 py-2 text-right font-medium">KPIs batidos</th>
-                <th className="px-2 py-2 text-right font-medium">Realizado médio</th>
-                <th className="px-2 py-2 text-right font-medium">Prêmio</th>
+                <ThOrdenavel rotulo="Pessoa" chave="pessoa" ord={ordPessoas} onAlternar={alternarPessoas} className="py-2 pl-3 font-medium" />
+                <ThOrdenavel rotulo="Tipo" chave="tipo" ord={ordPessoas} onAlternar={alternarPessoas} className="px-2 py-2 font-medium" />
+                <ThOrdenavel rotulo="KPIs batidos" chave="batidos" ord={ordPessoas} onAlternar={alternarPessoas} direita className="px-2 py-2 text-right font-medium" />
+                <ThOrdenavel rotulo="Realizado médio" chave="media" ord={ordPessoas} onAlternar={alternarPessoas} direita className="px-2 py-2 text-right font-medium" />
+                <ThOrdenavel rotulo="Prêmio" chave="premio" ord={ordPessoas} onAlternar={alternarPessoas} direita className="px-2 py-2 text-right font-medium" />
                 <th className="w-8" />
               </tr>
             </thead>
             <tbody>
-              {pessoas.map((p) => {
+              {pessoasOrdenadas.map((p) => {
                 const st = statusDe(p.mediaRealizado, p.mediaRealizado > 0)
                 return (
                   <tr

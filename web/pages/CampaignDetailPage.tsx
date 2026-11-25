@@ -7,6 +7,8 @@ import {
 } from '@shared/services/campaign.teleseler'
 import { useUsuario } from '../auth/UsuarioContext'
 import { useGestor } from '../auth/useGestor'
+import { useOrdenacao } from '../lib/ordenar'
+import { ThOrdenavel } from '../components/ThOrdenavel'
 import { OportunidadesCampanha } from '../components/OportunidadesCampanha'
 import { ParametrosCampanha } from '../components/ParametrosCampanha'
 import { ProgressBar } from '../components/ProgressBar'
@@ -52,6 +54,16 @@ export default function CampaignDetailPage() {
       // ranking 0/nulo vai para o fim
       .sort((a, b) => (a.ranking || Infinity) - (b.ranking || Infinity))
   }, [ranking.data, busca])
+
+  // ordenar clicando no cabeçalho (sem clique, vale a posição no ranking)
+  const { ordenadas, ord, alternar } = useOrdenacao(linhas, {
+    posicao: (r) => r.ranking || null,
+    operador: (r) => r.operatorName,
+    atingimento: (r) => r.percentageAchieved,
+    meta: (r) => r.individualTarget,
+    realizado: (r) => r.assessedValue,
+    premio: (r) => r.award,
+  })
 
   if (!Number.isInteger(idCampaign) || idCampaign <= 0) return <NotFoundPage />
 
@@ -166,16 +178,16 @@ export default function CampaignDetailPage() {
                 <table className="w-full text-left text-sm">
                   <thead className="bg-github-bg-hover text-[10px] uppercase tracking-wide text-github-text-muted">
                     <tr>
-                      <th className="w-10 py-2 pl-3 font-medium">#</th>
-                      <th className="px-2 py-2 font-medium">Operador</th>
-                      <th className="hidden w-48 px-2 py-2 font-medium md:table-cell">Atingimento</th>
-                      <th className="hidden whitespace-nowrap px-2 py-2 text-right font-medium sm:table-cell">Meta</th>
-                      <th className="whitespace-nowrap px-2 py-2 text-right font-medium">Realizado</th>
-                      <th className="whitespace-nowrap py-2 pl-2 pr-3 text-right font-medium">Prêmio</th>
+                      <ThOrdenavel rotulo="#" chave="posicao" ord={ord} onAlternar={alternar} className="w-10 py-2 pl-3 font-medium" />
+                      <ThOrdenavel rotulo="Operador" chave="operador" ord={ord} onAlternar={alternar} className="px-2 py-2 font-medium" />
+                      <ThOrdenavel rotulo="Atingimento" chave="atingimento" ord={ord} onAlternar={alternar} className="hidden w-48 px-2 py-2 font-medium md:table-cell" />
+                      <ThOrdenavel rotulo="Meta" chave="meta" ord={ord} onAlternar={alternar} direita className="hidden whitespace-nowrap px-2 py-2 text-right font-medium sm:table-cell" />
+                      <ThOrdenavel rotulo="Realizado" chave="realizado" ord={ord} onAlternar={alternar} direita className="whitespace-nowrap px-2 py-2 text-right font-medium" />
+                      <ThOrdenavel rotulo="Prêmio" chave="premio" ord={ord} onAlternar={alternar} direita className="whitespace-nowrap py-2 pl-2 pr-3 text-right font-medium" />
                     </tr>
                   </thead>
                   <tbody>
-                    {linhas.slice(0, limite).map((r) => {
+                    {ordenadas.slice(0, limite).map((r) => {
                       const bateu = r.percentageAchieved >= 100
                       return (
                         <tr key={r.idPersonSales} className="border-t border-github-border hover:bg-github-bg-hover">

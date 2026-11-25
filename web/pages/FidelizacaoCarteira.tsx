@@ -1,4 +1,6 @@
 import { useMemo, useState } from 'react'
+import { useOrdenacao } from '../lib/ordenar'
+import { ThOrdenavel } from '../components/ThOrdenavel'
 import dayjs from 'dayjs'
 import { Download, Search } from 'lucide-react'
 import { EmptyState, ErrorState } from '../components/StateViews'
@@ -39,6 +41,15 @@ export function FidelizacaoCarteira({ idPeriodo, idPessoa, nomePessoa }: Props) 
         (!termo || (c.nomeCliente ?? '').toLowerCase().includes(termo) || String(c.idPessoaCliente).includes(termo)),
     )
   }, [todos, situacao, busca])
+
+  const { ordenadas, ord, alternar } = useOrdenacao(visiveis, {
+    cliente: (c) => c.nomeCliente,
+    situacao: (c) => c.comCompra,
+    carteira: (c) => c.tipoCarteira,
+    cadastro: (c) => c.dataCadastroCliente,
+    limite: (c) => c.limiteDisponivel,
+    telefone: (c) => c.telefone,
+  })
 
   function baixarExcel() {
     exportarExcel({
@@ -115,16 +126,16 @@ export function FidelizacaoCarteira({ idPeriodo, idPessoa, nomePessoa }: Props) 
         <table className="w-full text-left text-sm">
           <thead className="text-[11px] uppercase tracking-wide text-github-text-muted">
             <tr className="border-b border-github-border">
-              <th className="py-2 pl-3 font-medium">Cliente</th>
-              <th className="px-2 py-2 font-medium">Situação</th>
-              <th className="hidden px-2 py-2 font-medium sm:table-cell">Carteira</th>
-              <th className="hidden px-2 py-2 font-medium md:table-cell">Cadastro</th>
-              <th className="hidden px-2 py-2 text-right font-medium md:table-cell">Limite disponível</th>
-              <th className="py-2 pl-2 pr-3 font-medium">Telefone</th>
+              <ThOrdenavel rotulo="Cliente" chave="cliente" ord={ord} onAlternar={alternar} className="py-2 pl-3 font-medium" />
+              <ThOrdenavel rotulo="Situação" chave="situacao" ord={ord} onAlternar={alternar} className="px-2 py-2 font-medium" />
+              <ThOrdenavel rotulo="Carteira" chave="carteira" ord={ord} onAlternar={alternar} className="hidden px-2 py-2 font-medium sm:table-cell" />
+              <ThOrdenavel rotulo="Cadastro" chave="cadastro" ord={ord} onAlternar={alternar} className="hidden px-2 py-2 font-medium md:table-cell" />
+              <ThOrdenavel rotulo="Limite disponível" chave="limite" ord={ord} onAlternar={alternar} direita className="hidden px-2 py-2 text-right font-medium md:table-cell" />
+              <ThOrdenavel rotulo="Telefone" chave="telefone" ord={ord} onAlternar={alternar} className="py-2 pl-2 pr-3 font-medium" />
             </tr>
           </thead>
           <tbody>
-            {visiveis.slice(0, limite).map((c) => (
+            {ordenadas.slice(0, limite).map((c) => (
               <tr key={c.idPessoaCliente} className="border-b border-github-border last:border-0">
                 <td className="py-2 pl-3">
                   <span className="font-medium">{c.nomeCliente ?? `Cliente ${c.idPessoaCliente}`}</span>

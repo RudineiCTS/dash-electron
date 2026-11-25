@@ -1,4 +1,6 @@
 import { Fragment, useMemo, useState } from 'react'
+import { useOrdenacao } from '../lib/ordenar'
+import { ThOrdenavel } from '../components/ThOrdenavel'
 import { Link, useParams, useSearchParams } from 'react-router-dom'
 import { ArrowLeft, ChevronDown, ChevronRight } from 'lucide-react'
 import dayjs from 'dayjs'
@@ -45,6 +47,13 @@ export default function CampaignOrdersPage() {
   )
 
   const agrupados = useMemo(() => agruparPedidos(pedidos.data?.orders ?? []), [pedidos.data])
+  const { ordenadas, ord, alternar: alternarOrdem } = useOrdenacao(agrupados, {
+    pedido: (p) => p.idOrder,
+    cliente: (p) => p.idClient,
+    origem: (p) => p.origin,
+    total: (p) => p.total,
+    devolucao: (p) => p.returnValue,
+  })
 
   if (!Number.isInteger(idCampaign) || idCampaign <= 0) return <NotFoundPage />
 
@@ -154,15 +163,15 @@ export default function CampaignOrdersPage() {
                 <table className="w-full text-left text-xs sm:text-sm">
                   <thead className="bg-github-bg-hover text-[10px] uppercase tracking-tight text-github-text-muted sm:tracking-wide">
                     <tr>
-                      <th className="py-2 pl-1.5 font-medium sm:pl-3">Pedido</th>
-                      <th className="px-1 py-2 font-medium sm:px-2">Cliente</th>
-                      <th className="px-1 py-2 font-medium sm:px-2">Origem</th>
-                      <th className="whitespace-nowrap px-1 py-2 text-right font-medium sm:px-2">Total</th>
-                      <th className="whitespace-nowrap py-2 pl-1 pr-1.5 text-right font-medium sm:pl-2 sm:pr-3">Devolução</th>
+                      <ThOrdenavel rotulo="Pedido" chave="pedido" ord={ord} onAlternar={alternarOrdem} className="py-2 pl-1.5 font-medium sm:pl-3" />
+                      <ThOrdenavel rotulo="Cliente" chave="cliente" ord={ord} onAlternar={alternarOrdem} className="px-1 py-2 font-medium sm:px-2" />
+                      <ThOrdenavel rotulo="Origem" chave="origem" ord={ord} onAlternar={alternarOrdem} className="px-1 py-2 font-medium sm:px-2" />
+                      <ThOrdenavel rotulo="Total" chave="total" ord={ord} onAlternar={alternarOrdem} direita className="whitespace-nowrap px-1 py-2 text-right font-medium sm:px-2" />
+                      <ThOrdenavel rotulo="Devolução" chave="devolucao" ord={ord} onAlternar={alternarOrdem} direita className="whitespace-nowrap py-2 pl-1 pr-1.5 text-right font-medium sm:pl-2 sm:pr-3" />
                     </tr>
                   </thead>
                   <tbody>
-                    {agrupados.slice(0, limite).map((p) => {
+                    {ordenadas.slice(0, limite).map((p) => {
                       const aberto = abertos.has(p.chave)
                       const painel = `produtos-${p.chave}`
                       return (

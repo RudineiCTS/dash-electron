@@ -1,4 +1,6 @@
 import { Fragment, useMemo, useState } from 'react'
+import { useOrdenacao } from '../lib/ordenar'
+import { ThOrdenavel } from '../components/ThOrdenavel'
 import { ChevronDown, ChevronRight, Search, X } from 'lucide-react'
 import { EmptyState, ErrorState } from '../components/StateViews'
 import {
@@ -66,6 +68,18 @@ export function FidelizacaoDetalhe({ linha, onFechar }: { linha: FidelizacaoLinh
       ),
     [detalhe.data, termo],
   )
+
+  const { ordenadas: valoresOrdenados, ord: ordValores, alternar: alternarValores } = useOrdenacao(valores, {
+    cliente: (c) => c.nomeCliente,
+    venda: (c) => c.valorVenda,
+    bees: (c) => c.valorVendaBees,
+    total: (c) => c.valorTotal,
+  })
+  const { ordenadas: hitsOrdenados, ord: ordHits, alternar: alternarHits } = useOrdenacao(hits, {
+    cliente: (c) => c.nomeCliente,
+    produtos: (c) => c.quantidadeProdutos,
+    faturado: (c) => c.valorFaturado,
+  })
 
   const tipo = detalhe.data?.tipo
   /** O tipo vem da fórmula de cálculo do KPI (API): valor, cobertura (positivados) ou hits. */
@@ -140,14 +154,14 @@ export function FidelizacaoDetalhe({ linha, onFechar }: { linha: FidelizacaoLinh
               <table className="w-full text-left text-sm">
                 <thead className="text-[11px] uppercase tracking-wide text-github-text-muted">
                   <tr className="border-b border-github-border">
-                    <th className="py-2 pl-3 font-medium">Cliente</th>
-                    {!cobertura && <th className="px-2 py-2 text-right font-medium">Venda</th>}
-                    {!cobertura && <th className="px-2 py-2 text-right font-medium">Bees</th>}
-                    <th className="py-2 pl-2 pr-3 text-right font-medium">Total vendido</th>
+                    <ThOrdenavel rotulo="Cliente" chave="cliente" ord={ordValores} onAlternar={alternarValores} className="py-2 pl-3 font-medium" />
+                    {!cobertura && <ThOrdenavel rotulo="Venda" chave="venda" ord={ordValores} onAlternar={alternarValores} direita className="px-2 py-2 text-right font-medium" />}
+                    {!cobertura && <ThOrdenavel rotulo="Bees" chave="bees" ord={ordValores} onAlternar={alternarValores} direita className="px-2 py-2 text-right font-medium" />}
+                    <ThOrdenavel rotulo="Total vendido" chave="total" ord={ordValores} onAlternar={alternarValores} direita className="py-2 pl-2 pr-3 text-right font-medium" />
                   </tr>
                 </thead>
                 <tbody>
-                  {valores.slice(0, limite).map((c) => (
+                  {valoresOrdenados.slice(0, limite).map((c) => (
                     <tr key={c.idPessoaCliente} className="border-b border-github-border last:border-0">
                       <td className="py-2 pl-3">
                         <span className="font-medium">{c.nomeCliente ?? `Cliente ${c.idPessoaCliente}`}</span>
@@ -165,13 +179,13 @@ export function FidelizacaoDetalhe({ linha, onFechar }: { linha: FidelizacaoLinh
                 <thead className="text-[11px] uppercase tracking-wide text-github-text-muted">
                   <tr className="border-b border-github-border">
                     <th className="w-8" />
-                    <th className="py-2 font-medium">Cliente</th>
-                    <th className="px-2 py-2 text-right font-medium">Produtos comprados</th>
-                    <th className="py-2 pl-2 pr-3 text-right font-medium">Faturado</th>
+                    <ThOrdenavel rotulo="Cliente" chave="cliente" ord={ordHits} onAlternar={alternarHits} className="py-2 font-medium" />
+                    <ThOrdenavel rotulo="Produtos comprados" chave="produtos" ord={ordHits} onAlternar={alternarHits} direita className="px-2 py-2 text-right font-medium" />
+                    <ThOrdenavel rotulo="Faturado" chave="faturado" ord={ordHits} onAlternar={alternarHits} direita className="py-2 pl-2 pr-3 text-right font-medium" />
                   </tr>
                 </thead>
                 <tbody>
-                  {hits.slice(0, limite).map((c) => {
+                  {hitsOrdenados.slice(0, limite).map((c) => {
                     const aberta = aberto === c.idPessoaCliente
                     return (
                       <Fragment key={c.idPessoaCliente}>
