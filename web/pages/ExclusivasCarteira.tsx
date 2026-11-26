@@ -23,7 +23,7 @@ const SITUACOES: { id: SituacaoCarteira; label: string }[] = [
 
 /** "POSITIVAÇÃO BOTICÁRIO EXCLUSIVO" -> "BOTICÁRIO EXCLUSIVO" (só para exibir). */
 function nomeIndustria(nome: string | null) {
-  return (nome ?? 'Sem indústria').replace(/^POSITIVAÇÃO\s+/i, '')
+  return (nome ?? 'Sem indústria').replace(/^(POSITIVAÇÃO|EXCLUSIVA)\s+/i, '')
 }
 
 function data(valor: string | null) {

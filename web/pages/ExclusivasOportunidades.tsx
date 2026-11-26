@@ -14,7 +14,7 @@ const campo = 'h-9 rounded-md border border-github-border bg-github-bg-card px-2
 
 /** "POSITIVAÇÃO BOTICÁRIO EXCLUSIVO" -> "BOTICÁRIO EXCLUSIVO" (só para exibir). */
 function nomeIndustria(nome: string | null) {
-  return (nome ?? 'Sem indústria').replace(/^POSITIVAÇÃO\s+/i, '')
+  return (nome ?? 'Sem indústria').replace(/^(POSITIVAÇÃO|EXCLUSIVA)\s+/i, '')
 }
 
 interface Props {
