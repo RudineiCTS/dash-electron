@@ -53,6 +53,8 @@ export function FidelizacaoDetalhe({ linha, onFechar }: { linha: FidelizacaoLinh
   const [busca, setBusca] = useState('')
   const [limite, setLimite] = useState(PAGE_SIZE)
   const [aberto, setAberto] = useState<number | null>(null)
+  const [aba, setAba] = useState<'clientes' | 'sugestoes'>('clientes')
+  const ehHits = linha.tipoDetalhe === 'hits'
 
   const termo = busca.trim().toLowerCase()
   const valores = useMemo(
@@ -109,7 +111,31 @@ export function FidelizacaoDetalhe({ linha, onFechar }: { linha: FidelizacaoLinh
         </button>
       </div>
 
-      {detalhe.loading ? (
+      {ehHits && (
+        <div role="tablist" aria-label="Visão dos Hits" className="flex w-fit gap-0.5 rounded-lg bg-github-bg-hover p-0.5">
+          {(
+            [
+              { id: 'clientes', label: 'Clientes' },
+              { id: 'sugestoes', label: 'Produtos para somar Hits' },
+            ] as const
+          ).map((t) => (
+            <button
+              key={t.id}
+              type="button"
+              role="tab"
+              aria-selected={aba === t.id}
+              onClick={() => setAba(t.id)}
+              className={`h-8 rounded-md px-3 text-sm font-medium ${aba === t.id ? 'bg-github-bg-card shadow-sm' : 'text-github-text-muted'}`}
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {ehHits && aba === 'sugestoes' ? (
+        <HitsSugestoes idPessoa={linha.idPessoa} nomePessoa={linha.pessoa ?? String(linha.idPessoa)} />
+      ) : detalhe.loading ? (
         <div className="h-24 animate-pulse rounded-lg bg-github-bg-hover" aria-busy="true" />
       ) : detalhe.error ? (
         <ErrorState message={detalhe.error} onRetry={detalhe.reload} />
@@ -228,7 +254,6 @@ export function FidelizacaoDetalhe({ linha, onFechar }: { linha: FidelizacaoLinh
               Mostrar mais ({(ehValor ? valores.length : hits.length) - limite})
             </button>
           )}
-          {tipo === 'hits' && <HitsSugestoes idPessoa={linha.idPessoa} nomePessoa={linha.pessoa ?? String(linha.idPessoa)} />}
           {tipo === 'hits' && (
             <p className="text-xs text-github-text-muted">
               Como o Hits é calculado: <strong className="font-semibold text-github-text">clientes × produtos distintos</strong>. Cada produto conta

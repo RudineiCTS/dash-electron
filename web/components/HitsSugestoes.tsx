@@ -39,10 +39,9 @@ export function HitsSugestoes({ idPessoa, nomePessoa }: { idPessoa: number; nome
   }
 
   return (
-    <section aria-label="Produtos sugeridos para somar Hits" className="flex flex-col gap-2 rounded-xl border border-github-border bg-github-bg-card p-3">
+    <section aria-label="Produtos sugeridos para somar Hits" className="flex flex-col gap-2">
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div>
-          <h3 className="text-sm font-semibold">Produtos para somar Hits</h3>
           <p className="text-xs text-github-text-muted">
             Os que mais clientes da Loja Virtual compram (últimos 3 meses) e que você ainda não vendeu neste mês. Cada produto novo soma
             Hits para todos os seus clientes positivados.
