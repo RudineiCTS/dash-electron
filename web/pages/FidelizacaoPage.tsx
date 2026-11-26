@@ -10,7 +10,7 @@ import { EmptyState, ErrorState } from '../components/StateViews'
 import { FidelizacaoCarteira } from './FidelizacaoCarteira'
 import { FidelizacaoDetalhe } from './FidelizacaoDetalhe'
 import { PedidosNaoFaturados } from '../components/PedidosNaoFaturados'
-import { getFidelizacaoPeriodos, getFidelizacaoResultado, type FidelizacaoLinha } from '../lib/fidelizacao'
+import { getFidelizacaoFaixas, getFidelizacaoPeriodos, getFidelizacaoResultado, type FidelizacaoFaixa, type FidelizacaoLinha } from '../lib/fidelizacao'
 import { formatCurrency } from '../lib/format'
 import { useApiResource } from '../lib/useApiResource'
 
@@ -64,7 +64,22 @@ function resumirPessoas(linhas: FidelizacaoLinha[]): PessoaResumo[] {
     .sort((a, b) => a.pessoa.localeCompare(b.pessoa, 'pt-BR'))
 }
 
-function CardKpi({ l, ativo, onAbrir }: { l: FidelizacaoLinha; ativo: boolean; onAbrir: (l: FidelizacaoLinha) => void }) {
+/**
+ * Quanto falta para a próxima faixa de premiação. As faixas são em % da meta: o que falta é (meta x início da próxima faixa)
+ * menos o realizado. KPI de cobertura conta clientes (arredonda para cima); o de valor, reais. null = KPI sem faixas ou sem meta.
+ */
+function proximaFaixa(l: FidelizacaoLinha, faixas: FidelizacaoFaixa[] | undefined) {
+  if (!faixas?.length || l.valorMeta <= 0) return null
+  const proxima = [...faixas].sort((a, b) => a.valorInicio - b.valorInicio).find((f) => f.valorInicio > l.realizado)
+  if (!proxima) return { maxima: true as const }
+  const alvo = (l.valorMeta * proxima.valorInicio) / 100
+  const clientes = l.tipoDetalhe === 'cobertura'
+  const falta = clientes ? Math.ceil(alvo - l.valorApurado - 1e-9) : Math.round((alvo - l.valorApurado) * 100) / 100
+  return { maxima: false as const, falta: Math.max(falta, clientes ? 1 : 0.01), clientes, inicio: proxima.valorInicio, premio: proxima.valorPremio }
+}
+
+function CardKpi({ l, ativo, onAbrir, faixas }: { l: FidelizacaoLinha; ativo: boolean; onAbrir: (l: FidelizacaoLinha) => void; faixas?: FidelizacaoFaixa[] }) {
+  const prox = proximaFaixa(l, faixas)
   const comMeta = l.valorMeta > 0
   const st = comMeta ? statusDe(l.realizado, true) : VERDE
   const casas = [l.valorMeta, l.valorApurado].some((v) => !Number.isInteger(v)) ? 2 : 0
@@ -99,6 +114,22 @@ function CardKpi({ l, ativo, onAbrir }: { l: FidelizacaoLinha; ativo: boolean; o
       <p className="mt-2 text-xs text-github-text-muted">
         Prêmio: <strong className={`font-semibold ${l.valorPremio > 0 ? 'text-[#3B6D11]' : 'text-github-text'}`}>{formatCurrency(l.valorPremio)}</strong>
       </p>
+      {prox && (
+        <p className="mt-1 text-xs text-github-text-muted">
+          {prox.maxima ? (
+            <strong className="font-semibold text-[#3B6D11]">Faixa máxima de premiação atingida</strong>
+          ) : (
+            <>
+              Faltam{' '}
+              <strong className="font-semibold text-github-text">
+                {prox.clientes ? `${prox.falta.toLocaleString('pt-BR')} ${prox.falta === 1 ? 'cliente' : 'clientes'}` : formatCurrency(prox.falta)}
+              </strong>{' '}
+              para a próxima faixa ({numero(prox.inicio)}% da meta): prêmio de{' '}
+              <strong className="font-semibold text-[#3B6D11]">{formatCurrency(prox.premio)}</strong>
+            </>
+          )}
+        </p>
+      )}
       {l.idMeta != null && l.idKpi != null && l.tipoDetalhe != null && (
         <button
           type="button"
@@ -133,6 +164,14 @@ export default function FidelizacaoPage() {
   const [kpiAberto, setKpiAberto] = useState<FidelizacaoLinha | null>(null)
   /** Dentro da pessoa: os KPIs ou a carteira dela. */
   const [visao, setVisao] = useState<'kpis' | 'carteira' | 'naofaturados'>('kpis')
+
+  // faixas de premiação dos KPIs do cenário do período escolhido (para mostrar quanto falta para a próxima)
+  const faixas = useApiResource((signal) => (idPeriodo != null ? getFidelizacaoFaixas(idPeriodo, signal) : Promise.resolve([])), [idPeriodo])
+  const faixasPorKpi = useMemo(() => {
+    const mapa = new Map<number, FidelizacaoFaixa[]>()
+    for (const f of faixas.data ?? []) mapa.set(f.idKpi, [...(mapa.get(f.idKpi) ?? []), f])
+    return mapa
+  }, [faixas.data])
 
   /** Período de hoje; se nenhum contém hoje, o mais recente. */
   useEffect(() => {
@@ -345,6 +384,7 @@ export default function FidelizacaoPage() {
                 <CardKpi
                   key={`${l.idPessoa}-${l.idKpi}`}
                   l={l}
+                  faixas={l.idKpi != null ? faixasPorKpi.get(l.idKpi) : undefined}
                   ativo={kpiAberto?.idKpi === l.idKpi && kpiAberto?.idMeta === l.idMeta}
                   onAbrir={(x) => setKpiAberto((atual) => (atual?.idKpi === x.idKpi && atual?.idMeta === x.idMeta ? null : x))}
                 />

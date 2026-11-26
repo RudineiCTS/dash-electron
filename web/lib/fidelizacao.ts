@@ -157,6 +157,19 @@ export async function getFidelizacaoPedidosNaoFaturados(idPessoa: number, signal
   return response.data
 }
 
+/** Faixa de premiação de um KPI (GET /api/fidelizacao/faixas). Início e fim são % da meta; o prêmio é em R$. */
+export interface FidelizacaoFaixa {
+  idKpi: number
+  valorInicio: number
+  valorFim: number | null
+  valorPremio: number
+}
+
+export async function getFidelizacaoFaixas(idPeriodo: number, signal?: AbortSignal): Promise<FidelizacaoFaixa[]> {
+  const response = await api.get<FidelizacaoFaixa[]>('fidelizacao/faixas', { params: { idPeriodo }, signal })
+  return response.data
+}
+
 /** Produto sugerido à operadora para somar Hits (GET /api/fidelizacao/hits-sugestoes). */
 export interface FidelizacaoHitsSugestao {
   idProduto: number
