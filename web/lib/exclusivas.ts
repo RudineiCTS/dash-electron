@@ -85,6 +85,9 @@ export async function getCarteiraClientes(
     pagina: number
     tamanho: number
     idPessoaTelevendas: number | null
+    /** Coluna: cliente, situacao, operador, pedidos, venda, primeira ou vendas3m (a ordenação é feita no servidor). */
+    ordenar?: string
+    direcao?: 'asc' | 'desc'
   },
   signal?: AbortSignal,
 ): Promise<CarteiraPagina> {

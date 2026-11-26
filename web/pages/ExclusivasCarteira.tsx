@@ -3,6 +3,8 @@ import dayjs from 'dayjs'
 import { ChevronDown, ChevronRight, Download, Search } from 'lucide-react'
 import { PedidosDoClienteExclusiva } from '../components/PedidosDoClienteExclusiva'
 import { EmptyState, ErrorState } from '../components/StateViews'
+import { ThOrdenavel } from '../components/ThOrdenavel'
+import type { Ordenacao } from '../lib/ordenar'
 import { getCarteiraClientes, getCarteiraResumo, type CarteiraCliente, type SituacaoCarteira } from '../lib/exclusivas'
 import { exportarExcel } from '../lib/exportarExcel'
 import { formatCurrency } from '../lib/format'
@@ -56,6 +58,8 @@ export function ExclusivasCarteira({ mes, onMes, idPessoaFiltro, ehGestor }: Exc
   const [buscaAplicada, setBuscaAplicada] = useState('')
   const [pagina, setPagina] = useState(1)
   const [aberto, setAberto] = useState<number | null>(null)
+  /** Coluna ordenada (a lista é paginada no servidor, então a ordenação também é feita lá). */
+  const [ord, setOrd] = useState<Ordenacao | null>(null)
   const [exportando, setExportando] = useState<string | null>(null)
   const [erroExcel, setErroExcel] = useState<string | null>(null)
 
@@ -77,12 +81,33 @@ export function ExclusivasCarteira({ mes, onMes, idPessoaFiltro, ehGestor }: Exc
     (signal) =>
       industriaAtiva
         ? getCarteiraClientes(
-            { referencia, industria: industriaAtiva, situacao, busca: buscaAplicada, pagina, tamanho: TAMANHO, idPessoaTelevendas: idPessoaFiltro },
+            {
+              referencia,
+              industria: industriaAtiva,
+              situacao,
+              busca: buscaAplicada,
+              pagina,
+              tamanho: TAMANHO,
+              idPessoaTelevendas: idPessoaFiltro,
+              ordenar: ord?.chave,
+              direcao: ord?.direcao,
+            },
             signal,
           )
         : Promise.resolve(null),
-    [referencia, industriaAtiva, situacao, buscaAplicada, pagina, idPessoaFiltro],
+    [referencia, industriaAtiva, situacao, buscaAplicada, pagina, idPessoaFiltro, ord],
   )
+
+  /** Primeiro clique: texto de A a Z e números do maior para o menor; segundo inverte; terceiro volta à ordem padrão. */
+  function alternarOrdem(chave: string) {
+    const inicial: Ordenacao['direcao'] = chave === 'cliente' || chave === 'operador' ? 'asc' : 'desc'
+    setOrd((atual) => {
+      if (!atual || atual.chave !== chave) return { chave, direcao: inicial }
+      return atual.direcao === inicial ? { chave, direcao: inicial === 'asc' ? 'desc' : 'asc' } : null
+    })
+    setPagina(1)
+    setAberto(null)
+  }
 
   function escolherIndustria(nome: string) {
     setIndustria((atual) => (atual === nome ? '' : nome))
@@ -278,13 +303,13 @@ export function ExclusivasCarteira({ mes, onMes, idPessoaFiltro, ehGestor }: Exc
               <table className="w-full text-left text-sm">
                 <thead className="bg-github-bg-hover text-[10px] uppercase tracking-wide text-github-text-muted">
                   <tr>
-                    <th className="py-2 pl-3 font-medium">Cliente</th>
-                    <th className="px-2 py-2 font-medium">Situação</th>
-                    {ehGestor && <th className="px-2 py-2 font-medium">Operador</th>}
-                    <th className="px-2 py-2 text-right font-medium">Pedidos</th>
-                    <th className="px-2 py-2 text-right font-medium">Venda líquida</th>
-                    <th className="hidden px-2 py-2 font-medium md:table-cell">1ª compra</th>
-                    <th className="whitespace-nowrap py-2 pl-2 pr-3 text-right font-medium">Vendas 3 meses</th>
+                    <ThOrdenavel rotulo="Cliente" chave="cliente" ord={ord} onAlternar={alternarOrdem} className="py-2 pl-3 font-medium" />
+                    <ThOrdenavel rotulo="Situação" chave="situacao" ord={ord} onAlternar={alternarOrdem} className="px-2 py-2 font-medium" />
+                    {ehGestor && <ThOrdenavel rotulo="Operador" chave="operador" ord={ord} onAlternar={alternarOrdem} className="px-2 py-2 font-medium" />}
+                    <ThOrdenavel rotulo="Pedidos" chave="pedidos" ord={ord} onAlternar={alternarOrdem} direita className="px-2 py-2 text-right font-medium" />
+                    <ThOrdenavel rotulo="Venda líquida" chave="venda" ord={ord} onAlternar={alternarOrdem} direita className="px-2 py-2 text-right font-medium" />
+                    <ThOrdenavel rotulo="1ª compra" chave="primeira" ord={ord} onAlternar={alternarOrdem} className="hidden px-2 py-2 font-medium md:table-cell" />
+                    <ThOrdenavel rotulo="Vendas 3 meses" chave="vendas3m" ord={ord} onAlternar={alternarOrdem} direita className="whitespace-nowrap py-2 pl-2 pr-3 text-right font-medium" />
                   </tr>
                 </thead>
                 <tbody>

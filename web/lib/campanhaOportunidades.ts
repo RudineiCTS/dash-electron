@@ -69,7 +69,15 @@ export async function getResumoOportunidades(idCampaign: number, signal?: AbortS
 export async function getClientesOportunidades(
   idCampaign: number,
   caminho: CaminhoOportunidade,
-  opcoes: { somenteProntos: boolean; busca: string; pagina: number; tamanho: number },
+  opcoes: {
+    somenteProntos: boolean
+    busca: string
+    pagina: number
+    tamanho: number
+    /** chance (padrão), potencial, ticket, dias, nome ou codigo; a ordenação é feita no servidor. */
+    ordenar?: string
+    direcao?: 'asc' | 'desc'
+  },
   signal?: AbortSignal,
 ): Promise<PaginaOportunidades> {
   const response = await api.get<PaginaOportunidades>(`campanhas/${idCampaign}/oportunidades`, {

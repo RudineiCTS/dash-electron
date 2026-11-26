@@ -204,10 +204,13 @@ export function PainelOportunidades({ idCampaign, resumo }: { idCampaign: number
   const [somenteProntos, setSomenteProntos] = useState(true)
   const [busca, setBusca] = useState('')
   const [pagina, setPagina] = useState(1)
+  const [ordem, setOrdem] = useState('chance:desc')
+  const [ordenar, direcao] = ordem.split(':') as [string, 'asc' | 'desc']
 
   const lista = useApiResource(
-    (signal) => getClientesOportunidades(idCampaign, caminho, { somenteProntos, busca: busca.trim(), pagina: 1, tamanho: TAMANHO * pagina }, signal),
-    [idCampaign, caminho, somenteProntos, busca, pagina],
+    (signal) =>
+      getClientesOportunidades(idCampaign, caminho, { somenteProntos, busca: busca.trim(), pagina: 1, tamanho: TAMANHO * pagina, ordenar, direcao }, signal),
+    [idCampaign, caminho, somenteProntos, busca, pagina, ordem],
   )
 
   const contagem = (id: CaminhoOportunidade) => resumo.find((r) => r.caminho === id)
@@ -257,6 +260,28 @@ export function PainelOportunidades({ idCampaign, resumo }: { idCampaign: number
           aria-label="Buscar pelo código do cliente"
           className="h-9 w-full rounded-md border border-github-border bg-github-bg-card px-3 text-base placeholder:text-github-text-muted sm:w-64 sm:text-sm"
         />
+        <label className="flex items-center gap-2 text-sm">
+          <span className="text-github-text-muted">Ordenar por</span>
+          <select
+            value={ordem}
+            onChange={(e) => {
+              setOrdem(e.target.value)
+              setPagina(1)
+            }}
+            className="h-9 rounded-md border border-github-border bg-github-bg-card px-2 text-base sm:text-sm"
+          >
+            <option value="chance:desc">Maior chance de comprar</option>
+            <option value="chance:asc">Menor chance de comprar</option>
+            <option value="potencial:desc">Maior potencial por mês</option>
+            <option value="ticket:desc">Maior ticket médio</option>
+            <option value="dias:desc">Mais tempo sem comprar</option>
+            <option value="dias:asc">Menos tempo sem comprar</option>
+            <option value="nome:asc">Nome do cliente (A a Z)</option>
+            <option value="nome:desc">Nome do cliente (Z a A)</option>
+            <option value="codigo:asc">Código do cliente (menor)</option>
+            <option value="codigo:desc">Código do cliente (maior)</option>
+          </select>
+        </label>
         <label className="flex items-center gap-2 text-sm">
           <input
             type="checkbox"
