@@ -50,6 +50,8 @@ export interface CarteiraCliente {
   pedidos: number
   totalVenda: number
   primeiraCompra: string | null
+  /** Vendas do cliente nos últimos 3 meses (pedidos faturados e com devolução parcial, de qualquer operador). */
+  vendas3Meses: number
 }
 
 export interface CarteiraPagina {

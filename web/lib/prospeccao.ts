@@ -48,6 +48,8 @@ export interface ProspeccaoCarteira {
   telefone2: string | null
   /** Já aparece no painel de prospecção do mês (vendeu). */
   noPainel: boolean
+  /** Vendas do cliente nos últimos 3 meses (pedidos faturados e com devolução parcial, de qualquer operador). */
+  vendas3Meses: number
 }
 
 /** Carteira do mês atual inteiro; `idPessoaTelevendas`: só dessa operadora (o gestor escolhe uma). */

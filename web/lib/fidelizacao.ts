@@ -108,6 +108,8 @@ export interface FidelizacaoCarteiraCliente {
   telefone2: string | null
   /** "LOJA VIRTUAL" ou "SETOR" (pelo gerente atual do cliente). */
   tipoCarteira: string
+  /** Vendas do cliente nos últimos 3 meses (pedidos faturados e com devolução parcial, de qualquer operador). */
+  vendas3Meses: number
   /** Aparece nos clientes calculados dos KPIs da pessoa no período. */
   comCompra: boolean
 }

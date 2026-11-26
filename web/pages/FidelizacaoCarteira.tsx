@@ -57,6 +57,7 @@ export function FidelizacaoCarteira({ idPeriodo, idPessoa, nomePessoa }: Props) 
     cadastro: (c) => c.dataCadastroCliente,
     limite: (c) => c.limiteDisponivel,
     telefone: (c) => c.telefone,
+    vendas: (c) => c.vendas3Meses,
   })
 
   function baixarExcel() {
@@ -73,6 +74,7 @@ export function FidelizacaoCarteira({ idPeriodo, idPessoa, nomePessoa }: Props) 
         { titulo: 'Limite disponível', tipo: 'moeda', largura: 16, valor: (c) => c.limiteDisponivel },
         { titulo: 'Telefone', largura: 16, valor: (c) => c.telefone },
         { titulo: 'Telefone 2', largura: 16, valor: (c) => c.telefone2 },
+        { titulo: 'Vendas 3 meses', tipo: 'moeda', largura: 16, valor: (c) => c.vendas3Meses },
       ],
     })
   }
@@ -155,7 +157,8 @@ export function FidelizacaoCarteira({ idPeriodo, idPessoa, nomePessoa }: Props) 
               <ThOrdenavel rotulo="Carteira" chave="carteira" ord={ord} onAlternar={alternar} className="hidden px-2 py-2 font-medium sm:table-cell" />
               <ThOrdenavel rotulo="Cadastro" chave="cadastro" ord={ord} onAlternar={alternar} className="hidden px-2 py-2 font-medium md:table-cell" />
               <ThOrdenavel rotulo="Limite disponível" chave="limite" ord={ord} onAlternar={alternar} direita className="hidden px-2 py-2 text-right font-medium md:table-cell" />
-              <ThOrdenavel rotulo="Telefone" chave="telefone" ord={ord} onAlternar={alternar} className="py-2 pl-2 pr-3 font-medium" />
+              <ThOrdenavel rotulo="Telefone" chave="telefone" ord={ord} onAlternar={alternar} className="px-2 py-2 font-medium" />
+              <ThOrdenavel rotulo="Vendas 3 meses" chave="vendas" ord={ord} onAlternar={alternar} direita className="whitespace-nowrap py-2 pl-2 pr-3 text-right font-medium" />
             </tr>
           </thead>
           <tbody>
@@ -187,14 +190,15 @@ export function FidelizacaoCarteira({ idPeriodo, idPessoa, nomePessoa }: Props) 
                   {c.dataCadastroCliente ? dayjs(c.dataCadastroCliente).format('DD/MM/YYYY') : '-'}
                 </td>
                 <td className="hidden whitespace-nowrap px-2 py-2 text-right md:table-cell">{formatCurrency(c.limiteDisponivel)}</td>
-                <td className="whitespace-nowrap py-2 pl-2 pr-3 text-github-text-muted">
+                <td className="whitespace-nowrap px-2 py-2 text-github-text-muted">
                   {[c.telefone, c.telefone2].filter((t) => !!t?.trim()).join(' · ') || '-'}
                 </td>
+                <td className="whitespace-nowrap py-2 pl-2 pr-3 text-right font-semibold">{formatCurrency(c.vendas3Meses)}</td>
               </tr>
             ))}
             {visiveis.length === 0 && (
               <tr>
-                <td colSpan={6} className="py-6 text-center text-sm text-github-text-muted">
+                <td colSpan={7} className="py-6 text-center text-sm text-github-text-muted">
                   Nenhum cliente com esses filtros.
                 </td>
               </tr>

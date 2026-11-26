@@ -55,6 +55,7 @@ export function ProspeccaoCarteira({ idPessoaTelevendas, operadoras }: Props) {
     cadastro: (c) => c.dataCadastroCliente,
     limite: (c) => c.limiteUtilizado,
     telefone: (c) => c.telefone,
+    vendas: (c) => c.vendas3Meses,
   })
 
   return (
@@ -127,7 +128,8 @@ export function ProspeccaoCarteira({ idPessoaTelevendas, operadoras }: Props) {
                   <ThOrdenavel rotulo="Situação" chave="situacao" ord={ord} onAlternar={alternar} className="px-2 py-2 font-medium" />
                   <ThOrdenavel rotulo="Cadastro" chave="cadastro" ord={ord} onAlternar={alternar} className="hidden px-2 py-2 font-medium md:table-cell" />
                   <ThOrdenavel rotulo="Limite utilizado" chave="limite" ord={ord} onAlternar={alternar} direita className="hidden px-2 py-2 text-right font-medium md:table-cell" />
-                  <ThOrdenavel rotulo="Telefone" chave="telefone" ord={ord} onAlternar={alternar} className="py-2 pl-2 pr-3 font-medium" />
+                  <ThOrdenavel rotulo="Telefone" chave="telefone" ord={ord} onAlternar={alternar} className="px-2 py-2 font-medium" />
+                  <ThOrdenavel rotulo="Vendas 3 meses" chave="vendas" ord={ord} onAlternar={alternar} direita className="whitespace-nowrap py-2 pl-2 pr-3 text-right font-medium" />
                 </tr>
               </thead>
               <tbody>
@@ -150,14 +152,15 @@ export function ProspeccaoCarteira({ idPessoaTelevendas, operadoras }: Props) {
                       {c.dataCadastroCliente ? dayjs(c.dataCadastroCliente).format('DD/MM/YYYY') : '-'}
                     </td>
                     <td className="hidden whitespace-nowrap px-2 py-2 text-right md:table-cell">{formatCurrency(c.limiteUtilizado)}</td>
-                    <td className="whitespace-nowrap py-2 pl-2 pr-3 text-github-text-muted">
+                    <td className="whitespace-nowrap px-2 py-2 text-github-text-muted">
                       {[c.telefone, c.telefone2].filter((t) => !!t?.trim()).join(' · ') || '-'}
                     </td>
+                    <td className="whitespace-nowrap py-2 pl-2 pr-3 text-right font-semibold">{formatCurrency(c.vendas3Meses)}</td>
                   </tr>
                 ))}
                 {visiveis.length === 0 && (
                   <tr>
-                    <td colSpan={5} className="py-6 text-center text-sm text-github-text-muted">
+                    <td colSpan={6} className="py-6 text-center text-sm text-github-text-muted">
                       Nenhum cliente com esses filtros.
                     </td>
                   </tr>

@@ -128,6 +128,7 @@ export function ExclusivasCarteira({ mes, onMes, idPessoaFiltro, ehGestor }: Exc
           { titulo: 'Pedidos', tipo: 'numero', largura: 9, valor: (c) => c.pedidos },
           { titulo: 'Venda líquida', tipo: 'moeda', largura: 14, valor: (c) => c.totalVenda },
           { titulo: '1ª compra', largura: 12, valor: (c) => (c.primeiraCompra ? dayjs(c.primeiraCompra).format('DD/MM/YYYY') : '') },
+          { titulo: 'Vendas 3 meses', tipo: 'moeda', largura: 16, valor: (c) => c.vendas3Meses },
         ],
       })
     } catch {
@@ -282,7 +283,8 @@ export function ExclusivasCarteira({ mes, onMes, idPessoaFiltro, ehGestor }: Exc
                     {ehGestor && <th className="px-2 py-2 font-medium">Operador</th>}
                     <th className="px-2 py-2 text-right font-medium">Pedidos</th>
                     <th className="px-2 py-2 text-right font-medium">Venda líquida</th>
-                    <th className="hidden py-2 pl-2 pr-3 font-medium md:table-cell">1ª compra</th>
+                    <th className="hidden px-2 py-2 font-medium md:table-cell">1ª compra</th>
+                    <th className="whitespace-nowrap py-2 pl-2 pr-3 text-right font-medium">Vendas 3 meses</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -322,11 +324,12 @@ export function ExclusivasCarteira({ mes, onMes, idPessoaFiltro, ehGestor }: Exc
                           <td className="whitespace-nowrap px-2 py-1.5 text-right font-semibold">
                             {temPedidos ? formatCurrency(c.totalVenda) : '-'}
                           </td>
-                          <td className="hidden whitespace-nowrap py-1.5 pl-2 pr-3 md:table-cell">{data(c.primeiraCompra)}</td>
+                          <td className="hidden whitespace-nowrap px-2 py-1.5 md:table-cell">{data(c.primeiraCompra)}</td>
+                          <td className="whitespace-nowrap py-1.5 pl-2 pr-3 text-right font-semibold">{formatCurrency(c.vendas3Meses)}</td>
                         </tr>
                         {aberta && (
                           <tr className="border-t border-github-border bg-github-bg-hover/40">
-                            <td colSpan={ehGestor ? 6 : 5} className="px-3 py-2">
+                            <td colSpan={ehGestor ? 7 : 6} className="px-3 py-2">
                               <PedidosDoClienteExclusiva
                                 referencia={referencia}
                                 idPessoaCliente={c.idPessoaCliente}
