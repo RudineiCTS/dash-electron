@@ -269,12 +269,12 @@ export default function ExclusivasPage() {
             const nome = r.industria ?? ''
             const ativa = industria === nome
             return (
-              <li key={nome}>
+              <li key={nome} className="flex">
                 <button
                   type="button"
                   aria-pressed={ativa}
                   onClick={() => escolherIndustria(nome)}
-                  className={`w-full rounded-xl border p-3 text-left transition-colors ${
+                  className={`flex w-full flex-col rounded-xl border p-3 text-left transition-colors ${
                     ativa
                       ? 'border-github-btn-green bg-github-bg-hover'
                       : 'border-github-border bg-github-bg-card hover:bg-github-bg-hover'
@@ -285,16 +285,17 @@ export default function ExclusivasPage() {
                     {r.positivados.toLocaleString('pt-BR')}
                     <span className="ml-1 text-xs font-normal text-github-text-muted">positivados</span>
                   </p>
-                  {r.aPositivar > 0 && (
+                  {/* a linha aparece sempre (cinza quando é 0) para os cards ficarem do mesmo tamanho */}
+                  {(
                     <p
-                      className="mt-1.5 text-lg font-semibold leading-none"
+                      className={`mt-1.5 text-lg font-semibold leading-none ${r.aPositivar > 0 ? '' : 'text-github-text-muted'}`}
                       title="Clientes com pedido digitado que ainda não foi faturado e que ainda não estão nos positivados"
                     >
                       {r.aPositivar.toLocaleString('pt-BR')}
                       <span className="ml-1 text-xs font-normal text-github-text-muted">a positivar</span>
                     </p>
                   )}
-                  <p className="mt-2 text-xs text-github-text-muted">
+                  <p className="mt-auto pt-2 text-xs text-github-text-muted">
                     {formatCurrency(r.totalVenda)}
                     {ehGestor && <> · {r.operadores} {r.operadores === 1 ? 'operador' : 'operadores'}</>}
                   </p>
