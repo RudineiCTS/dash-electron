@@ -69,8 +69,9 @@ function ClientesSemCompra({ idPessoa, idProduto }: { idPessoa: number; idProdut
   return (
     <div className="flex flex-col gap-1.5">
       <p className="text-[11px] text-github-text-muted">
-        {clientes.data.length.toLocaleString('pt-BR')} {clientes.data.length === 1 ? 'cliente da carteira ainda não comprou' : 'clientes da carteira ainda não compraram'} este produto
-        nos últimos 3 meses.
+        <strong className="font-semibold text-github-text">{clientes.data.length.toLocaleString('pt-BR')}</strong> de{' '}
+        {clientes.data[0].totalCarteira.toLocaleString('pt-BR')} clientes da sua carteira ainda não compraram este produto nos últimos 3 meses (
+        {(clientes.data[0].totalCarteira - clientes.data.length).toLocaleString('pt-BR')} já compraram).
       </p>
       <div className="max-h-72 overflow-auto">
         <table className="w-full text-left text-xs">
@@ -121,8 +122,7 @@ export function HitsSugestoes({ idPessoa, nomePessoa }: { idPessoa: number; nome
   const { ordenadas, ord, alternar } = useOrdenacao(itens, {
     posicao: (p) => p.posicao,
     produto: (p) => p.descProduto,
-    carteira: (p) => p.clientesCarteira,
-    lojaVirtual: (p) => p.clientesDistintos,
+    clientes: (p) => p.clientesDistintos,
     estoque: (p) => p.estoque,
   })
 
@@ -140,7 +140,6 @@ export function HitsSugestoes({ idPessoa, nomePessoa }: { idPessoa: number; nome
         { titulo: 'Posição', tipo: 'numero', largura: 10, valor: (p) => p.posicao },
         { titulo: 'Código', tipo: 'numero', largura: 10, valor: (p) => p.idProduto },
         { titulo: 'Produto', largura: 50, valor: (p) => p.descProduto },
-        { titulo: 'Clientes da carteira que compram', tipo: 'numero', largura: 30, valor: (p) => p.clientesCarteira },
         { titulo: 'Clientes da Loja Virtual que compram', tipo: 'numero', largura: 34, valor: (p) => p.clientesDistintos },
         { titulo: 'Estoque', tipo: 'numero', largura: 12, valor: (p) => p.estoque },
       ],
@@ -153,8 +152,8 @@ export function HitsSugestoes({ idPessoa, nomePessoa }: { idPessoa: number; nome
         <div>
           <p className="text-xs text-github-text-muted">
             Os que mais clientes da Loja Virtual compram (últimos 3 meses), com estoque, e que você ainda não vendeu neste mês. Cada produto novo soma
-            Hits para todos os seus clientes positivados. Toque no estoque para ver de qual filial ele vem e no produto para ver quais clientes seus
-            ainda não compraram.
+            Hits para todos os seus clientes positivados. Toque no estoque para ver de qual filial ele vem e no produto para ver quais clientes da sua
+            carteira ainda não compraram.
             {sugestoes.data?.dataReferencia && <> Lista de {dayjs(sugestoes.data.dataReferencia).format('DD/MM/YYYY')}.</>}
           </p>
         </div>
@@ -182,8 +181,7 @@ export function HitsSugestoes({ idPessoa, nomePessoa }: { idPessoa: number; nome
                 <tr className="border-b border-github-border">
                   <ThOrdenavel rotulo="#" chave="posicao" ord={ord} onAlternar={alternar} className="w-10 py-2 font-medium" />
                   <ThOrdenavel rotulo="Produto" chave="produto" ord={ord} onAlternar={alternar} className="px-2 py-2 font-medium" />
-                  <ThOrdenavel rotulo="Clientes da carteira que compram" chave="carteira" ord={ord} onAlternar={alternar} direita className="px-2 py-2 text-right font-medium" />
-                  <ThOrdenavel rotulo="Na Loja Virtual" chave="lojaVirtual" ord={ord} onAlternar={alternar} direita className="hidden whitespace-nowrap px-2 py-2 text-right font-medium sm:table-cell" />
+                  <ThOrdenavel rotulo="Clientes que compram" chave="clientes" ord={ord} onAlternar={alternar} direita className="whitespace-nowrap px-2 py-2 text-right font-medium" />
                   <ThOrdenavel rotulo="Estoque" chave="estoque" ord={ord} onAlternar={alternar} direita className="whitespace-nowrap py-2 pl-2 text-right font-medium" />
                 </tr>
               </thead>
@@ -206,8 +204,7 @@ export function HitsSugestoes({ idPessoa, nomePessoa }: { idPessoa: number; nome
                             <span className="ml-1 text-xs text-github-text-muted">{p.idProduto}</span>
                           </button>
                         </td>
-                        <td className="whitespace-nowrap px-2 py-1.5 text-right font-semibold">{p.clientesCarteira.toLocaleString('pt-BR')}</td>
-                        <td className="hidden whitespace-nowrap px-2 py-1.5 text-right text-github-text-muted sm:table-cell">{p.clientesDistintos.toLocaleString('pt-BR')}</td>
+                        <td className="whitespace-nowrap px-2 py-1.5 text-right">{p.clientesDistintos.toLocaleString('pt-BR')}</td>
                         <td className="whitespace-nowrap py-1.5 pl-2 text-right">
                           <button
                             type="button"
@@ -222,7 +219,7 @@ export function HitsSugestoes({ idPessoa, nomePessoa }: { idPessoa: number; nome
                       </tr>
                       {aba && (
                         <tr className="border-b border-github-border bg-github-bg-hover/50">
-                          <td colSpan={5} className="px-3 py-2">
+                          <td colSpan={4} className="px-3 py-2">
                             <div className="mb-2 flex w-fit gap-0.5 rounded-lg bg-github-bg-card p-0.5" role="tablist">
                               {(
                                 [

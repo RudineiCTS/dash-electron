@@ -178,8 +178,6 @@ export interface FidelizacaoHitsSugestao {
   posicao: number
   /** Clientes da Loja Virtual (empresa toda) que compraram o produto nos últimos 3 meses. */
   clientesDistintos: number
-  /** Clientes da carteira DESTA operadora que compraram o produto nos últimos 3 meses. */
-  clientesCarteira: number
   /** Estoque disponível no momento da carga. */
   estoque: number
 }
@@ -201,6 +199,8 @@ export interface FidelizacaoHitsClienteSemCompra {
   nomeCliente: string | null
   telefone: string | null
   telefone2: string | null
+  /** Tamanho da carteira (Loja Virtual) da operadora. */
+  totalCarteira: number
 }
 
 export async function getFidelizacaoHitsEstoque(idProduto: number, signal?: AbortSignal): Promise<FidelizacaoHitsEstoque[]> {
