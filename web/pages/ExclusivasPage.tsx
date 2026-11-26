@@ -12,6 +12,7 @@ import { exportarExcel } from '../lib/exportarExcel'
 import { formatCurrency } from '../lib/format'
 import { useApiResource } from '../lib/useApiResource'
 import { ExclusivasCarteira } from './ExclusivasCarteira'
+import { ExclusivasOportunidades } from './ExclusivasOportunidades'
 import { ExclusivasPedidosNaoFaturados } from './ExclusivasPedidosNaoFaturados'
 
 const PAGE_SIZE = 30
@@ -57,7 +58,7 @@ export default function ExclusivasPage() {
   const [busca, setBusca] = useState('')
   const [limite, setLimite] = useState(PAGE_SIZE)
   const [aberto, setAberto] = useState<string | null>(null)
-  const [aba, setAba] = useState<'resultado' | 'carteira' | 'pedidos'>('resultado')
+  const [aba, setAba] = useState<'resultado' | 'carteira' | 'oportunidades' | 'pedidos'>('resultado')
 
   const resumo = useApiResource(
     (signal) => (pronto ? getExclusivasResumo(referencia, idPessoaFiltro, signal) : Promise.resolve([])),
@@ -161,6 +162,7 @@ export default function ExclusivasPage() {
             [
               { id: 'resultado', label: 'Resultado' },
               { id: 'carteira', label: 'Carteira' },
+              { id: 'oportunidades', label: 'Oportunidades' },
               { id: 'pedidos', label: 'Pedidos não faturados' },
             ] as const
           ).map((a) => (
@@ -184,6 +186,8 @@ export default function ExclusivasPage() {
         <ExclusivasPedidosNaoFaturados mes={mes} onMes={setMes} idPessoa={idPessoa} ehGestor={ehGestor} />
       ) : pronto && aba === 'carteira' ? (
         <ExclusivasCarteira mes={mes} onMes={setMes} idPessoaFiltro={idPessoaFiltro} ehGestor={ehGestor} />
+      ) : pronto && aba === 'oportunidades' ? (
+        <ExclusivasOportunidades idPessoaFiltro={idPessoaFiltro} />
       ) : (
         <>
       {!idPessoa && !ehGestor && (

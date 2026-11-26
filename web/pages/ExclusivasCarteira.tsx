@@ -18,6 +18,7 @@ const SITUACOES: { id: SituacaoCarteira; label: string }[] = [
   { id: 'todos', label: 'Todos' },
   { id: 'positivados', label: 'Positivados' },
   { id: 'pendentes', label: 'Não positivados' },
+  { id: 'fora', label: 'Fora da positivação (lista de exclusão)' },
 ]
 
 /** "POSITIVAÇÃO BOTICÁRIO EXCLUSIVO" -> "BOTICÁRIO EXCLUSIVO" (só para exibir). */
@@ -109,6 +110,13 @@ export function ExclusivasCarteira({ mes, onMes, idPessoaFiltro, ehGestor }: Exc
     setAberto(null)
   }
 
+  // indústria sem carteira (só lista de exclusão, flag N): abre direto em "Fora da positivação"
+  const resumoAtivo = resumo.data?.find((x) => (x.industria ?? '') === industriaAtiva)
+  const semCarteira = !!resumoAtivo && resumoAtivo.carteira === 0 && resumoAtivo.foraDaPositivacao > 0
+  useEffect(() => {
+    if (semCarteira) setSituacao((s) => (s === 'pendentes' || s === 'positivados' ? 'fora' : s))
+  }, [semCarteira])
+
   function escolherIndustria(nome: string) {
     setIndustria((atual) => (atual === nome ? '' : nome))
     setPagina(1)
@@ -148,7 +156,7 @@ export function ExclusivasCarteira({ mes, onMes, idPessoaFiltro, ehGestor }: Exc
         colunas: [
           { titulo: 'Código', tipo: 'numero', largura: 10, valor: (c) => c.idPessoaCliente },
           { titulo: 'Cliente', largura: 40, valor: (c) => c.nomeCliente },
-          { titulo: 'Situação', largura: 14, valor: (c) => (c.positivou ? 'Positivado' : 'Não positivado') },
+          { titulo: 'Situação', largura: 14, valor: (c) => (c.foraDaPositivacao ? 'Fora da positivação' : c.positivou ? 'Positivado' : 'Não positivado') },
           ...(ehGestor ? [{ titulo: 'Operador', largura: 32, valor: (c: (typeof todos)[number]) => c.digitador }] : []),
           { titulo: 'Pedidos', tipo: 'numero', largura: 9, valor: (c) => c.pedidos },
           { titulo: 'Venda líquida', tipo: 'moeda', largura: 14, valor: (c) => c.totalVenda },
@@ -196,7 +204,7 @@ export function ExclusivasCarteira({ mes, onMes, idPessoaFiltro, ehGestor }: Exc
                   setAberto(null)
                 }}
               >
-                {SITUACOES.map((x) => (
+                {SITUACOES.filter((x) => x.id !== 'fora' || (resumoAtivo?.foraDaPositivacao ?? 0) > 0).map((x) => (
                   <option key={x.id} value={x.id}>
                     {x.label}
                   </option>
@@ -245,16 +253,38 @@ export function ExclusivasCarteira({ mes, onMes, idPessoaFiltro, ehGestor }: Exc
                 >
                   <p className="truncate text-xs font-medium uppercase tracking-wide text-github-text-muted">{nomeIndustria(r.industria)}</p>
                   <p className="mt-1 text-2xl font-semibold leading-none">
-                    {r.positivados.toLocaleString('pt-BR')}
-                    <span className="ml-1 text-xs font-normal text-github-text-muted">
-                      de {r.carteira.toLocaleString('pt-BR')} ({percentual(r.positivados, r.carteira)})
-                    </span>
+                    {r.carteira === 0 && r.foraDaPositivacao > 0 ? (
+                      <>
+                        Sem carteira
+                      </>
+                    ) : (
+                      <>
+                        {r.positivados.toLocaleString('pt-BR')}
+                        <span className="ml-1 text-xs font-normal text-github-text-muted">
+                          de {r.carteira.toLocaleString('pt-BR')} ({percentual(r.positivados, r.carteira)})
+                        </span>
+                      </>
+                    )}
                   </p>
                   <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-github-bg-hover" aria-hidden>
                     <div className="h-full rounded-full bg-[#639922]" style={{ width: `${Math.max(pct, pct > 0 ? 2 : 0)}%` }} />
                   </div>
                   <p className="mt-2 text-xs text-github-text-muted">
-                    <strong className="font-semibold text-github-text">{r.pendentes.toLocaleString('pt-BR')}</strong> não positivados
+                    {r.carteira === 0 && r.foraDaPositivacao > 0 ? (
+                      <>
+                        <strong className="font-semibold text-github-text">{r.foraDaPositivacao.toLocaleString('pt-BR')}</strong> na lista de exclusão. Veja a aba Oportunidades.
+                      </>
+                    ) : (
+                      <>
+                        <strong className="font-semibold text-github-text">{r.pendentes.toLocaleString('pt-BR')}</strong> não positivados
+                        {r.foraDaPositivacao > 0 && (
+                          <>
+                            {' '}
+                            · <strong className="font-semibold text-github-text">{r.foraDaPositivacao.toLocaleString('pt-BR')}</strong> fora da positivação
+                          </>
+                        )}
+                      </>
+                    )}
                   </p>
                 </button>
               </li>
@@ -292,10 +322,26 @@ export function ExclusivasCarteira({ mes, onMes, idPessoaFiltro, ehGestor }: Exc
               const r = resumo.data?.find((x) => (x.industria ?? '') === industriaAtiva)
               return r ? (
                 <p className="text-sm text-github-text-muted">
-                  <strong className="font-semibold text-github-text">{r.carteira.toLocaleString('pt-BR')}</strong> clientes na carteira de{' '}
-                  {nomeIndustria(industriaAtiva)} ·{' '}
-                  <strong className="font-semibold text-github-text">{r.positivados.toLocaleString('pt-BR')}</strong> positivados ·{' '}
-                  <strong className="font-semibold text-github-text">{r.pendentes.toLocaleString('pt-BR')}</strong> não positivados
+                  {r.carteira === 0 && r.foraDaPositivacao > 0 ? (
+                    <>
+                      {nomeIndustria(industriaAtiva)} não tem carteira: a lista abaixo tem os{' '}
+                      <strong className="font-semibold text-github-text">{r.foraDaPositivacao.toLocaleString('pt-BR')}</strong> clientes que ficam fora da positivação (lista de exclusão).
+                      Para vender, use a aba Oportunidades.
+                    </>
+                  ) : (
+                    <>
+                      <strong className="font-semibold text-github-text">{r.carteira.toLocaleString('pt-BR')}</strong> clientes na carteira de{' '}
+                      {nomeIndustria(industriaAtiva)} ·{' '}
+                      <strong className="font-semibold text-github-text">{r.positivados.toLocaleString('pt-BR')}</strong> positivados ·{' '}
+                      <strong className="font-semibold text-github-text">{r.pendentes.toLocaleString('pt-BR')}</strong> não positivados
+                      {r.foraDaPositivacao > 0 && (
+                        <>
+                          {' '}
+                          · <strong className="font-semibold text-github-text">{r.foraDaPositivacao.toLocaleString('pt-BR')}</strong> fora da positivação (lista de exclusão)
+                        </>
+                      )}
+                    </>
+                  )}
                 </p>
               ) : null
             })()}
@@ -341,7 +387,7 @@ export function ExclusivasCarteira({ mes, onMes, idPessoaFiltro, ehGestor }: Exc
                                 c.positivou ? 'bg-[#639922]/15 text-[#639922]' : 'bg-github-bg-hover text-github-text-muted'
                               }`}
                             >
-                              {c.positivou ? 'Positivado' : 'Não positivado'}
+                              {c.foraDaPositivacao ? 'Fora da positivação' : c.positivou ? 'Positivado' : 'Não positivado'}
                             </span>
                           </td>
                           {ehGestor && <td className="max-w-[12rem] truncate px-2 py-1.5">{c.digitador ?? '-'}</td>}

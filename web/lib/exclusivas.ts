@@ -38,15 +38,19 @@ export interface CarteiraResumo {
   positivados: number
   /** Clientes da carteira que ainda não positivaram. */
   pendentes: number
+  /** Clientes na lista de exclusão (flag Contem = N): não são carteira e não contam como não positivados. */
+  foraDaPositivacao: number
 }
 
-export type SituacaoCarteira = 'todos' | 'positivados' | 'pendentes'
+export type SituacaoCarteira = 'todos' | 'positivados' | 'pendentes' | 'fora'
 
 /** Cliente da carteira (GET /api/exclusivas/carteira/clientes). */
 export interface CarteiraCliente {
   idPessoaCliente: number
   nomeCliente: string | null
   positivou: boolean
+  /** Está na lista de exclusão (flag Contem = N): não faz parte da carteira. */
+  foraDaPositivacao: boolean
   /** Operador que positivou (vazio se ainda não positivou). */
   digitador: string | null
   pedidos: number
@@ -94,6 +98,47 @@ export async function getCarteiraClientes(
   const { idPessoaTelevendas, busca, ...resto } = params
   const response = await api.get<CarteiraPagina>('exclusivas/carteira/clientes', {
     params: { ...resto, ...(busca.trim() ? { busca: busca.trim() } : {}), ...(idPessoaTelevendas ? { idPessoaTelevendas } : {}) },
+    signal,
+  })
+  return response.data
+}
+
+/** Indústria exclusiva sem carteira, com a base de oportunidades (GET /api/exclusivas/oportunidades/resumo). */
+export interface OportunidadeResumo {
+  industria: string | null
+  clientes: number
+  maiorValor: number
+  menorValor: number
+  geradoEm: string | null
+}
+
+/** Cliente da base de oportunidades: quem mais comprou a indústria em 6 meses e ainda não positivou no mês. */
+export interface OportunidadeCliente {
+  posicao: number
+  idPessoaCliente: number
+  nomeCliente: string | null
+  valor6Meses: number
+  pedidos6Meses: number
+  /** Em quantos dos últimos 6 meses comprou. */
+  mesesComCompra: number
+  ultimaCompra: string | null
+  diasSemComprar: number | null
+  ticketMedio: number
+  telefone: string | null
+  telefone2: string | null
+}
+
+export async function getOportunidadesResumo(idPessoaTelevendas: number | null, signal?: AbortSignal): Promise<OportunidadeResumo[]> {
+  const response = await api.get<OportunidadeResumo[]>('exclusivas/oportunidades/resumo', {
+    params: idPessoaTelevendas ? { idPessoaTelevendas } : {},
+    signal,
+  })
+  return response.data
+}
+
+export async function getOportunidadesClientes(industria: string, idPessoaTelevendas: number | null, signal?: AbortSignal): Promise<OportunidadeCliente[]> {
+  const response = await api.get<OportunidadeCliente[]>('exclusivas/oportunidades/clientes', {
+    params: { industria, ...(idPessoaTelevendas ? { idPessoaTelevendas } : {}) },
     signal,
   })
   return response.data
