@@ -280,16 +280,16 @@ export default function ExclusivasPage() {
                   <p className="mt-1 text-2xl font-semibold leading-none">
                     {r.positivados.toLocaleString('pt-BR')}
                     <span className="ml-1 text-xs font-normal text-github-text-muted">positivados</span>
-                    {r.aPositivar > 0 && (
-                      <>
-                        <span className="mx-1.5 text-base font-normal text-github-text-muted">/</span>
-                        <span title="Clientes com pedido digitado que ainda não foi faturado e que ainda não estão nos positivados">
-                          {r.aPositivar.toLocaleString('pt-BR')}
-                          <span className="ml-1 text-xs font-normal text-github-text-muted">a positivar</span>
-                        </span>
-                      </>
-                    )}
                   </p>
+                  {r.aPositivar > 0 && (
+                    <p
+                      className="mt-1.5 text-lg font-semibold leading-none"
+                      title="Clientes com pedido digitado que ainda não foi faturado e que ainda não estão nos positivados"
+                    >
+                      {r.aPositivar.toLocaleString('pt-BR')}
+                      <span className="ml-1 text-xs font-normal text-github-text-muted">a positivar</span>
+                    </p>
+                  )}
                   <p className="mt-2 text-xs text-github-text-muted">
                     {formatCurrency(r.totalVenda)}
                     {ehGestor && <> · {r.operadores} {r.operadores === 1 ? 'operador' : 'operadores'}</>}
