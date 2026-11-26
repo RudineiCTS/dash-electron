@@ -176,10 +176,45 @@ export interface FidelizacaoHitsSugestao {
   descProduto: string | null
   /** 1 = o produto que mais clientes da Loja Virtual compram. */
   posicao: number
-  /** Clientes da Loja Virtual que compraram o produto nos últimos 3 meses. */
+  /** Clientes da Loja Virtual (empresa toda) que compraram o produto nos últimos 3 meses. */
   clientesDistintos: number
+  /** Clientes da carteira DESTA operadora que compraram o produto nos últimos 3 meses. */
+  clientesCarteira: number
   /** Estoque disponível no momento da carga. */
   estoque: number
+}
+
+/** Estoque do produto em uma filial e tipo (GET /api/fidelizacao/hits-sugestoes/{idProduto}/estoque). */
+export interface FidelizacaoHitsEstoque {
+  idFilial: number
+  filial: string | null
+  idTipo: number
+  tipo: string | null
+  quantidade: number
+  /** Entra no número de estoque mostrado na lista (tipo Normal, Matriz e Cajamar). */
+  contaNoTotal: boolean
+}
+
+/** Cliente da carteira que ainda não comprou o produto (GET /api/fidelizacao/hits-sugestoes/{idProduto}/clientes). */
+export interface FidelizacaoHitsClienteSemCompra {
+  idPessoaCliente: number
+  nomeCliente: string | null
+  telefone: string | null
+  telefone2: string | null
+}
+
+export async function getFidelizacaoHitsEstoque(idProduto: number, signal?: AbortSignal): Promise<FidelizacaoHitsEstoque[]> {
+  const response = await api.get<FidelizacaoHitsEstoque[]>(`fidelizacao/hits-sugestoes/${idProduto}/estoque`, { signal })
+  return response.data
+}
+
+export async function getFidelizacaoHitsClientesSemCompra(
+  idPessoa: number,
+  idProduto: number,
+  signal?: AbortSignal,
+): Promise<FidelizacaoHitsClienteSemCompra[]> {
+  const response = await api.get<FidelizacaoHitsClienteSemCompra[]>(`fidelizacao/hits-sugestoes/${idProduto}/clientes`, { params: { idPessoa }, signal })
+  return response.data
 }
 
 export interface FidelizacaoHitsSugestoes {
