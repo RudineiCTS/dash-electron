@@ -42,6 +42,7 @@ export default function App() {
           <Route path="campaigns/details/:id" element={<RotaProtegida aba="/campaigns"><CampaignDetailPage /></RotaProtegida>} />
           <Route path="campaigns/details/:id/pedidos" element={<RotaProtegida aba="/campaigns"><CampaignOrdersPage /></RotaProtegida>} />
           <Route path="campaigns/details/:id/pedidos-pendentes" element={<RotaProtegida aba="/campaigns"><CampaignPedidosPendentesPage /></RotaProtegida>} />
+          <Route path="campaigns/details/:id/pedidos-excluidos" element={<RotaProtegida aba="/campaigns"><CampaignPedidosPendentesPage tipo="excluidos" /></RotaProtegida>} />
           <Route path="campaigns/details/:id/oportunidades" element={<RotaProtegida aba="/campaigns"><CampaignOportunidadesPage /></RotaProtegida>} />
           <Route path="campaigns/details/:id/parametros/:tipo" element={<RotaProtegida aba="/campaigns"><CampaignParametrosPage /></RotaProtegida>} />
           <Route path="prospeccao" element={<RotaProtegida aba="/prospeccao"><ProspeccaoPage /></RotaProtegida>} />

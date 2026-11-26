@@ -34,8 +34,16 @@ export interface ItemPedidoPendente {
   daCampanha: boolean
 }
 
-export async function getPedidosPendentes(idCampaign: number, idPessoa: number, signal?: AbortSignal): Promise<PedidosPendentesCampanha> {
-  const response = await api.get<PedidosPendentesCampanha>(`campanhas/${idCampaign}/pedidos-pendentes`, { params: { idPessoa }, signal })
+/** pendentes = digitados e ainda não faturados; excluidos = pedidos excluídos. */
+export type TipoPedidos = 'pendentes' | 'excluidos'
+
+export async function getPedidosPendentes(
+  idCampaign: number,
+  idPessoa: number,
+  signal?: AbortSignal,
+  tipo: TipoPedidos = 'pendentes',
+): Promise<PedidosPendentesCampanha> {
+  const response = await api.get<PedidosPendentesCampanha>(`campanhas/${idCampaign}/pedidos-pendentes`, { params: { idPessoa, situacao: tipo }, signal })
   return response.data
 }
 

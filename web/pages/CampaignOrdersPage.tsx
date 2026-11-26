@@ -78,7 +78,12 @@ export default function CampaignOrdersPage() {
   const temPainel = carregandoPainel || !!desempenho.meta || !!desempenho.posicao
   const painel = <PainelDesempenho desempenho={desempenho} carregando={carregandoPainel} />
   // pedidos digitados, ainda não faturados, da campanha (só aparece quando há uma pessoa para consultar)
-  const pendentes = idAlvo ? <PedidosPendentesCard idCampaign={idCampaign} competencia={competencia} idPessoa={idAlvo} /> : null
+  const pendentes = idAlvo ? (
+    <>
+      <PedidosPendentesCard idCampaign={idCampaign} competencia={competencia} idPessoa={idAlvo} />
+      <PedidosPendentesCard idCampaign={idCampaign} competencia={competencia} idPessoa={idAlvo} tipo="excluidos" />
+    </>
+  ) : null
 
   function alternar(chave: string) {
     setAbertos((atual) => {

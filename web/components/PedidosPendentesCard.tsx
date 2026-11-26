@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
-import { ChevronRight, Hourglass } from 'lucide-react'
-import { getPedidosPendentes } from '../lib/campanhaPedidosPendentes'
+import { Ban, ChevronRight, Hourglass } from 'lucide-react'
+import { getPedidosPendentes, type TipoPedidos } from '../lib/campanhaPedidosPendentes'
 import { formatCurrency } from '../lib/format'
 import { useApiResource } from '../lib/useApiResource'
 
@@ -8,7 +8,24 @@ interface Props {
   idCampaign: number
   competencia: string
   idPessoa: number
+  /** Pendentes (ainda não faturados) ou excluídos. */
+  tipo?: TipoPedidos
 }
+
+const TEXTOS = {
+  pendentes: {
+    titulo: 'Pedidos pendentes',
+    vazio: 'Nenhum pedido digitado aguardando faturamento com produtos desta campanha.',
+    ajuda: 'Digitados por você, ainda não faturados, com produtos desta campanha.',
+    rota: 'pedidos-pendentes',
+  },
+  excluidos: {
+    titulo: 'Pedidos excluídos',
+    vazio: 'Nenhum pedido digitado e excluído com produtos desta campanha.',
+    ajuda: 'Digitados por você e excluídos, com produtos desta campanha.',
+    rota: 'pedidos-excluidos',
+  },
+} as const
 
 const cartao = 'rounded-xl border border-github-border bg-github-bg-card p-3'
 
@@ -16,15 +33,17 @@ const cartao = 'rounded-xl border border-github-border bg-github-bg-card p-3'
  * Pedidos que a pessoa digitou, ainda não foram faturados e são da campanha: quantos são e quanto valem para a campanha
  * (só os itens da campanha). Ao clicar, abre a lista com os produtos de cada pedido.
  */
-export function PedidosPendentesCard({ idCampaign, competencia, idPessoa }: Props) {
-  const pendentes = useApiResource((signal) => getPedidosPendentes(idCampaign, idPessoa, signal), [idCampaign, idPessoa])
+export function PedidosPendentesCard({ idCampaign, competencia, idPessoa, tipo = 'pendentes' }: Props) {
+  const txt = TEXTOS[tipo]
+  const Icone = tipo === 'excluidos' ? Ban : Hourglass
+  const pendentes = useApiResource((signal) => getPedidosPendentes(idCampaign, idPessoa, signal, tipo), [idCampaign, idPessoa, tipo])
 
   if (pendentes.loading) return <div className="h-24 animate-pulse rounded-xl border border-github-border bg-github-bg-card" aria-busy="true" />
   if (pendentes.error || !pendentes.data) {
     return (
-      <section className={cartao} aria-label="Pedidos pendentes">
+      <section className={cartao} aria-label={txt.titulo}>
         <h3 className="flex items-center gap-1.5 text-sm font-semibold">
-          <Hourglass size={15} /> Pedidos pendentes
+          <Icone size={15} /> {txt.titulo}
         </h3>
         <p className="mt-1 text-xs text-github-text-muted">Não foi possível carregar agora.</p>
       </section>
@@ -32,18 +51,18 @@ export function PedidosPendentesCard({ idCampaign, competencia, idPessoa }: Prop
   }
 
   const { totalPedidos, valorCampanha } = pendentes.data
-  const destino = `/campaigns/details/${idCampaign}/pedidos-pendentes?competencia=${competencia}&pessoa=${idPessoa}`
+  const destino = `/campaigns/details/${idCampaign}/${txt.rota}?competencia=${competencia}&pessoa=${idPessoa}`
 
   return (
-    <section className={cartao} aria-label="Pedidos pendentes">
+    <section className={cartao} aria-label={txt.titulo}>
       <h3 className="flex items-center gap-1.5 text-sm font-semibold">
-        <Hourglass size={15} /> Pedidos pendentes
+        <Icone size={15} /> {txt.titulo}
       </h3>
       {totalPedidos === 0 ? (
-        <p className="mt-1 text-xs text-github-text-muted">Nenhum pedido digitado aguardando faturamento com produtos desta campanha.</p>
+        <p className="mt-1 text-xs text-github-text-muted">{txt.vazio}</p>
       ) : (
         <>
-          <p className="mt-1 text-xs text-github-text-muted">Digitados por você, ainda não faturados, com produtos desta campanha.</p>
+          <p className="mt-1 text-xs text-github-text-muted">{txt.ajuda}</p>
           <div className="mt-2 flex items-end justify-between gap-2 border-t border-github-border pt-2">
             <div>
               <p className="text-[10px] font-medium uppercase tracking-wide text-github-text-muted">Valor da campanha</p>

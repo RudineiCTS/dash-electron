@@ -7,7 +7,7 @@ import { useUsuario } from '../auth/UsuarioContext'
 import { useGestor } from '../auth/useGestor'
 import { EmptyState, ErrorState } from '../components/StateViews'
 import { ThOrdenavel } from '../components/ThOrdenavel'
-import { getItensPedidoPendente, getPedidosPendentes } from '../lib/campanhaPedidosPendentes'
+import { getItensPedidoPendente, getPedidosPendentes, type TipoPedidos } from '../lib/campanhaPedidosPendentes'
 import { defaultCompetencia, formatCurrency } from '../lib/format'
 import { useOrdenacao } from '../lib/ordenar'
 import { useApiResource } from '../lib/useApiResource'
@@ -61,7 +61,8 @@ function ItensDoPedido({ idCampaign, idPedido, idPessoa }: { idCampaign: number;
  * Pedidos pendentes de uma pessoa na campanha: digitados por ela, ainda não faturados e com produtos da campanha.
  * O valor de cada pedido é só o dos itens da campanha; os produtos aparecem ao clicar no pedido.
  */
-export default function CampaignPedidosPendentesPage() {
+export default function CampaignPedidosPendentesPage({ tipo = 'pendentes' }: { tipo?: TipoPedidos }) {
+  const excluidos = tipo === 'excluidos'
   const { id } = useParams<{ id: string }>()
   const idCampaign = Number(id)
   const [params] = useSearchParams()
@@ -74,8 +75,8 @@ export default function CampaignPedidosPendentesPage() {
 
   const resumos = useApiResource((signal) => getCampaignSummaryPerPeriod(competencia, signal), [competencia])
   const pendentes = useApiResource(
-    (signal) => (idAlvo ? getPedidosPendentes(idCampaign, idAlvo, signal) : Promise.resolve(null)),
-    [idCampaign, idAlvo],
+    (signal) => (idAlvo ? getPedidosPendentes(idCampaign, idAlvo, signal, tipo) : Promise.resolve(null)),
+    [idCampaign, idAlvo, tipo],
   )
   const linhas = pendentes.data?.itens ?? []
   const { ordenadas, ord, alternar } = useOrdenacao(linhas, {
@@ -110,17 +111,17 @@ export default function CampaignPedidosPendentesPage() {
         >
           <ArrowLeft size={15} /> Pedidos
         </Link>
-        <h1 className="text-lg font-semibold">Pedidos pendentes{titulo ? ` · ${titulo}` : ''}</h1>
+        <h1 className="text-lg font-semibold">{excluidos ? 'Pedidos excluídos' : 'Pedidos pendentes'}{titulo ? ` · ${titulo}` : ''}</h1>
       </div>
 
       <p className="text-sm text-github-text-muted">
-        Pedidos digitados, ainda não faturados, com produtos desta campanha. O valor é só o dos itens da campanha; toque no pedido para ver os produtos.
+        {excluidos ? 'Pedidos digitados e excluídos' : 'Pedidos digitados, ainda não faturados'}, com produtos desta campanha. O valor é só o dos itens da campanha; toque no pedido para ver os produtos.
       </p>
 
       {pendentes.loading && <div className="h-40 animate-pulse rounded-xl border border-github-border bg-github-bg-card" aria-busy="true" />}
       {pendentes.error && <ErrorState message={pendentes.error} onRetry={pendentes.reload} />}
       {!idAlvo && !carregandoGestor && <EmptyState message="Seu usuário não está ligado a uma pessoa do televendas." />}
-      {pendentes.data && linhas.length === 0 && <EmptyState message="Nenhum pedido pendente com produtos desta campanha." />}
+      {pendentes.data && linhas.length === 0 && <EmptyState message={excluidos ? 'Nenhum pedido excluído com produtos desta campanha.' : 'Nenhum pedido pendente com produtos desta campanha.'} />}
 
       {pendentes.data && linhas.length > 0 && idAlvo && (
         <>
