@@ -165,6 +165,8 @@ export interface FidelizacaoHitsSugestao {
   posicao: number
   /** Clientes da Loja Virtual que compraram o produto nos últimos 3 meses. */
   clientesDistintos: number
+  /** Estoque disponível no momento da carga. */
+  estoque: number
 }
 
 export interface FidelizacaoHitsSugestoes {

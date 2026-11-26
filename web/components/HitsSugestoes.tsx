@@ -22,6 +22,7 @@ export function HitsSugestoes({ idPessoa, nomePessoa }: { idPessoa: number; nome
     posicao: (p) => p.posicao,
     produto: (p) => p.descProduto,
     clientes: (p) => p.clientesDistintos,
+    estoque: (p) => p.estoque,
   })
 
   function baixarExcel() {
@@ -34,6 +35,7 @@ export function HitsSugestoes({ idPessoa, nomePessoa }: { idPessoa: number; nome
         { titulo: 'Código', tipo: 'numero', largura: 10, valor: (p) => p.idProduto },
         { titulo: 'Produto', largura: 50, valor: (p) => p.descProduto },
         { titulo: 'Clientes que compram', tipo: 'numero', largura: 20, valor: (p) => p.clientesDistintos },
+        { titulo: 'Estoque', tipo: 'numero', largura: 12, valor: (p) => p.estoque },
       ],
     })
   }
@@ -43,7 +45,7 @@ export function HitsSugestoes({ idPessoa, nomePessoa }: { idPessoa: number; nome
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div>
           <p className="text-xs text-github-text-muted">
-            Os que mais clientes da Loja Virtual compram (últimos 3 meses) e que você ainda não vendeu neste mês. Cada produto novo soma
+            Os que mais clientes da Loja Virtual compram (últimos 3 meses), com estoque, e que você ainda não vendeu neste mês. Cada produto novo soma
             Hits para todos os seus clientes positivados.
             {sugestoes.data?.dataReferencia && <> Lista de {dayjs(sugestoes.data.dataReferencia).format('DD/MM/YYYY')}.</>}
           </p>
@@ -72,7 +74,8 @@ export function HitsSugestoes({ idPessoa, nomePessoa }: { idPessoa: number; nome
                 <tr className="border-b border-github-border">
                   <ThOrdenavel rotulo="#" chave="posicao" ord={ord} onAlternar={alternar} className="w-10 py-2 font-medium" />
                   <ThOrdenavel rotulo="Produto" chave="produto" ord={ord} onAlternar={alternar} className="px-2 py-2 font-medium" />
-                  <ThOrdenavel rotulo="Clientes que compram" chave="clientes" ord={ord} onAlternar={alternar} direita className="whitespace-nowrap py-2 pl-2 text-right font-medium" />
+                  <ThOrdenavel rotulo="Clientes que compram" chave="clientes" ord={ord} onAlternar={alternar} direita className="whitespace-nowrap px-2 py-2 text-right font-medium" />
+                  <ThOrdenavel rotulo="Estoque" chave="estoque" ord={ord} onAlternar={alternar} direita className="whitespace-nowrap py-2 pl-2 text-right font-medium" />
                 </tr>
               </thead>
               <tbody>
@@ -83,7 +86,8 @@ export function HitsSugestoes({ idPessoa, nomePessoa }: { idPessoa: number; nome
                       <span className="font-medium">{p.descProduto ?? `Produto ${p.idProduto}`}</span>
                       <span className="ml-1.5 text-xs text-github-text-muted">{p.idProduto}</span>
                     </td>
-                    <td className="whitespace-nowrap py-1.5 pl-2 text-right">{p.clientesDistintos.toLocaleString('pt-BR')}</td>
+                    <td className="whitespace-nowrap px-2 py-1.5 text-right">{p.clientesDistintos.toLocaleString('pt-BR')}</td>
+                    <td className="whitespace-nowrap py-1.5 pl-2 text-right">{p.estoque.toLocaleString('pt-BR')}</td>
                   </tr>
                 ))}
               </tbody>
