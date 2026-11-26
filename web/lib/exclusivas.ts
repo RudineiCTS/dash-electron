@@ -7,6 +7,8 @@ export interface ExclusivaResumo {
   clientes: number
   /** Clientes distintos positivados no mês. */
   positivados: number
+  /** Clientes com pedido digitado e ainda não faturado que vão positivar (e ainda não estão nos positivados). */
+  aPositivar: number
   totalVenda: number
   geradoEm: string | null
 }
