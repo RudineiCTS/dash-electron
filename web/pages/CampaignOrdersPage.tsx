@@ -8,6 +8,7 @@ import { getCampaignSummaryDetailsById, getCampaignSummaryPerPeriod } from '@sha
 import { PERMITIR_TROCA_USUARIO, useUsuario } from '../auth/UsuarioContext'
 import { useGestor } from '../auth/useGestor'
 import { PainelDesempenho } from '../components/PainelDesempenho'
+import { PedidosPendentesCard } from '../components/PedidosPendentesCard'
 import { Stat } from '../components/Stat'
 import { ValorOculto } from '../components/ValorOculto'
 import { EmptyState, ErrorState } from '../components/StateViews'
@@ -76,6 +77,8 @@ export default function CampaignOrdersPage() {
   // Sem meta e sem ranking (e sem carregar) não há painel: nem o contêiner entra, para não sobrar espaço vazio
   const temPainel = carregandoPainel || !!desempenho.meta || !!desempenho.posicao
   const painel = <PainelDesempenho desempenho={desempenho} carregando={carregandoPainel} />
+  // pedidos digitados, ainda não faturados, da campanha (só aparece quando há uma pessoa para consultar)
+  const pendentes = idAlvo ? <PedidosPendentesCard idCampaign={idCampaign} competencia={competencia} idPessoa={idAlvo} /> : null
 
   function alternar(chave: string) {
     setAbertos((atual) => {
@@ -149,7 +152,12 @@ export default function CampaignOrdersPage() {
         </section>
 
         {/* Celular/tablet: entre o cartão e a tabela */}
-        {temPainel && <div className="w-full max-w-3xl xl:hidden">{painel}</div>}
+        {(temPainel || pendentes) && (
+          <div className="flex w-full max-w-3xl flex-col gap-3 xl:hidden">
+            {temPainel && painel}
+            {pendentes}
+          </div>
+        )}
 
         {!idAlvo && !carregandoGestor && (
           <EmptyState
@@ -283,8 +291,11 @@ export default function CampaignOrdersPage() {
       </div>
 
       {/* Desktop largo: coluna fixa à direita, ao lado da tabela */}
-      {temPainel && (
-        <aside className="hidden xl:sticky xl:top-[4.5rem] xl:block xl:w-80 xl:shrink-0">{painel}</aside>
+      {(temPainel || pendentes) && (
+        <aside className="hidden xl:sticky xl:top-[4.5rem] xl:flex xl:w-80 xl:shrink-0 xl:flex-col xl:gap-3">
+          {temPainel && painel}
+          {pendentes}
+        </aside>
       )}
     </div>
   )

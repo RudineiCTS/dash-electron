@@ -4,6 +4,7 @@ import CampaignsPage from './pages/CampaignsPage'
 import CampaignDetailPage from './pages/CampaignDetailPage'
 import CampaignOrdersPage from './pages/CampaignOrdersPage'
 import CampaignOportunidadesPage from './pages/CampaignOportunidadesPage'
+import CampaignPedidosPendentesPage from './pages/CampaignPedidosPendentesPage'
 import CampaignParametrosPage from './pages/CampaignParametrosPage'
 import NotFoundPage from './pages/NotFoundPage'
 import SecaoPage from './pages/SecaoPage'
@@ -40,6 +41,7 @@ export default function App() {
           <Route path="campaigns" element={<RotaProtegida aba="/campaigns"><CampaignsPage /></RotaProtegida>} />
           <Route path="campaigns/details/:id" element={<RotaProtegida aba="/campaigns"><CampaignDetailPage /></RotaProtegida>} />
           <Route path="campaigns/details/:id/pedidos" element={<RotaProtegida aba="/campaigns"><CampaignOrdersPage /></RotaProtegida>} />
+          <Route path="campaigns/details/:id/pedidos-pendentes" element={<RotaProtegida aba="/campaigns"><CampaignPedidosPendentesPage /></RotaProtegida>} />
           <Route path="campaigns/details/:id/oportunidades" element={<RotaProtegida aba="/campaigns"><CampaignOportunidadesPage /></RotaProtegida>} />
           <Route path="campaigns/details/:id/parametros/:tipo" element={<RotaProtegida aba="/campaigns"><CampaignParametrosPage /></RotaProtegida>} />
           <Route path="prospeccao" element={<RotaProtegida aba="/prospeccao"><ProspeccaoPage /></RotaProtegida>} />
