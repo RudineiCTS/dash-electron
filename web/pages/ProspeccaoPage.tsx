@@ -431,9 +431,6 @@ export default function ProspeccaoPage() {
                   Mostrar mais ({visiveis.length - limite})
                 </button>
               )}
-              <p className="text-xs text-github-text-muted">
-                Competência de {dayjs(todos[0].mesCompetencia).format('DD/MM/YYYY')}. “Mês nº” é há quantos meses seguidos o cliente está em prospecção.
-              </p>
             </>
           )}
         </>
