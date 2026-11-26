@@ -3,6 +3,7 @@ import { useOrdenacao } from '../lib/ordenar'
 import { ThOrdenavel } from '../components/ThOrdenavel'
 import { ChevronDown, ChevronRight, Search, X } from 'lucide-react'
 import { EmptyState, ErrorState } from '../components/StateViews'
+import { HitsSugestoes } from '../components/HitsSugestoes'
 import {
   getFidelizacaoClientes,
   getFidelizacaoProdutos,
@@ -227,6 +228,7 @@ export function FidelizacaoDetalhe({ linha, onFechar }: { linha: FidelizacaoLinh
               Mostrar mais ({(ehValor ? valores.length : hits.length) - limite})
             </button>
           )}
+          {tipo === 'hits' && <HitsSugestoes idPessoa={linha.idPessoa} nomePessoa={linha.pessoa ?? String(linha.idPessoa)} />}
           {tipo === 'hits' && (
             <p className="text-xs text-github-text-muted">
               Como o Hits é calculado: <strong className="font-semibold text-github-text">clientes × produtos distintos</strong>. Cada produto conta

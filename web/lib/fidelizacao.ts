@@ -156,3 +156,25 @@ export async function getFidelizacaoPedidosNaoFaturados(idPessoa: number, signal
   const response = await api.get<FidelizacaoPedidosNaoFaturados>('fidelizacao/pedidos-nao-faturados', { params: { idPessoa }, signal })
   return response.data
 }
+
+/** Produto sugerido à operadora para somar Hits (GET /api/fidelizacao/hits-sugestoes). */
+export interface FidelizacaoHitsSugestao {
+  idProduto: number
+  descProduto: string | null
+  /** 1 = o produto que mais clientes da Loja Virtual compram. */
+  posicao: number
+  /** Clientes da Loja Virtual que compraram o produto nos últimos 3 meses. */
+  clientesDistintos: number
+}
+
+export interface FidelizacaoHitsSugestoes {
+  /** Dia em que a lista foi calculada; null se a carga ainda não rodou para a pessoa. */
+  dataReferencia: string | null
+  geradoEm: string | null
+  itens: FidelizacaoHitsSugestao[]
+}
+
+export async function getFidelizacaoHitsSugestoes(idPessoa: number, signal?: AbortSignal): Promise<FidelizacaoHitsSugestoes> {
+  const response = await api.get<FidelizacaoHitsSugestoes>('fidelizacao/hits-sugestoes', { params: { idPessoa }, signal })
+  return response.data
+}
