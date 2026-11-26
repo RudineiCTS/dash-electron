@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { ChevronDown, ChevronRight, ChevronUp } from 'lucide-react'
+import { ChevronDown, ChevronRight, ChevronUp, Loader2 } from 'lucide-react'
 import {
   getClientesOportunidades,
   getContatoOportunidade,
@@ -274,6 +274,16 @@ export function PainelOportunidades({ idCampaign, resumo }: { idCampaign: number
         </p>
       </div>
 
+      {lista.loading && (
+        <div className="flex flex-col gap-2" role="status" aria-live="polite" aria-busy="true">
+          <p className="flex items-center gap-2 text-sm text-github-text-muted">
+            <Loader2 size={16} className="animate-spin" /> Carregando clientes…
+          </p>
+          {[0, 1, 2].map((i) => (
+            <div key={i} className="h-16 animate-pulse rounded-xl border border-github-border bg-github-bg-card" />
+          ))}
+        </div>
+      )}
       {lista.error && <ErrorState message={lista.error} onRetry={lista.reload} />}
       {lista.data && lista.data.itens.length === 0 && <EmptyState message="Nenhum cliente neste caminho com esse filtro." />}
 
