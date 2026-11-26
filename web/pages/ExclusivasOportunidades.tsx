@@ -96,7 +96,8 @@ export function ExclusivasOportunidades({ idPessoaFiltro }: Props) {
   return (
     <section aria-label="Oportunidades das exclusivas" className="flex flex-col gap-3">
       <p className="text-sm text-github-text-muted">
-        Os 600 clientes que mais compraram cada indústria nos <strong className="font-semibold text-github-text">últimos 6 meses</strong> e que{' '}
+        Os 600 clientes que mais compraram cada indústria <strong className="font-semibold text-github-text">pelo Televendas</strong> nos{' '}
+        <strong className="font-semibold text-github-text">últimos 6 meses</strong> e que{' '}
         <strong className="font-semibold text-github-text">ainda não positivaram neste mês</strong>. Comece pelos primeiros da lista.
         {geradoEm && <> Atualizado em {dayjs(geradoEm).format('DD/MM HH:mm')}.</>}
       </p>
