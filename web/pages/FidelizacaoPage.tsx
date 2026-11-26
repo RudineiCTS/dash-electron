@@ -9,6 +9,7 @@ import { ProgressBar } from '../components/ProgressBar'
 import { EmptyState, ErrorState } from '../components/StateViews'
 import { FidelizacaoCarteira } from './FidelizacaoCarteira'
 import { FidelizacaoDetalhe } from './FidelizacaoDetalhe'
+import { PedidosNaoFaturados } from '../components/PedidosNaoFaturados'
 import { getFidelizacaoPeriodos, getFidelizacaoResultado, type FidelizacaoLinha } from '../lib/fidelizacao'
 import { formatCurrency } from '../lib/format'
 import { useApiResource } from '../lib/useApiResource'
@@ -131,7 +132,7 @@ export default function FidelizacaoPage() {
   /** KPI aberto (clientes). */
   const [kpiAberto, setKpiAberto] = useState<FidelizacaoLinha | null>(null)
   /** Dentro da pessoa: os KPIs ou a carteira dela. */
-  const [visao, setVisao] = useState<'kpis' | 'carteira'>('kpis')
+  const [visao, setVisao] = useState<'kpis' | 'carteira' | 'naofaturados'>('kpis')
 
   /** Período de hoje; se nenhum contém hoje, o mais recente. */
   useEffect(() => {
@@ -313,6 +314,7 @@ export default function FidelizacaoPage() {
               [
                 { id: 'kpis', label: 'KPIs' },
                 { id: 'carteira', label: 'Carteira' },
+                { id: 'naofaturados', label: 'Pedidos não faturados' },
               ] as const
             ).map((t) => (
               <button
@@ -327,7 +329,13 @@ export default function FidelizacaoPage() {
               </button>
             ))}
           </div>
-          {visao === 'carteira' && pessoaAberta != null && idPeriodo != null ? (
+          {visao === 'naofaturados' && pessoaAberta != null && periodoAtual ? (
+            <PedidosNaoFaturados
+              idPessoa={pessoaAberta}
+              mes={dayjs(periodoAtual.dataInicio).format('YYYY-MM')}
+              nomePessoa={dadosPessoa?.pessoa ?? usuario?.operatorName ?? 'pessoa'}
+            />
+          ) : visao === 'carteira' && pessoaAberta != null && idPeriodo != null ? (
             <FidelizacaoCarteira idPeriodo={idPeriodo} idPessoa={pessoaAberta} nomePessoa={dadosPessoa?.pessoa ?? usuario?.operatorName ?? 'pessoa'} />
           ) : kpis.length === 0 ? (
             <EmptyState message="Nenhum KPI calculado para esta pessoa no período." />
