@@ -5,9 +5,11 @@ import { ArrowLeft, ChevronDown, ChevronRight } from 'lucide-react'
 import { getCampaignSummaryPerPeriod } from '@shared/services/campaign.teleseler'
 import { useUsuario } from '../auth/UsuarioContext'
 import { useGestor } from '../auth/useGestor'
+import { BotaoExportarExcel } from '../components/BotaoExportarExcel'
 import { EmptyState, ErrorState } from '../components/StateViews'
 import { ThOrdenavel } from '../components/ThOrdenavel'
 import { getItensPedidoPendente, getPedidosPendentes, type TipoPedidos } from '../lib/campanhaPedidosPendentes'
+import { exportarExcel } from '../lib/exportarExcel'
 import { defaultCompetencia, formatCurrency } from '../lib/format'
 import { useOrdenacao } from '../lib/ordenar'
 import { useApiResource } from '../lib/useApiResource'
@@ -92,6 +94,27 @@ export default function CampaignPedidosPendentesPage({ tipo = 'pendentes' }: { t
   const titulo = resumos.data?.find((s) => s.idCampaign === idCampaign)?.campaignDescription
   const voltar = `/campaigns/details/${idCampaign}/pedidos?competencia=${competencia}${pessoaParam ? `&pessoa=${pessoaParam}` : ''}`
 
+  /** Baixa os pedidos da lista (na ordem da tela). */
+  function baixarExcel() {
+    exportarExcel({
+      arquivo: `pedidos-${excluidos ? 'excluidos' : 'pendentes'}-campanha-${idCampaign}-${competencia}`,
+      aba: excluidos ? 'Excluídos' : 'Pendentes',
+      linhas: ordenadas,
+      totalizar: true,
+      colunas: [
+        { titulo: 'Pedido', tipo: 'numero', largura: 12, valor: (p) => p.idPedido },
+        { titulo: 'Pré-pedido', tipo: 'numero', largura: 12, valor: (p) => p.idPrePedido },
+        { titulo: 'Cód. cliente', tipo: 'numero', largura: 12, valor: (p) => p.idCliente },
+        { titulo: 'Cliente', largura: 40, valor: (p) => p.nomeCliente },
+        { titulo: 'Data do pedido', largura: 14, valor: (p) => dayjs(p.dataPedido).format('DD/MM/YYYY') },
+        { titulo: 'Situação', largura: 18, valor: (p) => p.situacao },
+        { titulo: 'Itens da campanha', tipo: 'numero', largura: 12, valor: (p) => p.itens },
+        { titulo: 'Valor da campanha', tipo: 'moeda', largura: 16, valor: (p) => p.valorCampanha },
+        { titulo: 'Valor do pedido', tipo: 'moeda', largura: 16, valor: (p) => p.valorPedido },
+      ],
+    })
+  }
+
   function alternarPedido(idPedido: number) {
     setAbertos((atual) => {
       const novo = new Set(atual)
@@ -125,11 +148,14 @@ export default function CampaignPedidosPendentesPage({ tipo = 'pendentes' }: { t
 
       {pendentes.data && linhas.length > 0 && idAlvo && (
         <>
-          <p className="text-sm text-github-text-muted">
-            <strong className="font-semibold text-github-text">{pendentes.data.totalPedidos.toLocaleString('pt-BR')}</strong>{' '}
-            {pendentes.data.totalPedidos === 1 ? 'pedido' : 'pedidos'} · valor da campanha{' '}
-            <strong className="font-semibold text-github-text">{formatCurrency(pendentes.data.valorCampanha)}</strong>
-          </p>
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <p className="text-sm text-github-text-muted">
+              <strong className="font-semibold text-github-text">{pendentes.data.totalPedidos.toLocaleString('pt-BR')}</strong>{' '}
+              {pendentes.data.totalPedidos === 1 ? 'pedido' : 'pedidos'} · valor da campanha{' '}
+              <strong className="font-semibold text-github-text">{formatCurrency(pendentes.data.valorCampanha)}</strong>
+            </p>
+            <BotaoExportarExcel total={ordenadas.length} onClick={baixarExcel} />
+          </div>
           <div className="overflow-x-auto rounded-xl border border-github-border bg-github-bg-card">
             <table className="w-full text-left text-sm">
               <thead className="text-[11px] uppercase tracking-wide text-github-text-muted">

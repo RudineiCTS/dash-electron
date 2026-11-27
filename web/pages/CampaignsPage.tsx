@@ -2,11 +2,13 @@ import { useMemo } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { getCampaignSummaryPerPeriod } from '@shared/services/campaign.teleseler'
 import { useUsuario } from '../auth/UsuarioContext'
+import { BotaoExportarExcel } from '../components/BotaoExportarExcel'
 import { CampaignCard } from '../components/CampaignCard'
 import { CampaignTable } from '../components/CampaignTable'
 import { CardListSkeleton, EmptyState, ErrorState } from '../components/StateViews'
 import { VisaoToggle } from '../components/VisaoToggle'
 import { calcularTotaisCampanhas } from '@shared/utils/totaisCampanhas'
+import { exportarExcel } from '../lib/exportarExcel'
 import { defaultCompetencia, formatCurrency, formatPercent, monthToCompetencia } from '../lib/format'
 import { getMinhasPosicoes, indexarPosicoes } from '../lib/posicoes'
 import { getVisibilidades, indexarVisibilidades } from '../lib/visibilidade'
@@ -91,6 +93,26 @@ export default function CampaignsPage() {
   const premiacaoTotal = visiveis.reduce((acc, c) => acc + (c.totalAward ?? 0), 0)
   // Totais de vendas (R$) só das campanhas com meta; sem meta e positivação ficam fora (utils/totaisCampanhas)
   const totais = useMemo(() => calcularTotaisCampanhas(comApurado), [comApurado])
+
+  /** Baixa as campanhas que estão na tela (com o filtro de aba/tipo). O que está oculto para o usuário sai em branco. */
+  function baixarExcel() {
+    exportarExcel({
+      arquivo: `campanhas-${competencia}`,
+      aba: 'Campanhas',
+      linhas: visiveis,
+      colunas: [
+        { titulo: 'Cód.', tipo: 'numero', largura: 8, valor: (c) => c.idCampaign },
+        { titulo: 'Campanha', largura: 50, valor: (c) => c.campaignDescription },
+        { titulo: 'Tipo', largura: 22, valor: (c) => c.campaignTypeDescription },
+        { titulo: 'Início', largura: 12, valor: (c) => (c.startDate ? c.startDate.slice(0, 10).split('-').reverse().join('/') : null) },
+        { titulo: 'Fim', largura: 12, valor: (c) => ((c.earlyEndDate ?? c.endDate) ? (c.earlyEndDate ?? c.endDate).slice(0, 10).split('-').reverse().join('/') : null) },
+        { titulo: 'Meta', tipo: 'moeda', largura: 16, valor: (c) => (temMeta(c) ? c.goalValue : null) },
+        { titulo: 'Realizado', tipo: 'moeda', largura: 16, valor: (c) => (c.assessedHidden ? null : c.assessedValue) },
+        { titulo: 'Atingimento (%)', tipo: 'moeda', largura: 16, valor: (c) => (c.assessedHidden || !temMeta(c) ? null : c.percentageAchieved) },
+        { titulo: 'Premiação', tipo: 'moeda', largura: 16, valor: (c) => (c.prizeHidden ? null : c.totalAward) },
+      ],
+    })
+  }
 
   // Resumo por status (mesmas cores e cortes dos cards).
   const resumoStatus = useMemo(() => {
@@ -216,6 +238,12 @@ export default function CampaignsPage() {
             )}
           </p>
         </section>
+      )}
+
+      {data && !error && visiveis.length > 0 && (
+        <div className="flex justify-end">
+          <BotaoExportarExcel total={visiveis.length} onClick={baixarExcel} />
+        </div>
       )}
 
       {loading && <CardListSkeleton />}

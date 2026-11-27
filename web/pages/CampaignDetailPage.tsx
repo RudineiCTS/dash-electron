@@ -11,11 +11,13 @@ import { useOrdenacao } from '../lib/ordenar'
 import { ThOrdenavel } from '../components/ThOrdenavel'
 import { OportunidadesCampanha } from '../components/OportunidadesCampanha'
 import { ParametrosCampanha } from '../components/ParametrosCampanha'
+import { BotaoExportarExcel } from '../components/BotaoExportarExcel'
 import { ProgressBar } from '../components/ProgressBar'
 import { Stat } from '../components/Stat'
 import { ValorOculto } from '../components/ValorOculto'
 import { EmptyState, ErrorState } from '../components/StateViews'
 import { defaultCompetencia, formatCurrency, formatDetailMetric, formatPercent, formatSummaryMetric } from '../lib/format'
+import { exportarExcel } from '../lib/exportarExcel'
 import { etiquetaGrupo } from '../lib/grupo'
 import { useApiResource } from '../lib/useApiResource'
 import NotFoundPage from './NotFoundPage'
@@ -59,6 +61,7 @@ export default function CampaignDetailPage() {
   }, [ranking.data, busca])
 
   // ordenar clicando no cabeçalho (sem clique, vale a posição no ranking)
+  const tipoCampanhaRanking = resumo?.campaignTypeDescription ?? ranking.data?.[0]?.campaignTypeDescription ?? ''
   const { ordenadas, ord, alternar } = useOrdenacao(linhas, {
     posicao: (r) => r.ranking || null,
     operador: (r) => r.operatorName,
@@ -67,6 +70,26 @@ export default function CampaignDetailPage() {
     realizado: (r) => r.assessedValue,
     premio: (r) => r.award,
   })
+
+  /** Baixa o ranking (na ordem e com a busca que estão na tela). O que está oculto para o usuário sai em branco. */
+  function baixarExcel() {
+    const quantidade = tipoCampanhaRanking === 'QUANTIDADE VENDIDA' || tipoCampanhaRanking === 'POSITIVAÇÃO'
+    const tipoValor = quantidade ? 'numero' : 'moeda'
+    exportarExcel({
+      arquivo: `ranking-campanha-${idCampaign}-${competencia}`,
+      aba: 'Ranking',
+      linhas: ordenadas,
+      colunas: [
+        { titulo: '#', tipo: 'numero', largura: 6, valor: (r) => r.ranking || null },
+        { titulo: 'Operador', largura: 38, valor: (r) => r.operatorName },
+        { titulo: 'Grupo', largura: 22, valor: (r) => etiquetaGrupo(r.personGroup, r.personSubGroup).label },
+        { titulo: 'Atingimento (%)', tipo: 'moeda', largura: 16, valor: (r) => (r.assessedHidden ? null : r.percentageAchieved) },
+        { titulo: 'Meta', tipo: tipoValor, largura: 16, valor: (r) => r.individualTarget },
+        { titulo: 'Realizado', tipo: tipoValor, largura: 16, valor: (r) => (r.assessedHidden ? null : r.assessedValue) },
+        { titulo: 'Prêmio', tipo: 'moeda', largura: 16, valor: (r) => (r.prizeHidden ? null : r.award) },
+      ],
+    })
+  }
 
   if (!Number.isInteger(idCampaign) || idCampaign <= 0) return <NotFoundPage />
 
@@ -163,6 +186,7 @@ export default function CampaignDetailPage() {
               <span className="ml-2 text-xs font-normal text-github-text-muted">{linhas.length} pessoas</span>
             )}
           </h2>
+          <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto">
           <label className="relative block w-full sm:w-72">
             <span className="sr-only">Buscar por nome</span>
             <Search size={16} className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-github-text-muted" />
@@ -177,6 +201,8 @@ export default function CampaignDetailPage() {
               className="h-9 w-full rounded-md border border-github-border bg-github-bg-card pl-8 pr-3 text-sm text-github-text placeholder:text-github-text-muted"
             />
           </label>
+          <BotaoExportarExcel total={ordenadas.length} onClick={baixarExcel} />
+          </div>
         </div>
 
         {temGestao && (

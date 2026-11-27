@@ -3,7 +3,9 @@ import { useOrdenacao } from '../lib/ordenar'
 import { ThOrdenavel } from '../components/ThOrdenavel'
 import dayjs from 'dayjs'
 import { Search } from 'lucide-react'
+import { BotaoExportarExcel } from '../components/BotaoExportarExcel'
 import { EmptyState, ErrorState } from '../components/StateViews'
+import { exportarExcel } from '../lib/exportarExcel'
 import { formatCurrency } from '../lib/format'
 import { getProspeccaoCarteira } from '../lib/prospeccao'
 import { useApiResource } from '../lib/useApiResource'
@@ -57,6 +59,26 @@ export function ProspeccaoCarteira({ idPessoaTelevendas, operadoras }: Props) {
     telefone: (c) => c.telefone,
     vendas: (c) => c.vendas3Meses,
   })
+
+  /** Baixa a carteira (com os filtros e a ordem que estão na tela). */
+  function baixarExcel() {
+    const nome = operadoras.find((o) => o.id === idFiltro)?.nome ?? String(idFiltro ?? '')
+    exportarExcel({
+      arquivo: `prospeccao-carteira-${nome}-${dayjs().format('YYYY-MM')}`.replace(/\s+/g, '-'),
+      aba: 'Carteira',
+      linhas: ordenadas,
+      colunas: [
+        { titulo: 'Cód. cliente', tipo: 'numero', largura: 12, valor: (c) => c.idCliente },
+        { titulo: 'Cliente', largura: 44, valor: (c) => c.nomeCliente },
+        { titulo: 'Situação', largura: 16, valor: (c) => (c.noPainel ? 'Positivado' : 'Não positivado') },
+        { titulo: 'Cadastro', largura: 12, valor: (c) => (c.dataCadastroCliente ? dayjs(c.dataCadastroCliente).format('DD/MM/YYYY') : null) },
+        { titulo: 'Limite utilizado', tipo: 'moeda', largura: 16, valor: (c) => c.limiteUtilizado },
+        { titulo: 'Telefone', largura: 18, valor: (c) => c.telefone },
+        { titulo: 'Telefone 2', largura: 18, valor: (c) => c.telefone2 },
+        { titulo: 'Vendas 3 meses', tipo: 'moeda', largura: 16, valor: (c) => c.vendas3Meses },
+      ],
+    })
+  }
 
   return (
     <section aria-label="Carteira" className="flex flex-col gap-3">
@@ -115,11 +137,14 @@ export function ProspeccaoCarteira({ idPessoaTelevendas, operadoras }: Props) {
         <EmptyState message="Nenhum cliente na carteira neste mês." />
       ) : (
         <>
-          <p className="text-sm text-github-text-muted">
-            <strong className="font-semibold text-github-text">{todos.length.toLocaleString('pt-BR')}</strong> clientes na carteira ·{' '}
-            <strong className="font-semibold text-github-text">{venderam.toLocaleString('pt-BR')}</strong> positivados ·{' '}
-            <strong className="font-semibold text-github-text">{(todos.length - venderam).toLocaleString('pt-BR')}</strong> não positivados
-          </p>
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <p className="text-sm text-github-text-muted">
+              <strong className="font-semibold text-github-text">{todos.length.toLocaleString('pt-BR')}</strong> clientes na carteira ·{' '}
+              <strong className="font-semibold text-github-text">{venderam.toLocaleString('pt-BR')}</strong> positivados ·{' '}
+              <strong className="font-semibold text-github-text">{(todos.length - venderam).toLocaleString('pt-BR')}</strong> não positivados
+            </p>
+            <BotaoExportarExcel total={ordenadas.length} onClick={baixarExcel} />
+          </div>
           <div className="overflow-x-auto rounded-xl border border-github-border bg-github-bg-card">
             <table className="w-full text-left text-sm">
               <thead className="text-[11px] uppercase tracking-wide text-github-text-muted">

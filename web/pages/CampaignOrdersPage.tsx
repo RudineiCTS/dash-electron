@@ -7,12 +7,14 @@ import dayjs from 'dayjs'
 import { getCampaignSummaryDetailsById, getCampaignSummaryPerPeriod } from '@shared/services/campaign.teleseler'
 import { PERMITIR_TROCA_USUARIO, useUsuario } from '../auth/UsuarioContext'
 import { useGestor } from '../auth/useGestor'
+import { BotaoExportarExcel } from '../components/BotaoExportarExcel'
 import { PainelDesempenho } from '../components/PainelDesempenho'
 import { PedidosPendentesCard } from '../components/PedidosPendentesCard'
 import { Stat } from '../components/Stat'
 import { ValorOculto } from '../components/ValorOculto'
 import { EmptyState, ErrorState } from '../components/StateViews'
 import { montarDesempenho } from '../lib/desempenho'
+import { exportarExcel } from '../lib/exportarExcel'
 import { defaultCompetencia, formatCurrency, formatDetailMetric, formatPercent } from '../lib/format'
 import { agruparPedidos, getPedidosDaPessoa } from '../lib/pedidos'
 import { useApiResource } from '../lib/useApiResource'
@@ -89,6 +91,26 @@ export default function CampaignOrdersPage() {
       <PedidosPendentesCard idCampaign={idCampaign} competencia={competencia} idPessoa={idAlvo} tipo="excluidos" />
     </>
   ) : null
+
+  /** Baixa os pedidos (um por linha de produto, com o pedido repetido), na ordem que está na tela. Oculto sai em branco. */
+  function baixarExcel() {
+    const quantidade = tipoCampanha === 'QUANTIDADE VENDIDA'
+    const tipoValor = quantidade ? 'numero' : 'moeda'
+    const linhas = ordenadas.flatMap((p) => p.itens.map((item) => ({ p, item })))
+    exportarExcel({
+      arquivo: `pedidos-campanha-${idCampaign}-${(meu?.operatorName ?? String(idAlvo ?? '')).replace(/\s+/g, '-')}-${competencia}`,
+      aba: 'Pedidos',
+      linhas,
+      colunas: [
+        { titulo: 'Pedido', tipo: 'numero', largura: 12, valor: ({ p }) => p.idOrder },
+        { titulo: 'Cód. cliente', tipo: 'numero', largura: 12, valor: ({ p }) => p.idClient },
+        { titulo: 'Origem', tipo: 'numero', largura: 8, valor: ({ p }) => p.origin },
+        { titulo: 'Cód. produto', tipo: 'numero', largura: 12, valor: ({ item }) => item.idProduct },
+        { titulo: 'Total', tipo: tipoValor, largura: 14, valor: ({ item }) => (apuradoOculto ? null : item.total) },
+        { titulo: 'Devolução', tipo: tipoValor, largura: 14, valor: ({ item }) => (apuradoOculto ? null : item.returnValue) },
+      ],
+    })
+  }
 
   function alternar(chave: string) {
     setAbertos((atual) => {
@@ -189,13 +211,16 @@ export default function CampaignOrdersPage() {
             <EmptyState message="Nenhum pedido apurado para este usuário nesta campanha." />
           ) : (
             <section aria-label="Pedidos" className="flex flex-col gap-2">
-              <h2 className="text-base font-semibold">
-                Pedidos
-                <span className="ml-2 text-xs font-normal text-github-text-muted">
-                  {agrupados.length} {agrupados.length === 1 ? 'pedido' : 'pedidos'} · {totalItens}{' '}
-                  {totalItens === 1 ? 'item' : 'itens'} · toque no pedido para ver os produtos
-                </span>
-              </h2>
+              <div className="flex max-w-3xl flex-wrap items-center justify-between gap-2">
+                <h2 className="text-base font-semibold">
+                  Pedidos
+                  <span className="ml-2 text-xs font-normal text-github-text-muted">
+                    {agrupados.length} {agrupados.length === 1 ? 'pedido' : 'pedidos'} · {totalItens}{' '}
+                    {totalItens === 1 ? 'item' : 'itens'} · toque no pedido para ver os produtos
+                  </span>
+                </h2>
+                <BotaoExportarExcel total={totalItens} onClick={baixarExcel} />
+              </div>
 
               <div className="max-w-3xl overflow-x-auto rounded-xl border border-github-border bg-github-bg-card">
                 <table className="w-full text-left text-xs sm:text-sm">

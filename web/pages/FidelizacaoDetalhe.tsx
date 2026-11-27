@@ -2,6 +2,7 @@ import { Fragment, useMemo, useState } from 'react'
 import { useOrdenacao } from '../lib/ordenar'
 import { ThOrdenavel } from '../components/ThOrdenavel'
 import { ChevronDown, ChevronRight, Search, X } from 'lucide-react'
+import { BotaoExportarExcel } from '../components/BotaoExportarExcel'
 import { EmptyState, ErrorState } from '../components/StateViews'
 import { HitsSugestoes } from '../components/HitsSugestoes'
 import {
@@ -9,6 +10,7 @@ import {
   getFidelizacaoProdutos,
   type FidelizacaoLinha,
 } from '../lib/fidelizacao'
+import { exportarExcel } from '../lib/exportarExcel'
 import { formatCurrency } from '../lib/format'
 import { useApiResource } from '../lib/useApiResource'
 
@@ -91,6 +93,43 @@ export function FidelizacaoDetalhe({ linha, onFechar }: { linha: FidelizacaoLinh
   const total = ehValor ? (detalhe.data?.valores.length ?? 0) : (detalhe.data?.hits.length ?? 0)
   const somaValor = (detalhe.data?.valores ?? []).reduce((s, c) => s + c.valorTotal, 0)
 
+  /** Baixa os clientes do KPI (na ordem e com a busca que estão na tela). */
+  function baixarExcel() {
+    const arquivo = `fidelizacao-${nomeDoKpi(linha)}-${linha.pessoa ?? linha.idPessoa}`.replace(/\s+/g, '-')
+    if (ehValor) {
+      exportarExcel({
+        arquivo,
+        aba: 'Clientes',
+        linhas: valoresOrdenados,
+        totalizar: true,
+        colunas: [
+          { titulo: 'Cód. cliente', tipo: 'numero', largura: 12, valor: (c) => c.idPessoaCliente },
+          { titulo: 'Cliente', largura: 44, valor: (c) => c.nomeCliente },
+          ...(cobertura
+            ? []
+            : [
+                { titulo: 'Venda', tipo: 'moeda' as const, largura: 16, valor: (c: (typeof valoresOrdenados)[number]) => c.valorVenda },
+                { titulo: 'Bees', tipo: 'moeda' as const, largura: 16, valor: (c: (typeof valoresOrdenados)[number]) => c.valorVendaBees },
+              ]),
+          { titulo: 'Total vendido', tipo: 'moeda', largura: 16, valor: (c) => c.valorTotal },
+        ],
+      })
+      return
+    }
+    exportarExcel({
+      arquivo,
+      aba: 'Clientes',
+      linhas: hitsOrdenados,
+      totalizar: true,
+      colunas: [
+        { titulo: 'Cód. cliente', tipo: 'numero', largura: 12, valor: (c) => c.idPessoaCliente },
+        { titulo: 'Cliente', largura: 44, valor: (c) => c.nomeCliente },
+        { titulo: 'Produtos comprados', tipo: 'numero', largura: 18, valor: (c) => c.quantidadeProdutos },
+        { titulo: 'Faturado', tipo: 'moeda', largura: 16, valor: (c) => c.valorFaturado },
+      ],
+    })
+  }
+
   return (
     <section aria-label={`Clientes de ${nomeDoKpi(linha)}`} className="flex flex-col gap-3 rounded-xl border border-github-border bg-github-bg-card p-3">
       <div className="flex flex-wrap items-start justify-between gap-2">
@@ -164,6 +203,7 @@ export function FidelizacaoDetalhe({ linha, onFechar }: { linha: FidelizacaoLinh
                 }}
               />
             </label>
+            <BotaoExportarExcel total={ehValor ? valoresOrdenados.length : hitsOrdenados.length} onClick={baixarExcel} />
             <p className="text-sm text-github-text-muted">
               <strong className="font-semibold text-github-text">{total.toLocaleString('pt-BR')}</strong>{' '}
               {cobertura ? 'clientes positivados' : 'clientes'}

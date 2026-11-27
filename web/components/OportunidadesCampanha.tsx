@@ -10,8 +10,10 @@ import {
   type ClienteOportunidade,
   type ResumoCaminho,
 } from '../lib/campanhaOportunidades'
+import { exportarExcel } from '../lib/exportarExcel'
 import { formatCurrency } from '../lib/format'
 import { useApiResource } from '../lib/useApiResource'
+import { BotaoExportarExcel } from './BotaoExportarExcel'
 import { EmptyState, ErrorState } from './StateViews'
 
 const TAMANHO = 30
@@ -213,6 +215,49 @@ export function PainelOportunidades({ idCampaign, resumo }: { idCampaign: number
     [idCampaign, caminho, somenteProntos, busca, pagina, ordem],
   )
 
+  const [exportando, setExportando] = useState(false)
+  const [erroExportar, setErroExportar] = useState<string | null>(null)
+
+  /** Baixa TODOS os clientes do caminho com o mesmo filtro e ordem da tela (busca as páginas de 100 em 100). */
+  async function baixarExcel() {
+    setExportando(true)
+    setErroExportar(null)
+    try {
+      const todos: ClienteOportunidade[] = []
+      for (let pg = 1; pg <= 200; pg++) {
+        const r = await getClientesOportunidades(idCampaign, caminho, { somenteProntos, busca: busca.trim(), pagina: pg, tamanho: 100, ordenar, direcao })
+        todos.push(...r.itens)
+        if (todos.length >= r.total || r.itens.length === 0) break
+      }
+      exportarExcel<ClienteOportunidade>({
+        arquivo: `oportunidades-campanha-${idCampaign}-${caminho.toLowerCase()}`,
+        aba: 'Oportunidades',
+        linhas: todos,
+        colunas: [
+          { titulo: 'Cód. cliente', tipo: 'numero', largura: 12, valor: (c) => c.idPessoaCliente },
+          { titulo: 'Cliente', largura: 44, valor: (c) => c.nome },
+          { titulo: 'Caminho', largura: 24, valor: () => atual.titulo },
+          { titulo: 'Situação', largura: 24, valor: (c) => SITUACAO[c.situacao]?.texto ?? c.situacao },
+          { titulo: 'Chance de comprar', tipo: 'numero', largura: 16, valor: (c) => c.score },
+          { titulo: 'Porte', largura: 12, valor: (c) => c.porte },
+          { titulo: 'Curva', largura: 8, valor: (c) => c.curva },
+          { titulo: 'Potencial por mês', tipo: 'moeda', largura: 16, valor: (c) => c.potencialMensal },
+          { titulo: 'Maior pedido do mês', tipo: 'moeda', largura: 16, valor: (c) => c.maiorPrePedidoMes },
+          { titulo: 'Dias sem comprar', tipo: 'numero', largura: 14, valor: (c) => c.diasSemComprar },
+          { titulo: 'Ciclo (dias)', tipo: 'numero', largura: 12, valor: (c) => c.cicloDias },
+          { titulo: 'Ticket médio', tipo: 'moeda', largura: 14, valor: (c) => c.ticketMedio },
+          { titulo: 'Crédito disponível', tipo: 'moeda', largura: 16, valor: (c) => c.creditoDisponivel },
+          { titulo: 'Motivos', largura: 50, valor: (c) => c.motivos },
+          { titulo: 'Alertas', largura: 50, valor: (c) => c.alertas },
+        ],
+      })
+    } catch {
+      setErroExportar('Não foi possível gerar o Excel agora. Tente de novo.')
+    } finally {
+      setExportando(false)
+    }
+  }
+
   const contagem = (id: CaminhoOportunidade) => resumo.find((r) => r.caminho === id)
   const atual = CAMINHOS.find((c) => c.id === caminho)!
 
@@ -294,6 +339,17 @@ export function PainelOportunidades({ idCampaign, resumo }: { idCampaign: number
           />
           Só clientes liberados para vender
         </label>
+        <BotaoExportarExcel
+          total={contagem(caminho)?.[somenteProntos ? 'prontos' : 'clientes'] ?? 0}
+          onClick={() => void baixarExcel()}
+          className={exportando ? 'pointer-events-none opacity-60' : ''}
+        />
+        {exportando && <span className="text-xs text-github-text-muted">Gerando o arquivo…</span>}
+        {erroExportar && (
+          <span role="alert" className="text-xs text-other-redflag">
+            {erroExportar}
+          </span>
+        )}
         <p className="basis-full text-xs text-github-text-muted">
           Liberado = cadastro ativo, sem boleto vencido há mais de 7 dias e com crédito livre. Desmarque para ver também quem está com pendência no financeiro.
         </p>

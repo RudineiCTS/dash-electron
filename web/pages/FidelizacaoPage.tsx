@@ -5,12 +5,14 @@ import dayjs from 'dayjs'
 import { ArrowLeft, ChevronRight } from 'lucide-react'
 import { PERMITIR_TROCA_USUARIO, useUsuario } from '../auth/UsuarioContext'
 import { useGestor } from '../auth/useGestor'
+import { BotaoExportarExcel } from '../components/BotaoExportarExcel'
 import { ProgressBar } from '../components/ProgressBar'
 import { EmptyState, ErrorState } from '../components/StateViews'
 import { FidelizacaoCarteira } from './FidelizacaoCarteira'
 import { FidelizacaoDetalhe } from './FidelizacaoDetalhe'
 import { PedidosNaoFaturados } from '../components/PedidosNaoFaturados'
 import { getFidelizacaoFaixas, getFidelizacaoPeriodos, getFidelizacaoResultado, type FidelizacaoFaixa, type FidelizacaoLinha } from '../lib/fidelizacao'
+import { exportarExcel } from '../lib/exportarExcel'
 import { formatCurrency } from '../lib/format'
 import { useApiResource } from '../lib/useApiResource'
 
@@ -26,6 +28,8 @@ function statusDe(percent: number, comMeta: boolean) {
 
 /** KPI sem meta (ex.: Hits): não há o que cobrar, então o card já aparece verde. */
 const VERDE = { faixa: 'border-l-[#3B6D11]', barra: 'bg-[#3B6D11]', texto: 'text-[#3B6D11]' }
+
+const nomeDoKpiLinha = (l: FidelizacaoLinha) => l.nomeKpi?.trim() || l.descricaoKpi?.trim() || l.codigoKpi || 'KPI'
 
 const numero = (n: number) => n.toLocaleString('pt-BR', { maximumFractionDigits: 2 })
 /** Percentual sempre com duas casas (69,00%, 57,70%, 111,51%), para os cards ficarem iguais. */
@@ -195,6 +199,26 @@ export default function FidelizacaoPage() {
     media: (p) => p.mediaRealizado,
     premio: (p) => p.premio,
   })
+  /** Baixa os KPIs do período: uma linha por pessoa e KPI (o time todo para o gestor, ou só os da pessoa). */
+  function baixarExcel() {
+    const periodo = periodoAtual ? `${dayjs(periodoAtual.dataInicio).format('YYYY-MM')}` : String(idPeriodo ?? '')
+    exportarExcel({
+      arquivo: `fidelizacao-resultado-${periodo}`,
+      aba: 'KPIs',
+      linhas,
+      colunas: [
+        { titulo: 'Pessoa', largura: 34, valor: (l) => l.pessoa },
+        { titulo: 'Tipo', largura: 20, valor: (l) => l.tipoPessoa },
+        { titulo: 'KPI', largura: 44, valor: (l) => nomeDoKpiLinha(l) },
+        { titulo: 'Meta', tipo: 'moeda', largura: 16, valor: (l) => (l.valorMeta > 0 ? l.valorMeta : null) },
+        { titulo: 'Apurado', tipo: 'moeda', largura: 16, valor: (l) => l.valorApurado },
+        { titulo: 'Realizado (%)', tipo: 'moeda', largura: 14, valor: (l) => (l.valorMeta > 0 ? l.realizado : null) },
+        { titulo: 'Prêmio', tipo: 'moeda', largura: 14, valor: (l) => l.valorPremio },
+        { titulo: 'Calculado em', largura: 18, valor: (l) => (l.dataCalculo ? dayjs(l.dataCalculo).format('DD/MM/YYYY HH:mm') : null) },
+      ],
+    })
+  }
+
   /** Somatório do time (linha de total da tabela). */
   const totalTime = useMemo(() => {
     const comMeta = linhas.filter((l) => l.valorMeta > 0)
@@ -253,6 +277,12 @@ export default function FidelizacaoPage() {
             ))}
           </select>
         </label>
+      )}
+
+      {pronto && linhas.length > 0 && visao === 'kpis' && (
+        <div className="flex justify-end">
+          <BotaoExportarExcel total={linhas.length} onClick={baixarExcel} />
+        </div>
       )}
 
       {periodos.error ? (
