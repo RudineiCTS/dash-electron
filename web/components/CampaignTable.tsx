@@ -3,7 +3,7 @@ import { ChevronRight } from 'lucide-react'
 import type { CampaignSummary } from '@shared/interfaces/CampaignSummary'
 import { formatCurrency, formatPercent, formatSummaryMetric } from '../lib/format'
 import type { PosicaoCampanha } from '../lib/posicoes'
-import { statusDoCard, temMeta } from '../lib/status'
+import { faltaParaBater, statusDoCard, temMeta } from '../lib/status'
 import type { VisibilidadeCampanha } from '../lib/visibilidade'
 import { AvisoOcultoAdmin } from './AvisoOcultoAdmin'
 import { PosicaoBadge } from './PosicaoBadge'
@@ -49,6 +49,7 @@ export function CampaignTable({ campanhas, competencia, posicoes, regrasOcultas 
             const comMeta = temMeta(c) && !apuradoOculto
             const percentual = c.percentageAchieved ?? 0
             const status = statusDoCard(percentual, comMeta)
+            const falta = faltaParaBater(c)
             const destino = `/campaigns/details/${c.idCampaign}?competencia=${competencia}`
             const posicao = posicoes.get(c.idCampaign)
             const regraOculta = regrasOcultas?.get(c.idCampaign)
@@ -78,6 +79,11 @@ export function CampaignTable({ campanhas, competencia, posicoes, regrasOcultas 
                 </td>
                 <td className="whitespace-nowrap px-2 py-2 text-right font-medium">
                   {apuradoOculto ? <ValorOculto /> : formatSummaryMetric(c.campaignTypeDescription, c.assessedValue)}
+                  {falta !== null && (
+                    <span className={`block text-[11px] font-normal ${falta === 0 ? 'text-[#3B6D11]' : 'text-github-text-muted'}`}>
+                      {falta === 0 ? 'Meta batida' : `faltam ${formatSummaryMetric(c.campaignTypeDescription, falta)}`}
+                    </span>
+                  )}
                 </td>
                 <td className="px-2 py-2">
                   <div className="flex items-center justify-end gap-2 sm:justify-start">

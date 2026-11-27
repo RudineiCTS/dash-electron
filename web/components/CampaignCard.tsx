@@ -3,7 +3,7 @@ import { ChevronRight } from 'lucide-react'
 import type { CampaignSummary } from '@shared/interfaces/CampaignSummary'
 import { formatCurrency, formatPercent, formatSummaryMetric } from '../lib/format'
 import type { PosicaoCampanha } from '../lib/posicoes'
-import { statusDoCard, temMeta } from '../lib/status'
+import { faltaParaBater, statusDoCard, temMeta } from '../lib/status'
 import type { VisibilidadeCampanha } from '../lib/visibilidade'
 import { AvisoOcultoAdmin } from './AvisoOcultoAdmin'
 import { PosicaoBadge } from './PosicaoBadge'
@@ -28,6 +28,7 @@ export function CampaignCard({ campaign: c, competencia, posicao, regraOculta }:
   const comMeta = temMeta(c) && !apuradoOculto
   const percentual = c.percentageAchieved ?? 0
   const status = statusDoCard(percentual, comMeta)
+  const falta = faltaParaBater(c)
 
   return (
     <Link
@@ -53,6 +54,18 @@ export function CampaignCard({ campaign: c, competencia, posicao, regraOculta }:
           {apuradoOculto ? <ValorOculto /> : comMeta ? formatPercent(percentual) : 'Sem meta'}
         </span>
       </div>
+
+      {falta !== null && (
+        <p className={`mt-1 text-xs ${falta === 0 ? 'font-semibold text-[#3B6D11]' : 'text-github-text-muted'}`}>
+          {falta === 0 ? (
+            'Meta batida'
+          ) : (
+            <>
+              Faltam <strong className="font-semibold text-github-text">{formatSummaryMetric(c.campaignTypeDescription, falta)}</strong> para bater a campanha
+            </>
+          )}
+        </p>
+      )}
 
       <dl className="mt-2 grid grid-cols-3 gap-x-2">
         <Stat label="Meta" value={formatSummaryMetric(c.campaignTypeDescription, c.goalValue)} />

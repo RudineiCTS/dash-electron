@@ -8,6 +8,15 @@ export function temMeta(c: { goalValue: number | null }): boolean {
 }
 
 /**
+ * Quanto falta para bater a meta da campanha (na mesma unidade do realizado: R$, pontos ou unidades).
+ * null = não se aplica: sem meta ou com o apurado escondido do usuário. 0 = meta batida.
+ */
+export function faltaParaBater(c: { goalValue: number | null; assessedValue: number | null; assessedHidden?: boolean }): number | null {
+  if (c.assessedHidden || (c.goalValue ?? 0) <= 0 || c.assessedValue == null) return null
+  return Math.max((c.goalValue as number) - c.assessedValue, 0)
+}
+
+/**
  * Cor por status: verde = bateu a meta (>= 100%), laranja = em andamento (50% a 99%),
  * vermelho = abaixo de 50%, cinza = sem meta. Usada na faixa lateral, na barra e no percentual
  * dos cards de campanha e do painel de desempenho.
