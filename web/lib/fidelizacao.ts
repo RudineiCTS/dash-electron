@@ -152,8 +152,8 @@ export interface FidelizacaoPedidosNaoFaturados {
   itens: FidelizacaoPedidoNaoFaturado[]
 }
 
-export async function getFidelizacaoPedidosNaoFaturados(idPessoa: number, signal?: AbortSignal): Promise<FidelizacaoPedidosNaoFaturados> {
-  const response = await api.get<FidelizacaoPedidosNaoFaturados>('fidelizacao/pedidos-nao-faturados', { params: { idPessoa }, signal })
+export async function getFidelizacaoPedidosNaoFaturados(idPessoa: number, somenteCarteira: boolean, signal?: AbortSignal): Promise<FidelizacaoPedidosNaoFaturados> {
+  const response = await api.get<FidelizacaoPedidosNaoFaturados>('fidelizacao/pedidos-nao-faturados', { params: { idPessoa, somenteCarteira }, signal })
   return response.data
 }
 

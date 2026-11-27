@@ -34,15 +34,17 @@ interface Props {
   /** Mês aberto na tela ("YYYY-MM"). */
   mes: string
   nomePessoa: string
+  /** Fidelização: só pedidos de clientes da carteira da pessoa. As Exclusivas não têm essa carteira e mostram tudo o que ela digitou. */
+  somenteCarteira?: boolean
 }
 
 /**
  * Pedidos DIGITADOS pela pessoa que ainda não entraram na apuração (a apuração só vê pedido faturado): não faturados,
  * excluídos e devoluções. Vem da tabela gravada pela procedure uspUsuComissaoVendasPedidoNaoFaturadoCarga, que guarda
- * um período só (o da última carga). Aqui só vale quem digitou: pedido só da carteira fica de fora.
+ * um período só (o da última carga). Aqui só vale quem digitou: pedido só da carteira fica de fora. Na Fidelização, entram só os clientes da carteira da pessoa.
  */
-export function PedidosNaoFaturados({ idPessoa, mes, nomePessoa }: Props) {
-  const resposta = useApiResource((signal) => getFidelizacaoPedidosNaoFaturados(idPessoa, signal), [idPessoa])
+export function PedidosNaoFaturados({ idPessoa, mes, nomePessoa, somenteCarteira = false }: Props) {
+  const resposta = useApiResource((signal) => getFidelizacaoPedidosNaoFaturados(idPessoa, somenteCarteira, signal), [idPessoa, somenteCarteira])
   const [grupo, setGrupo] = useState<GrupoSituacao>('todas')
   const [tipoCarteira, setTipoCarteira] = useState<TipoCarteira>('todas')
   const [busca, setBusca] = useState('')
@@ -194,7 +196,7 @@ export function PedidosNaoFaturados({ idPessoa, mes, nomePessoa }: Props) {
       </div>
 
       <p className="text-xs text-github-text-muted">
-        Pedidos digitados por {nomePessoa}. O valor é o total da nota (na devolução parcial, não é só o que foi devolvido).
+        Pedidos digitados por {nomePessoa}{somenteCarteira ? ', de clientes da carteira dela' : ''}. O valor é o total da nota (na devolução parcial, não é só o que foi devolvido).
         {dados.geradoEm && <> Atualizado em {dayjs(dados.geradoEm).format('DD/MM HH:mm')}.</>}
       </p>
 

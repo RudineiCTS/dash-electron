@@ -373,6 +373,7 @@ export default function FidelizacaoPage() {
               idPessoa={pessoaAberta}
               mes={dayjs(periodoAtual.dataInicio).format('YYYY-MM')}
               nomePessoa={dadosPessoa?.pessoa ?? usuario?.operatorName ?? 'pessoa'}
+              somenteCarteira
             />
           ) : visao === 'carteira' && pessoaAberta != null && idPeriodo != null ? (
             <FidelizacaoCarteira idPeriodo={idPeriodo} idPessoa={pessoaAberta} nomePessoa={dadosPessoa?.pessoa ?? usuario?.operatorName ?? 'pessoa'} />
