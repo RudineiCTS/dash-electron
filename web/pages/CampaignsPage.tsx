@@ -258,7 +258,7 @@ export default function CampaignsPage() {
           ) : (
             <ul className="grid grid-cols-[repeat(auto-fill,minmax(19rem,1fr))] gap-2.5">
               {visiveis.map((c) => (
-                <li key={c.idCampaign}>
+                <li key={c.idCampaign} className="flex">
                   <CampaignCard
                     campaign={c}
                     competencia={competencia}

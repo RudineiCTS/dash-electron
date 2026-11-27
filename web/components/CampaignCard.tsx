@@ -33,7 +33,7 @@ export function CampaignCard({ campaign: c, competencia, posicao, regraOculta }:
   return (
     <Link
       to={`/campaigns/details/${c.idCampaign}?competencia=${competencia}`}
-      className={`block rounded-xl border border-l-4 border-github-border bg-github-bg-card p-3 transition-colors hover:bg-github-bg-hover active:bg-github-bg-hover ${status.faixa}`}
+      className={`flex h-full w-full flex-col rounded-xl border border-l-4 border-github-border bg-github-bg-card p-3 transition-colors hover:bg-github-bg-hover active:bg-github-bg-hover ${status.faixa}`}
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
@@ -55,19 +55,18 @@ export function CampaignCard({ campaign: c, competencia, posicao, regraOculta }:
         </span>
       </div>
 
-      {falta !== null && (
-        <p className={`mt-1 text-xs ${falta === 0 ? 'font-semibold text-[#3B6D11]' : 'text-github-text-muted'}`}>
-          {falta === 0 ? (
-            'Meta batida'
-          ) : (
-            <>
-              Faltam <strong className="font-semibold text-github-text">{formatSummaryMetric(c.campaignTypeDescription, falta)}</strong> para bater a campanha
-            </>
-          )}
-        </p>
-      )}
+      {/* a linha sempre ocupa o espaço (vazia quando não se aplica), para os cards ficarem do mesmo tamanho */}
+      <p className={`mt-1 min-h-4 text-xs ${falta === 0 ? 'font-semibold text-[#3B6D11]' : 'text-github-text-muted'}`}>
+        {falta === null ? null : falta === 0 ? (
+          'Meta batida'
+        ) : (
+          <>
+            Faltam <strong className="font-semibold text-github-text">{formatSummaryMetric(c.campaignTypeDescription, falta)}</strong> para bater a campanha
+          </>
+        )}
+      </p>
 
-      <dl className="mt-2 grid grid-cols-3 gap-x-2">
+      <dl className="mt-auto grid grid-cols-3 gap-x-2 pt-2">
         <Stat label="Meta" value={formatSummaryMetric(c.campaignTypeDescription, c.goalValue)} />
         <Stat
           label="Realizado"
