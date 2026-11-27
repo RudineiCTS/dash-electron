@@ -295,6 +295,14 @@ export default function ExclusivasPage() {
                       <span className="ml-1 text-xs font-normal text-github-text-muted">a positivar</span>
                     </p>
                   )}
+                  {/* prêmio pela faixa de premiação da indústria (positivados x valor da faixa); sem faixa de valor por cliente aparece "-" */}
+                  <p
+                    className={`mt-1.5 text-sm font-semibold leading-none ${r.valorPremio > 0 ? 'text-[#639922]' : 'text-github-text-muted'}`}
+                    title="Prêmio pela faixa de premiação: clientes positivados x valor da faixa em que a quantidade cai"
+                  >
+                    {r.valorPremio > 0 ? formatCurrency(r.valorPremio) : '-'}
+                    <span className="ml-1 text-xs font-normal text-github-text-muted">de prêmio{ehGestor || r.operadores < 2 ? '' : ' (sua parte)'}</span>
+                  </p>
                   <p className="mt-auto pt-2 text-xs text-github-text-muted">
                     {formatCurrency(r.totalVenda)}
                     {ehGestor && <> · {r.operadores} {r.operadores === 1 ? 'operador' : 'operadores'}</>}

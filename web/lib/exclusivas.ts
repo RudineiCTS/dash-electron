@@ -9,6 +9,8 @@ export interface ExclusivaResumo {
   positivados: number
   /** Clientes com pedido digitado e ainda não faturado que vão positivar (e ainda não estão nos positivados). */
   aPositivar: number
+  /** Prêmio da indústria no mês pelas faixas de premiação (positivados x valor da faixa). 0 = sem faixa de valor por cliente. */
+  valorPremio: number
   totalVenda: number
   geradoEm: string | null
 }
