@@ -23,7 +23,7 @@ interface Props {
 }
 
 /**
- * Oportunidades das exclusivas SEM carteira (Nestlé, P&G HPC, Flora, J&J e Ontex): os 600 clientes que mais compraram a
+ * Oportunidades das exclusivas (Nestlé, P&G HPC, Flora, J&J, Ontex e, só da carteira, Boticário, Haleon e Reckitt): os 600 clientes que mais compraram a
  * indústria nos últimos 6 meses e que ainda não positivaram no mês. A base é recalculada na carga diária.
  */
 export function ExclusivasOportunidades({ idPessoaFiltro }: Props) {
@@ -90,7 +90,7 @@ export function ExclusivasOportunidades({ idPessoaFiltro }: Props) {
   if (resumo.loading) return <div className="h-24 animate-pulse rounded-xl border border-github-border bg-github-bg-card" aria-busy="true" />
   if (resumo.error) return <ErrorState message={resumo.error} onRetry={resumo.reload} />
   if (!resumo.data?.length) {
-    return <EmptyState message="Não há base de oportunidades para as suas exclusivas. Ela existe para as exclusivas sem carteira: Nestlé, P&G HPC, Flora, J&J e Ontex." />
+    return <EmptyState message="Não há base de oportunidades para as suas exclusivas neste momento." />
   }
 
   return (
@@ -98,7 +98,8 @@ export function ExclusivasOportunidades({ idPessoaFiltro }: Props) {
       <p className="text-sm text-github-text-muted">
         Os 600 clientes que mais compraram cada indústria <strong className="font-semibold text-github-text">pelo Televendas</strong> nos{' '}
         <strong className="font-semibold text-github-text">últimos 6 meses</strong> e que{' '}
-        <strong className="font-semibold text-github-text">ainda não positivaram neste mês</strong>. Comece pelos primeiros da lista.
+        <strong className="font-semibold text-github-text">ainda não positivaram neste mês</strong>. Comece pelos primeiros da lista. Nas exclusivas com
+        carteira (Boticário, Haleon e Reckitt) a lista tem só clientes da carteira.
         {geradoEm && <> Atualizado em {dayjs(geradoEm).format('DD/MM HH:mm')}.</>}
       </p>
 
