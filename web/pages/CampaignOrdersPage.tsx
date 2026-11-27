@@ -61,6 +61,10 @@ export default function CampaignOrdersPage() {
 
   const resumo = resumos.data?.find((s) => s.idCampaign === idCampaign)
   const meu = idAlvo ? ranking.data?.find((r) => r.idPersonSales === idAlvo) : undefined
+  // Em campanha de QUANTIDADE VENDIDA o total do pedido é quantidade (unidades), não dinheiro: sem o cifrão
+  const tipoCampanha = meu?.campaignTypeDescription ?? resumo?.campaignTypeDescription ?? ''
+  const valorDoPedido = (v: Parameters<typeof formatCurrency>[0]) =>
+    tipoCampanha === 'QUANTIDADE VENDIDA' && v != null ? Number(v).toLocaleString('pt-BR') : formatCurrency(v)
   const totalItens = pedidos.data?.orders.length ?? 0
   const dataApuracao = pedidos.data?.appraisalDate ? dayjs(pedidos.data.appraisalDate).format('DD/MM/YYYY HH:mm') : '—'
 
@@ -230,14 +234,14 @@ export default function CampaignOrdersPage() {
                             <td className="whitespace-nowrap px-1 py-1.5 sm:px-2">{p.idClient ?? '—'}</td>
                             <td className="px-1 py-1.5 text-github-text-muted sm:px-2">{p.origin}</td>
                             <td className="whitespace-nowrap px-1 py-1.5 text-right font-semibold sm:px-2">
-                              {apuradoOculto ? <ValorOculto /> : formatCurrency(p.total)}
+                              {apuradoOculto ? <ValorOculto /> : valorDoPedido(p.total)}
                             </td>
                             <td
                               className={`whitespace-nowrap py-1.5 pl-1 pr-1.5 text-right sm:pl-2 sm:pr-3 ${
                                 p.returnValue > 0 ? 'text-other-redflag' : 'text-github-text-muted'
                               }`}
                             >
-                              {apuradoOculto ? <ValorOculto /> : formatCurrency(p.returnValue)}
+                              {apuradoOculto ? <ValorOculto /> : valorDoPedido(p.returnValue)}
                             </td>
                           </tr>
 
@@ -260,14 +264,14 @@ export default function CampaignOrdersPage() {
                                       <tr key={`${item.idProduct}-${i}`} className="border-t border-github-border/60">
                                         <td className="whitespace-nowrap py-1">{item.idProduct}</td>
                                         <td className="whitespace-nowrap px-1 py-1 text-right font-semibold">
-                                          {apuradoOculto ? <ValorOculto /> : formatCurrency(item.total)}
+                                          {apuradoOculto ? <ValorOculto /> : valorDoPedido(item.total)}
                                         </td>
                                         <td
                                           className={`whitespace-nowrap py-1 pl-1 text-right ${
                                             (item.returnValue ?? 0) > 0 ? 'text-other-redflag' : 'text-github-text-muted'
                                           }`}
                                         >
-                                          {apuradoOculto ? <ValorOculto /> : formatCurrency(item.returnValue)}
+                                          {apuradoOculto ? <ValorOculto /> : valorDoPedido(item.returnValue)}
                                         </td>
                                       </tr>
                                     ))}
