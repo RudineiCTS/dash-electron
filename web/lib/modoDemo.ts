@@ -166,7 +166,9 @@ export function instalarModoDemo(clientes: AxiosInstance[]) {
   for (const cliente of clientes) {
     cliente.interceptors.response.use((resposta) => {
       const tipo = String(resposta.headers?.['content-type'] ?? '')
-      if (tipo.includes('application/json')) resposta.data = anonimizar(resposta.data)
+      // o login e o "quem sou eu" (auth/...) ficam reais: é o nome de quem está apresentando
+      const ehAuth = String(resposta.config?.url ?? '').startsWith('auth/')
+      if (tipo.includes('application/json') && !ehAuth) resposta.data = anonimizar(resposta.data)
       return resposta
     })
   }
