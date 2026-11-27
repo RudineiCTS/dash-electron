@@ -240,12 +240,12 @@ export function ExclusivasCarteira({ mes, onMes, idPessoaFiltro, ehGestor }: Exc
             const ativa = industriaAtiva === nome
             const pct = r.carteira > 0 ? Math.min(100, (r.positivados / r.carteira) * 100) : 0
             return (
-              <li key={nome}>
+              <li key={nome} className="flex">
                 <button
                   type="button"
                   aria-pressed={ativa}
                   onClick={() => escolherIndustria(nome)}
-                  className={`w-full rounded-xl border p-3 text-left transition-colors ${
+                  className={`flex w-full flex-col rounded-xl border p-3 text-left transition-colors ${
                     ativa
                       ? 'border-github-btn-green bg-github-bg-hover'
                       : 'border-github-border bg-github-bg-card hover:bg-github-bg-hover'
@@ -269,7 +269,7 @@ export function ExclusivasCarteira({ mes, onMes, idPessoaFiltro, ehGestor }: Exc
                   <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-github-bg-hover" aria-hidden>
                     <div className="h-full rounded-full bg-[#639922]" style={{ width: `${Math.max(pct, pct > 0 ? 2 : 0)}%` }} />
                   </div>
-                  <p className="mt-2 text-xs text-github-text-muted">
+                  <p className="mt-auto pt-2 text-xs text-github-text-muted">
                     {r.carteira === 0 && r.foraDaPositivacao > 0 ? (
                       <>
                         <strong className="font-semibold text-github-text">{r.foraDaPositivacao.toLocaleString('pt-BR')}</strong> na lista de exclusão. Veja a aba Oportunidades.

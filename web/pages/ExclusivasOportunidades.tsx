@@ -108,12 +108,12 @@ export function ExclusivasOportunidades({ idPessoaFiltro }: Props) {
           const nome = r.industria ?? ''
           const ativa = industriaAtiva === nome
           return (
-            <li key={nome}>
+            <li key={nome} className="flex">
               <button
                 type="button"
                 aria-pressed={ativa}
                 onClick={() => escolher(nome)}
-                className={`w-full rounded-xl border p-3 text-left transition-colors ${
+                className={`flex w-full flex-col rounded-xl border p-3 text-left transition-colors ${
                   ativa ? 'border-github-btn-green bg-github-bg-hover' : 'border-github-border bg-github-bg-card hover:bg-github-bg-hover'
                 }`}
               >
@@ -122,7 +122,7 @@ export function ExclusivasOportunidades({ idPessoaFiltro }: Props) {
                   {r.clientes.toLocaleString('pt-BR')}
                   <span className="ml-1 text-xs font-normal text-github-text-muted">oportunidades</span>
                 </p>
-                <p className="mt-2 text-xs text-github-text-muted">
+                <p className="mt-auto pt-2 text-xs text-github-text-muted">
                   de {formatCurrency(r.menorValor)} a {formatCurrency(r.maiorValor)} em 6 meses
                 </p>
               </button>
