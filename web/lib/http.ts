@@ -1,6 +1,7 @@
 import { isAxiosError } from 'axios'
 import { api, apiParams } from '@shared/services/api'
 import type { AuthAdapter } from '../auth/authAdapter'
+import { instalarModoDemo } from './modoDemo'
 
 /**
  * Reconfigura os clientes axios compartilhados com o app Electron (src/services/api.ts,
@@ -29,4 +30,7 @@ export function configureHttp(auth: AuthAdapter) {
       },
     )
   }
+
+  // apresentações locais (VITE_MODO_DEMO=true): troca nomes e telefones por dados inventados
+  instalarModoDemo([api, apiParams])
 }

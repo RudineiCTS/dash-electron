@@ -3,6 +3,7 @@ import { Link, Navigate, NavLink, Outlet, useLocation } from 'react-router-dom'
 import { useUsuario } from '../auth/UsuarioContext'
 import { LogoCompass } from '../components/LogoCompass'
 import { ThemeButton } from '../components/ThemeButton'
+import { MODO_DEMO_DISPONIVEL, alternarModoDemo, modoDemoAtivo } from '../lib/modoDemo'
 import { ABAS } from './abas'
 
 function classeAba(isActive: boolean, vertical: boolean) {
@@ -19,6 +20,22 @@ function classeAba(isActive: boolean, vertical: boolean) {
  * Navegação por abas: lateral (sidebar) a partir de md; em telas menores vira
  * uma faixa horizontal rolável logo abaixo do header.
  */
+/** Só existe com VITE_MODO_DEMO=true (apresentações locais): liga/desliga o disfarce de nomes e telefones. */
+function BotaoModoDemo() {
+  if (!MODO_DEMO_DISPONIVEL) return null
+  const ligado = modoDemoAtivo()
+  return (
+    <button
+      type="button"
+      onClick={alternarModoDemo}
+      title={ligado ? 'Modo demo ligado: nomes e telefones são inventados. Clique para desligar.' : 'Modo demo desligado: aparecem os dados reais. Clique para ligar.'}
+      className={`flex h-8 shrink-0 items-center rounded-md px-2.5 text-xs font-semibold ${ligado ? 'bg-[#EF9F27] text-black' : 'bg-white/15 text-white'}`}
+    >
+      Demo: {ligado ? 'ligado' : 'desligado'}
+    </button>
+  )
+}
+
 export function WebLayout() {
   const { abasPermitidas, primeiraAba, sessao, exigeLogin, sair, administrador } = useUsuario()
   const location = useLocation()
@@ -45,6 +62,7 @@ export function WebLayout() {
 
           {sessao && (
             <div className="ml-auto flex min-w-0 items-center gap-2">
+              <BotaoModoDemo />
               <span className="hidden max-w-40 truncate text-sm sm:inline" title={sessao.usuario.nome}>
                 {sessao.usuario.nome}
               </span>
