@@ -11,8 +11,9 @@ import { useApiResource } from '../lib/useApiResource'
  */
 export function useGestor(idPessoa: number | null) {
   const base = useApiResource((signal) => getDigitadoras(signal), [])
-  const { acesso, carregandoAcesso, administrador } = useUsuario()
-  // administrador do Compass vê todos os colaboradores, mesmo sem estar ligado a uma pessoa do televendas
-  const ehGestor = administrador || (!!idPessoa && (!!acesso?.gestao || !!base.data?.some((p) => p.idSupervisor === idPessoa)))
-  return { ehGestor, carregando: !administrador && !!idPessoa && (base.loading || carregandoAcesso) }
+  const { acesso, carregandoAcesso, administrador, supervisao } = useUsuario()
+  // administrador e Supervisão do Compass veem todos os colaboradores, mesmo sem estar ligados a uma pessoa do televendas
+  const veTudo = administrador || supervisao
+  const ehGestor = veTudo || (!!idPessoa && (!!acesso?.gestao || !!base.data?.some((p) => p.idSupervisor === idPessoa)))
+  return { ehGestor, carregando: !veTudo && !!idPessoa && (base.loading || carregandoAcesso) }
 }

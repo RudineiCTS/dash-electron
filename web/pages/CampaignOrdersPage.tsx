@@ -65,8 +65,9 @@ export default function CampaignOrdersPage() {
   const dataApuracao = pedidos.data?.appraisalDate ? dayjs(pedidos.data.appraisalDate).format('DD/MM/YYYY HH:mm') : '—'
 
   const semDadosDoUsuario = ranking.loading ? 'Carregando…' : '—'
-  // O administrador escondeu o apurado desta campanha: realizado, percentual e valores dos pedidos não existem para este usuário
-  const apuradoOculto = !!(resumo?.assessedHidden || meu?.assessedHidden || pedidos.data?.assessedHidden)
+  // O administrador escondeu o apurado desta campanha: realizado, percentual e valores dos pedidos não existem para este usuário.
+  // O total da campanha (resumo) escondido é da equipe: o que vale aqui é a linha da pessoa e os pedidos dela, que a API já mascara.
+  const apuradoOculto = !!(meu?.assessedHidden || pedidos.data?.assessedHidden)
   // Sem meta individual não há percentual a mostrar (o ranking devolve 0,00%, que enganaria).
   const temPercentual = !!meu && (meu.individualTarget > 0 || meu.percentageAchieved > 0)
 

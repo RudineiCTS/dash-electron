@@ -81,8 +81,9 @@ export function montarDesempenho(
     }
   }
 
-  // Apurado escondido pelo administrador: meta/realizado/falta não existem para este usuário, então não há bloco de meta
-  if (resumo?.assessedHidden || meu?.assessedHidden) base = null
+  // Apurado escondido pelo administrador: meta/realizado/falta não existem para este usuário, então não há bloco de meta.
+  // O escondido da campanha inteira (resumo) só vale para a meta da equipe; o da pessoa, para a meta individual.
+  if (base?.origem === 'individual' ? meu?.assessedHidden : resumo?.assessedHidden) base = null
 
   let meta: MetaPrazo | null = null
   if (base) {

@@ -21,11 +21,12 @@ interface Rascunho {
   nome: string
   idPessoaTelevendas: number | null
   administrador: boolean
+  supervisao: boolean
   ativo: boolean
   telas: string[]
 }
 
-const NOVO: Rascunho = { id: null, loginAd: '', nome: '', idPessoaTelevendas: null, administrador: false, ativo: true, telas: ['/campaigns'] }
+const NOVO: Rascunho = { id: null, loginAd: '', nome: '', idPessoaTelevendas: null, administrador: false, supervisao: false, ativo: true, telas: ['/campaigns'] }
 
 function mensagemDoErro(err: unknown): string {
   const resp = (err as { response?: { data?: { mensagem?: string } } } | null)?.response
@@ -47,6 +48,8 @@ export default function UsuariosPage() {
 
   /** A tela de Usuários é só de administrador: não aparece para marcar. */
   const telasMarcaveis = useMemo<Tela[]>(() => (telas.data ?? []).filter((t) => t.caminho !== '/usuarios'), [telas.data])
+  /** Supervisão enxerga tudo menos Usuários e Parâmetros (o servidor aplica; aqui só mostra). */
+  const telaDaSupervisao = (caminho: string) => caminho !== '/parametros' && caminho !== '/usuarios'
   const rotuloDaTela = useMemo(() => new Map((telas.data ?? []).map((t) => [t.caminho, t.rotulo])), [telas.data])
 
   function editar(u: UsuarioAdmin) {
@@ -57,6 +60,7 @@ export default function UsuariosPage() {
       nome: u.nome,
       idPessoaTelevendas: u.idPessoaTelevendas,
       administrador: u.administrador,
+      supervisao: u.supervisao,
       ativo: u.ativo,
       telas: u.telas,
     })
@@ -78,6 +82,7 @@ export default function UsuariosPage() {
       nome: rascunho.nome,
       idPessoaTelevendas: rascunho.idPessoaTelevendas,
       administrador: rascunho.administrador,
+      supervisao: rascunho.supervisao && !rascunho.administrador,
       ativo: rascunho.ativo,
       telas: rascunho.telas,
     }
@@ -177,7 +182,7 @@ export default function UsuariosPage() {
                 <button
                   key={p.nome}
                   type="button"
-                  disabled={rascunho.administrador}
+                  disabled={rascunho.administrador || rascunho.supervisao}
                   onClick={() => setRascunho({ ...rascunho, telas: p.telas })}
                   className="h-8 rounded-md border border-github-border px-3 text-xs font-medium hover:bg-github-bg-hover disabled:opacity-50"
                 >
@@ -191,8 +196,10 @@ export default function UsuariosPage() {
                 <label key={t.caminho} className="flex items-center gap-2 text-sm">
                   <input
                     type="checkbox"
-                    checked={rascunho.administrador || rascunho.telas.includes(t.caminho)}
-                    disabled={rascunho.administrador}
+                    checked={
+                      rascunho.administrador || (rascunho.supervisao ? telaDaSupervisao(t.caminho) : rascunho.telas.includes(t.caminho))
+                    }
+                    disabled={rascunho.administrador || rascunho.supervisao}
                     onChange={() => alternarTela(t.caminho)}
                     className="h-4 w-4"
                   />
@@ -207,10 +214,20 @@ export default function UsuariosPage() {
               <input
                 type="checkbox"
                 checked={rascunho.administrador}
-                onChange={(e) => setRascunho({ ...rascunho, administrador: e.target.checked })}
+                onChange={(e) => setRascunho({ ...rascunho, administrador: e.target.checked, supervisao: e.target.checked ? false : rascunho.supervisao })}
                 className="h-4 w-4"
               />
               Administrador (vê todas as telas e cadastra usuários)
+            </label>
+            <label className="flex items-center gap-2 text-sm">
+              <input
+                type="checkbox"
+                checked={rascunho.supervisao && !rascunho.administrador}
+                disabled={rascunho.administrador}
+                onChange={(e) => setRascunho({ ...rascunho, supervisao: e.target.checked })}
+                className="h-4 w-4"
+              />
+              Supervisão (vê tudo, de todas as pessoas, menos Usuários e Parâmetros; não precisa de pessoa do televendas)
             </label>
             <label className="flex items-center gap-2 text-sm">
               <input
@@ -256,6 +273,9 @@ export default function UsuariosPage() {
                 <p className="flex flex-wrap items-center gap-2 text-sm font-semibold">
                   {u.nome}
                   {u.administrador && <span className="rounded bg-[#32307B] px-1.5 py-0.5 text-[10px] font-medium text-white">Administrador</span>}
+                  {u.supervisao && !u.administrador && (
+                    <span className="rounded bg-[#32307B]/80 px-1.5 py-0.5 text-[10px] font-medium text-white">Supervisão</span>
+                  )}
                   {!u.ativo && <span className="rounded border border-github-border px-1.5 py-0.5 text-[10px] font-medium text-github-text-muted">Inativo</span>}
                 </p>
                 <p className="text-xs text-github-text-muted">
@@ -265,9 +285,11 @@ export default function UsuariosPage() {
                 <p className="mt-1 text-xs text-github-text-muted">
                   {u.administrador
                     ? 'Todas as telas'
-                    : u.telas.length
-                      ? u.telas.map((t) => rotuloDaTela.get(t) ?? t).join(' · ')
-                      : 'Nenhuma tela liberada'}
+                    : u.supervisao
+                      ? 'Todas, menos Usuários e Parâmetros'
+                      : u.telas.length
+                        ? u.telas.map((t) => rotuloDaTela.get(t) ?? t).join(' · ')
+                        : 'Nenhuma tela liberada'}
                 </p>
               </div>
               <button

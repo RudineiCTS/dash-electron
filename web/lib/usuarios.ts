@@ -11,6 +11,7 @@ export interface UsuarioAdmin {
   nome: string
   idPessoaTelevendas: number | null
   administrador: boolean
+  supervisao: boolean
   ativo: boolean
   telas: string[]
   dataCadastro: string
@@ -23,6 +24,7 @@ export interface UsuarioSalvar {
   nome: string
   idPessoaTelevendas: number | null
   administrador: boolean
+  supervisao: boolean
   ativo: boolean
   telas: string[]
 }
@@ -33,10 +35,6 @@ export const PERFIS: { nome: string; telas: string[] }[] = [
   { nome: 'Exclusivas', telas: ['/campaigns', '/exclusivas'] },
   { nome: 'Prospecção', telas: ['/campaigns', '/prospeccao'] },
   { nome: 'SAC', telas: ['/sac'] },
-  {
-    nome: 'Supervisão',
-    telas: ['/campaigns', '/prospeccao', '/fidelizacao', '/sac', '/exclusivas', '/oportunidades', '/parametros'],
-  },
 ]
 
 export async function getTelas(signal?: AbortSignal): Promise<Tela[]> {

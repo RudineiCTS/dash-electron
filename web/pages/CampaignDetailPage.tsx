@@ -35,7 +35,7 @@ export default function CampaignDetailPage() {
   const idCampaign = Number(id)
   const [params] = useSearchParams()
   const competencia = params.get('competencia') ?? defaultCompetencia()
-  const { idPessoa, administrador } = useUsuario()
+  const { idPessoa, administrador, supervisao } = useUsuario()
   const { ehGestor } = useGestor(idPessoa)
   const [busca, setBusca] = useState('')
   const [limite, setLimite] = useState(PAGE_SIZE)
@@ -45,7 +45,7 @@ export default function CampaignDetailPage() {
 
   const resumo = resumos.data?.find((s) => s.idCampaign === idCampaign)
   // O administrador vê todas as linhas; avisa quando há gestão no ranking, que os outros usuários não recebem
-  const temGestao = administrador && (ranking.data ?? []).some((r) => r.personType === 1 || r.personType === 2)
+  const temGestao = (administrador || supervisao) && (ranking.data ?? []).some((r) => r.personType === 1 || r.personType === 2)
   const linhas = useMemo(() => {
     const termo = busca.trim().toLowerCase()
     return [...(ranking.data ?? [])]

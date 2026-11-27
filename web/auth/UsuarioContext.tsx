@@ -55,6 +55,8 @@ interface UsuarioContextValue {
   exigeLogin: boolean
   /** Administrador do Compass: vê todas as telas e cadastra usuários. */
   administrador: boolean
+  /** Perfil Supervisão: vê tudo (todas as pessoas, sem ocultação) menos Usuários e Parâmetros. */
+  supervisao: boolean
   /** Confere usuário e senha na API; lança erro com a mensagem a mostrar. */
   entrar: (login: string, senha: string) => Promise<void>
   sair: () => void
@@ -137,6 +139,7 @@ export function UsuarioProvider({ children }: { children: ReactNode }) {
         sessao,
         exigeLogin: !PERMITIR_TROCA_USUARIO,
         administrador: !!sessao?.usuario.administrador,
+        supervisao: !!sessao?.usuario.supervisao,
         entrar,
         sair,
       }

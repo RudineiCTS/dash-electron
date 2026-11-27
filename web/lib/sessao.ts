@@ -6,6 +6,8 @@ export interface UsuarioSessao {
   nome: string
   idPessoaTelevendas: number | null
   administrador: boolean
+  /** Perfil Supervisão: vê tudo (todas as pessoas) menos Usuários e Parâmetros; não precisa de pessoa do televendas. */
+  supervisao: boolean
   /** Caminhos das telas liberadas (ex.: "/campaigns", "/fidelizacao"). */
   telas: string[]
 }
